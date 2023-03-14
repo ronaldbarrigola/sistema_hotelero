@@ -1,0 +1,119 @@
+.dropdown-menu {
+    margin-top: 0;
+}
+
+.dropdown-menu .dropdown-toggle::after {
+    vertical-align: middle;
+    border-left: 4px solid;
+    border-bottom: 4px solid transparent;
+    border-top: 4px solid transparent;
+}
+
+.dropdown-menu .dropdown .dropdown-menu {
+    left: 100%;
+    top: 0%;
+    margin: 0 0 0 5px;
+    border-width: 1;
+}
+
+.dropdown-menu .dropdown .dropdown-menu.left {
+    right: 100%;
+    left: auto;
+}
+
+.dropdown-menu>li a:hover,
+.dropdown-menu>li.show {
+    background: whitesmoke;
+    color: darkblue;
+}
+
+.dropdown-menu>li.show>a {
+    color: blue;
+}
+
+@media (min-width: 768px) {
+    .dropdown-menu .dropdown .dropdown-menu {
+        margin: 0;
+        border-width: 1px;
+    }
+}
+
+
+/*
+ESTILOS DE SMART MENU PERSONALIZADO
+ You probably do not need to edit this at all.
+
+ Add some SmartMenus required styles not covered in Bootstrap 4's default CSS.
+ These are theme independent and should work with any Bootstrap 4 theme mod.
+*/
+
+
+/* Carets in collapsible mode (make them look like +/- buttons) */
+
+.nav.navbar-nav .sub-arrow {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    margin: -0.7em 0.5em 0 0;
+    border: 1px solid rgba(0, 0, 0, .1);
+    border-radius: .25rem;
+    padding: 0;
+    width: 2em;
+    height: 1.4em;
+    font-size: 1.25rem;
+    line-height: 1.2em;
+    text-align: center;
+}
+
+.nav.navbar-nav .sub-arrow::before {
+    content: '+';
+}
+
+.nav.navbar-nav .show>a>.sub-arrow::before {
+    content: '-';
+}
+
+.navbar-dark .nav.navbar-nav .nav-link .sub-arrow {
+    border-color: rgba(255, 255, 255, .1);
+}
+
+
+/* OCULTAR O MOSTRAR FLECHA SEGUN TAMAÑO DE PANTALLA*/
+
+.nav.navbar-nav .dropdown-toggle.nav-link::after,
+.dropdown-toggle.dropdown-item::after {
+    content: normal;
+}
+
+@media (min-width: 768px) {
+    .nav.navbar-nav .dropdown-toggle.nav-link::after,
+    .dropdown-toggle.dropdown-item::after {
+        content: '';
+    }
+}
+
+
+/* keep the carets properly positioned */
+
+.nav.navbar-nav .nav-link,
+.nav.navbar-nav .dropdown-item {
+    position: relative;
+}
+
+
+/* Nav carets in expanded mode */
+
+
+/* .navbar-nav:not(.mr-auto) .nav-link .sub-arrow { */
+
+
+/* .navbar-nav .nav-link .sub-arrow {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: .255em;
+    vertical-align: .255em;
+    border-top: .3em solid;
+    border-right: .3em solid transparent;
+    border-left: .3em solid transparent;
+} */

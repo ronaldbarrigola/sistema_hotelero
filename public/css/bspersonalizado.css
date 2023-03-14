@@ -1,0 +1,26 @@
+/* cabecera de paneles */
+
+
+/* .panel-default > .panel-heading {*/
+
+.card-header {
+    color: #fff;
+    background-color: #1e4260;
+}
+
+
+/* cabecera de ventana modal */
+
+.modal-header {
+    color: #fff;
+    background-color: #1e4260;
+    border-color: #ddd;
+}
+
+
+/* boton de la ventana modal */
+
+.close {
+    color: red;
+    opacity: 1;
+}

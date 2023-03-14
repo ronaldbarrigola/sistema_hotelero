@@ -1,0 +1,82 @@
+/* .css-treeview ul {
+    display: none;
+} */
+
+
+/* .css-treeview label,
+.css-treeview label::before {
+    cursor: pointer;
+} */
+
+
+/* .css-treeview input:first-child:checked:not(:disabled)~ul {
+    display: block;
+} */
+
+.css-treeview li {
+    list-style-type: none;
+    margin: 0;
+    padding: 10px 5px 0 5px;
+    position: relative
+}
+
+.css-treeview li::before,
+.css-treeview li::after {
+    content: '';
+    left: -20px;
+    position: absolute;
+    right: auto
+}
+
+.css-treeview li::before {
+    border-left: 2px solid #000;
+    bottom: 50px;
+    height: 100%;
+    top: 0;
+    width: 1px
+}
+
+.css-treeview li::after {
+    border-top: 2px solid #000;
+    height: 20px;
+    top: 25px;
+    width: 25px
+}
+
+.css-treeview li span {
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border: 2px solid #000;
+    border-radius: 3px;
+    display: inline-block;
+    padding: 3px 8px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
+/* class="d-inline-block" */
+
+.css-treeview li div {
+    display: inline-block;
+}
+
+.css-treeview>ul>li::before,
+.css-treeview>ul>li::after {
+    border: 0
+}
+
+.css-treeview li:last-child::before {
+    height: 27px
+}
+
+.css-treeview li span:hover {
+    background: #0080ff;
+    color: white;
+    border: 2px solid #94a0b4;
+}
+
+[aria-expanded='false']>.expanded,
+[aria-expanded='true']>.collapsed {
+    display: none;
+}
