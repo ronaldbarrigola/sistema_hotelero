@@ -1,7 +1,7 @@
 @extends('layouts.plantillaFormExtendido')
 @section('contenido')
     @section('panelCabecera')
-    @include('business/categoria/actionbar',['','titulo'=>'CATEGORIA'])
+    @include('business/categoria/actionbar',['','titulo'=>'CATEGORIAS'])
     @endsection
 
     @section('panelCuerpo')
@@ -18,6 +18,7 @@
             </div>
         </div>
         @include('partials/confirmaeliminacion',['url_base_eliminar'=>'business/categoria'])
+        @include('business/categoria/create_edit')
     @endsection
 @endsection
 
@@ -28,13 +29,22 @@
 @push('scripts')
     <script>
         $(document).ready( function () {
+
+            $(document).on("click", "#btnCreateCategoria", function(){ //El boton btnCreateCategoria se encuentra en actionbar
+                $("#edit").val("");
+                $("#title_modal_view_categoria").text("NUEVA CATEGORIA");
+                limpiarDatoCategoria();
+                $('#modalViewCategoria').modal('show');
+            });
+
+            // ══════════════════════ Cargando columnas para datatables  ══════════════════════
             var columnas=[
                             {data:'id'},
                             {data:'descripcion'},
                             {data:'id',
                                 orderable:false,
                                 render: function(data){
-                                    return "<a href={{url('/business/categoria/')}}/"+data+"/edit><button class='btn btn-info'>Editar</button></a>";
+                                    return '<button id="'+data+ '" class="btn btn-info" onclick="dataEditCategoria(this);">Editar</button></a>';
                                 }
                             },
                             {data:'id',

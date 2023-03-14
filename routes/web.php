@@ -81,8 +81,9 @@ Route::get('/seguridad/obtenerRolesFaltantesPorIdUsuario', [UsuarioRolController
 //==============================================================================================================
 //rutas proyecto negocio
 //==============================================================================================================
-Route::get('/busines/cliente/editcliente', [ClienteController::class,'edit'])->name('editcliente');
+Route::get('/busines/categoria/editcategoria', [CategoriaController::class,'edit'])->name('editcategoria');
 Route::get('/business/ciudad/listaciudades', [CiudadController::class,'obtenerCiudadesPorPaisId'])->name('listaciudades');
+Route::get('/busines/cliente/editcliente', [ClienteController::class,'edit'])->name('editcliente');
 Route::get('/busines/cliente/edithabitacion', [HabitacionController::class,'edit'])->name('edithabitacion');
 Route::get('/base/persona/buscarPersonaDocId', [PersonaController::class,'buscarPersonaClientePorDocId'])->name('buscarPersonaDocId');
 Route::get('/business/habitacion/obtenerHabitaciones', [HabitacionController::class,'obtenerHabitaciones'])->name('obtenerHabitaciones');

@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Auth;
-
 use App\Repositories\Base\PersonaRepository;
 use App\Repositories\Base\TipoDocRepository;
 use App\Repositories\Base\CiudadRepository;
@@ -14,7 +12,6 @@ use App\Repositories\Business\ClienteRepository;
 use App\Repositories\Business\PaisRepository;
 use App\Repositories\Business\ProfesionRepository;
 use App\Repositories\Business\EmpresaRepository;
-use Carbon\Carbon;
 
 class ClienteController extends Controller
 {

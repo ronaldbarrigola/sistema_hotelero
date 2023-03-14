@@ -61,7 +61,7 @@
 
         });//Fin ready
 
-        function guardarHabitacion(){
+        function guardarCategoria(){
             var descripcion=$("#descripcion").val();
 
             if(descripcion==""||descripcion==null){
@@ -122,8 +122,8 @@
 
                 },
                 success: function(result){
-                     $('#categoria_id').val(result.id);
-                     $('#descripcion').val(result.descripcion);
+                     $('#categoria_id').val(result.categoria.id);
+                     $('#descripcion').val(result.categoria.descripcion);
                      $("#modalViewCategoria").modal("show");
                 },//End success
                 complete:function(result, textStatus ){
@@ -132,7 +132,7 @@
             }); //End Ajax
         }
 
-        function limpiarDatoHabitacion(){
+        function limpiarDatoCategoria(){
             $("#descripcion").val("");
         }
 

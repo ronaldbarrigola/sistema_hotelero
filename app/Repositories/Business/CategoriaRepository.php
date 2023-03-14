@@ -50,7 +50,7 @@ class CategoriaRepository{
     // MODIFICAR OBJETO
     //=========================================================================================================================
     public function modificarDesdeRequest(Request $request){
-        $categoria=$this->obtenerCategoriaPorId($request->get('categoria_id'));
+        $categoria=$this->obtenerCategoriaPorId($request->get('id'));
         $categoria->fill($request->all()); //llena datos desde el array entrante en el request.
         $categoria->update();
         return $categoria;

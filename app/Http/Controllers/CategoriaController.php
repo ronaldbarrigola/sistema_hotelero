@@ -9,14 +9,13 @@ use App\Repositories\Business\CategoriaRepository;
 class CategoriaController extends Controller
 {
     protected $categoriaRep;
-    //===constructor=============================================================================================
+
     public function __construct(CategoriaRepository $categoriaRep){
         $this->middleware('auth');
         $this->middleware('guest');
         $this->categoriaRep=$categoriaRep;
     }
 
-     //===========================================================================================================
      public function index(Request $request){
         if($request->ajax()){
             return $this->categoriaRep->obtenerCategoriaDataTables();
@@ -25,41 +24,27 @@ class CategoriaController extends Controller
         }
     }
 
-    //================================================================================================
     public function create(){
         return view('business.categoria.create');
     }
 
-    //================================================================================================
     public function store(Request $request){
         $categoria=$this->categoriaRep->insertarDesdeRequest($request);
-        if($request->ajax()){
-           $listaCategoria=$this->categoriaRep->obtenerCategoria();
-           return response()->json(array ('categoria'=>$categoria,'listacategoria'=>$listaCategoria));
-        } else {
-           return Redirect::to('business/categoria');//esto va al index
-        }
+        return response()->json(array ('categoria'=>$categoria));
     }
 
-    //================================================================================================
-    public function show($id){
-        return Redirect::to('business/categoria?categoria_id='.$id);
-    }
-
-    //================================================================================================
-    public function edit($id){
+    public function edit(Request $request){
+        $id=$request['categoria_id'];//El mismo id se usa mapra persona y cliente
         $categoria=$this->categoriaRep->obtenerCategoriaPorId($id);
-        return view('business.categoria.edit',['categoria'=>$categoria]);
+        return response()->json(array ('categoria'=>$categoria));
     }
 
-    //================================================================================================
     public function update(Request $request, $id){
-        $request['categoria_id']=$id;//ADICIONANDO MANUALMENTE AL REQUEST EL ID. PARA NO ENVIAR COMO OTRO PARAMETRO.
-        $this->categoriaRep->modificarDesdeRequest($request);
-        return Redirect::to('business/categoria');//esto va al index
+        $request->request->add(['id'=>$id]);//El mismo id se usa mapra persona y cliente
+        $categoria=$this->categoriaRep->modificarDesdeRequest($request);
+        return  $categoria;
     }
 
-   //================================================================================================
     public function destroy(Request $request,$id){
         $categoria=$this->categoriaRep->eliminar($id);
         if($request->ajax()){
