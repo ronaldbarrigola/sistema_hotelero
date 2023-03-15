@@ -92,8 +92,8 @@ class ClienteController extends Controller
 
         if($request->ajax()){
              return response()->json(array (
-                'msg'     => 'cliente ' . $cliente->nombre. ', eliminada',
-                'id'      => $cliente->cliente_id
+                'msg'     => 'cliente ' . $cliente->cliente. ', eliminada',
+                'id'      => $cliente->id
             ));
         }
 

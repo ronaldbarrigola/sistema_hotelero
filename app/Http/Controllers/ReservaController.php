@@ -5,102 +5,95 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Auth;
 
-use App\Repositories\Base\PersonaRepository;
-use App\Repositories\Base\TipoDocRepository;
-use App\Repositories\Base\CiudadRepository;
-use App\Repositories\Base\SexoRepository;
-use App\Repositories\Base\EstadoCivilRepository;
 use App\Repositories\Business\ClienteRepository;
+use App\Repositories\Business\EstadoReservaRepository;
+use App\Repositories\Business\HabitacionRepository;
+use App\Repositories\Business\MotivoRepository;
+use App\Repositories\Business\PaqueteRepository;
+use App\Repositories\Business\ReservaRepository;
+use App\Repositories\Business\CiudadRepository;
 use App\Repositories\Business\PaisRepository;
-use App\Repositories\Business\ProfesionRepository;
-use App\Repositories\Business\EmpresaRepository;
 use Carbon\Carbon;
 
 class ReservaController extends Controller
 {
-    protected $personaRep;
-    protected $tipoDocRep;
+    protected $clienteRep;
+    protected $estadoReservaRep;
+    protected $habitacionRep;
+    protected $motivoRep;
+    protected $paqueteRep;
+    protected $reservaRep;
     protected $paisRep;
     protected $ciudadRep;
-    protected $profesionRep;
-    protected $empresaRep;
-    protected $sexoRep;
-    protected $estadoCivilRep;
-    protected $clienteRep;
 
     //===constructor=============================================================================================
-    public function __construct(ClienteRepository $clienteRep,PersonaRepository $personaRep,TipoDocRepository $tipoDocRep,PaisRepository $paisRep,CiudadRepository $ciudadRep,ProfesionRepository $profesionRep,EmpresaRepository $empresaRep,SexoRepository $sexoRep,EstadoCivilRepository $estadoCivilRep){
+    public function __construct(ClienteRepository $clienteRep,ReservaRepository $reservaRep,EstadoReservaRepository $estadoReservaRep,HabitacionRepository $habitacionRep,MotivoRepository $motivoRep,PaqueteRepository $paqueteRep,PaisRepository $paisRep,CiudadRepository $ciudadRep){
         $this->middleware('auth');
         $this->middleware('guest');
-        $this->personaRep=$personaRep;
-        $this->tipoDocRep=$tipoDocRep;
+        $this->clienteRep=$clienteRep;
+        $this->estadoReservaRep=$estadoReservaRep;
+        $this->habitacionRep=$habitacionRep;
+        $this->motivoRep=$motivoRep;
+        $this->paqueteRep=$paqueteRep;
+        $this->reservaRep=$reservaRep;
         $this->paisRep=$paisRep;
         $this->ciudadRep=$ciudadRep;
-        $this->profesionRep=$profesionRep;
-        $this->empresaRep=$empresaRep;
-        $this->ciudadRep=$ciudadRep;
-        $this->sexoRep=$sexoRep;
-        $this->estadoCivilRep=$estadoCivilRep;
-        $this->clienteRep=$clienteRep;
     }
 
      //===========================================================================================================
      public function index(Request $request){
         if($request->ajax()){
-            return $this->clienteRep->obtenerClientesDataTables();
+            return $this->reservaRep->obtenerReservasDataTables();
         }else{
-            $id="";
-            $persona=$this->personaRep->obtenerPersonaPorId($id);
-            $tipo_docs=$this->tipoDocRep->obtenerTipoDocs();
+            $cliente=$this->clienteRep->obtenerClientes();
+            $estadoReservas=$this->estadoReservaRep->obtenerEstadoReservas();
+            $habitaciones=$this->habitacionRep->obtenerHabitaciones();
+            $motivos=$this->motivoRep->obtenerMotivos();
+            $paquetes=$this->paqueteRep->obtenerPaquetes();
             $paises=$this->paisRep->obtenerPaises();
             $ciudades=$this->ciudadRep->obtenerCiudades();
-            $profesiones=$this->profesionRep->obtenerProfesiones();
-            $empresas=$this->empresaRep->obtenerEmpresas();
-            $sexos=$this->sexoRep->obtenerSexos();
-            $estados_civiles=$this->estadoCivilRep->obtenerEstadosCiviles();
-            return view('business.cliente.index',['persona'=>$persona,'tipo_docs'=>$tipo_docs,'paises'=>$paises,'ciudades'=>$ciudades,'profesiones'=>$profesiones,'empresas'=>$empresas,'sexos'=>$sexos,'estados_civiles'=>$estados_civiles]);
+            return view('business.reserva.index',['cliente'=>$cliente,'estadoReservas'=>$estadoReservas,'habitaciones'->$habitaciones,'motivos'->$motivos,'paquetes'->$paquetes,'paises'=>$paises,'ciudades'=>$ciudades]);
         }
     }
 
     //================================================================================================
     public function store(Request $request){
-        $cliente=$this->clienteRep->insertarDesdeRequest($request);
-        return response()->json(array ('cliente'=>$cliente));
+        $reserva=$this->reservaRep->insertarDesdeRequest($request);
+        return response()->json(array ('reserva'=>$reserva));
     }
 
     //================================================================================================
     public function edit(Request $request){
-        $id=$request['cliente_id'];//El mismo id se usa mapra persona y cliente
-        $persona=$this->personaRep->obtenerPersonaPorId($id);
-        $cliente=$this->clienteRep->obtenerClientePorId($id);
+        $id=$request['reserva_id'];
+        $reserva=$this->reservaRep->obtenerReservaPorId($id);
 
         $ciudades=null;
-        if( $cliente!=null){
-            $ciudades=$this->ciudadRep->obtenerCiudadesPorPaisId($cliente->pais_id);
+        if( $reserva!=null){
+            $ciudades=$this->ciudadRep->obtenerCiudadesPorPaisId($reserva->procedencia_pais_id);
         }
 
-        return response()->json(array ('persona'=>$persona,'cliente'=>$cliente,'ciudades'=>$ciudades));
+        return response()->json(array('reserva'=>$reserva,'ciudades'=>$ciudades));
     }
 
     //================================================================================================
     public function update(Request $request,$id){
-        $request->request->add(['id'=>$id]);//El mismo id se usa mapra persona y cliente
-        $cliente=$this->clienteRep->modificarDesdeRequest($request);
-        return  $cliente;
+        $request->request->add(['id'=>$id]);
+        $reserva=$this->reservaRep->modificarDesdeRequest($request);
+        return  $reserva;
     }
 
    //================================================================================================
     public function destroy(Request $request,$id){
-        $cliente=$this->clienteRep->eliminar($id);
+        $reserva=$this->reservaRep->eliminar($id);
 
         if($request->ajax()){
              return response()->json(array (
-                'msg'     => 'cliente ' . $cliente->nombre. ', eliminada',
-                'id'      => $cliente->cliente_id
+                'msg'     => 'reserva ' . $reserva->id. ', eliminada',
+                'id'      => $reserva->id
             ));
         }
 
-        return Redirect::route('business.cliente.index');
+        return Redirect::route('business.reserva.index');
     }
 
 }

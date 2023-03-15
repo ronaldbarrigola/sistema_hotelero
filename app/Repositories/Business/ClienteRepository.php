@@ -16,18 +16,23 @@ class ClienteRepository{
         $this->personaRep=$personaRep;
     }
 
+
+    public function obtenerClientes(){
+       $clientes=DB::table('bas_persona as p')
+       ->join('cli_cliente as c','c.id','=','p.id')
+       ->join('bas_tipo_doc as d','d.id','=','p.tipo_doc_id')
+       ->leftjoin('cli_pais as cp','cp.id','=','c.pais_id')
+       ->leftjoin('cli_ciudad as cc','cc.id','=','c.ciudad_id')
+       ->select('c.id','p.doc_id','d.nombre as tipo_documento',DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) AS cliente'),'cp.descripcion as pais','cc.descripcion as ciudad','p.direccion','p.telefono','p.email')
+       ->where('p.estado','=','1')
+       ->orderBy('c.id','desc')
+       ->get();
+       return  $clientes;
+    }
+
     public function obtenerClientesDataTables(){
-        return datatables()->of(
-            DB::table('bas_persona as p')
-            ->join('cli_cliente as c','c.id','=','p.id')
-            ->join('bas_tipo_doc as d','d.id','=','p.tipo_doc_id')
-            ->leftjoin('cli_pais as cp','cp.id','=','c.pais_id')
-            ->leftjoin('cli_ciudad as cc','cc.id','=','c.ciudad_id')
-            ->select('c.id','p.doc_id','d.nombre as tipo_documento',DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) AS cliente'),'cp.descripcion as pais','cc.descripcion as ciudad','p.direccion','p.telefono','p.email')
-            ->where('p.estado','=','1')
-            ->orderBy('c.id','desc')
-            ->get()
-        )->toJson();
+        $clientes=$this->obtenerClientes();
+        return datatables()->of($clientes)->toJson();
     }
 
     public function obtenerClientePorId($id){

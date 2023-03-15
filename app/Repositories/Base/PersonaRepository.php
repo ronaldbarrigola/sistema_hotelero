@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use DB;
 
 class PersonaRepository{
+
     public function obtenerPersonasDataTables(){
         return datatables()->of(
             DB::table('bas_persona as p')
