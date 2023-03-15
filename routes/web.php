@@ -13,21 +13,9 @@ use App\Http\Controllers\CiudadController;
 use App\Http\Controllers\HabitacionController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\ReservaController;
+use App\Http\Controllers\ProductoController;
 
-
-// use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Support\Facades\Route;
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
-
 
 //==============================================================================================================
 //rutas BASE DE LOGIN Y OTROS BASICOS
@@ -39,9 +27,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/home', [HomeController::class,'index'])->name('home');
 Route::get('/{slug}', [HomeController::class,'index']);
 Route::get('/', [HomeController::class,'index']);
-
-
-//Auth::routes();
 
 // SUCURSAL
 Route::resource('seguridad/sucursales', SucursalController::class);
@@ -81,23 +66,21 @@ Route::get('/seguridad/obtenerRolesFaltantesPorIdUsuario', [UsuarioRolController
 //==============================================================================================================
 //rutas proyecto negocio
 //==============================================================================================================
-Route::get('/busines/categoria/editcategoria', [CategoriaController::class,'edit'])->name('editcategoria');
-Route::get('/business/ciudad/listaciudades', [CiudadController::class,'obtenerCiudadesPorPaisId'])->name('listaciudades');
 Route::get('/busines/cliente/editcliente', [ClienteController::class,'edit'])->name('editcliente');
-Route::get('/busines/cliente/edithabitacion', [HabitacionController::class,'edit'])->name('edithabitacion');
-Route::get('/base/persona/buscarPersonaDocId', [PersonaController::class,'buscarPersonaClientePorDocId'])->name('buscarPersonaDocId');
+Route::get('/busines/habitacion/edithabitacion', [HabitacionController::class,'edit'])->name('edithabitacion');
 Route::get('/business/habitacion/obtenerHabitaciones', [HabitacionController::class,'obtenerHabitaciones'])->name('obtenerHabitaciones');
+Route::get('/busines/categoria/editcategoria', [CategoriaController::class,'edit'])->name('editcategoria');
+Route::get('/busines/producto/editproducto', [ProductoController::class,'edit'])->name('editproducto');
+Route::get('/business/ciudad/listaciudades', [CiudadController::class,'obtenerCiudadesPorPaisId'])->name('listaciudades');
+Route::get('/base/persona/buscarPersonaDocId', [PersonaController::class,'buscarPersonaClientePorDocId'])->name('buscarPersonaDocId');
 
-//POST
-
-
-//DELETE
 
 
 //Rutas generales
 Route::resource('business/cliente', ClienteController::class);
 Route::resource('business/habitacion', HabitacionController::class);
 Route::resource('business/categoria', CategoriaController::class);
+Route::resource('business/producto', ProductoController::class);
 Route::resource('business/reserva', ReservaController::class);
 
 

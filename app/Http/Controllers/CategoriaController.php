@@ -49,8 +49,8 @@ class CategoriaController extends Controller
         $categoria=$this->categoriaRep->eliminar($id);
         if($request->ajax()){
              return response()->json(array (
-                'msg'     => 'categoria '.$categoria->categoria. ', eliminada',
-                'id'      => $categoria->categoria_id
+                'msg'     => 'categoria '.$categoria->descripcion. ', eliminada',
+                'id'      => $categoria->id
             ));
         }
 

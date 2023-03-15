@@ -1,7 +1,7 @@
 @extends('layouts.plantillaFormExtendido')
 @section('contenido')
     @section('panelCabecera')
-    @include('business/categoria/actionbar',['','titulo'=>'CATEGORIAS'])
+    @include('business/producto/actionbar',['','titulo'=>'PRODUCTOS'])
     @endsection
 
     @section('panelCuerpo')
@@ -10,15 +10,17 @@
                 <table id="tblListaDatos" class="table table-striped table-bordered table-sm table-hover">
                     <thead>
                         <th>Id</th>
+                        <th>Producto</th>
                         <th>Categoria</th>
+                        <th>Precio</th>
                         <th>Modificar</th>
                         <th>Eliminar</th>
                     </thead>
                 </table>
             </div>
         </div>
-        @include('partials/confirmaeliminacion',['url_base_eliminar'=>'business/categoria'])
-        @include('business/categoria/create_edit')
+        @include('partials/confirmaeliminacion',['url_base_eliminar'=>'business/producto'])
+        @include('business/producto/create_edit')
     @endsection
 @endsection
 
@@ -30,21 +32,23 @@
     <script>
         $(document).ready( function () {
 
-            $(document).on("click", "#btnCreateCategoria", function(){ //El boton btnCreateCategoria se encuentra en actionbar
+            $(document).on("click", "#btnCreateProducto", function(){ //El boton btnCreateProducto se encuentra en actionbar
                 $("#edit").val("");
-                $("#title_modal_view_categoria").text("NUEVA CATEGORIA");
-                limpiarDatoCategoria();
-                $('#modalViewCategoria').modal('show');
+                $("#title_modal_view_producto").text("NUEVO PRODUCTO");
+                limpiarDatoProducto();
+                $('#modalViewProducto').modal('show');
             });
 
             // ══════════════════════ Cargando columnas para datatables  ══════════════════════
             var columnas=[
                             {data:'id'},
-                            {data:'descripcion'},
+                            {data:'producto'},
+                            {data:'categoria'},
+                            {data:'precio'},
                             {data:'id',
                                 orderable:false,
                                 render: function(data){
-                                    return '<button id="'+data+ '" class="btn btn-info" onclick="dataEditCategoria(this);">Editar</button></a>';
+                                    return '<button id="'+data+ '" class="btn btn-info" onclick="dataEditProducto(this);">Editar</button></a>';
                                 }
                             },
                             {data:'id',
@@ -62,7 +66,7 @@
                 "dom": '<"table-responsive"tr><"bottom float-left"p><"clearfix">',
                 "serverSide":true,
                 "order": [[ 0, "desc" ]],
-                "ajax":"{{url('business/categoria')}}",
+                "ajax":"{{url('business/producto')}}",
                 "columns":columnas
             });
 
