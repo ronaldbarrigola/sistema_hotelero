@@ -12,7 +12,6 @@
                         <th>Id</th>
                         <th>Producto</th>
                         <th>Categoria</th>
-                        <th>Precio</th>
                         <th>Modificar</th>
                         <th>Eliminar</th>
                     </thead>
@@ -44,7 +43,6 @@
                             {data:'id'},
                             {data:'producto'},
                             {data:'categoria'},
-                            {data:'precio'},
                             {data:'id',
                                 orderable:false,
                                 render: function(data){

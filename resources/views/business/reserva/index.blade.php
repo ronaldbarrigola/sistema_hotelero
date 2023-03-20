@@ -1,35 +1,36 @@
 @extends('layouts.plantillaFormExtendido')
 @section('contenido')
     @section('panelCabecera')
-        @include('business/cliente/actionbar',['','titulo'=>'CLIENTES'])
+        @include('business/reserva/actionbar',['','titulo'=>'RESERVAS'])
     @endsection
 
     @section('panelCuerpo')
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-                {{-- <div class="table-responsive"> --}}
-                    <table id="tblListaDatos" class="table table-striped table-bordered table-sm table-hover">
-                        <thead>
-                            <th>Id</th>
-                            <th>Cliente</th>
-                            <th>Nro. Documento</th>
-                            <th>Tipo Documento</th>
-                            <th>Pais</th>
-                            <th>Ciudad</th>
-                            <th>Direccion</th>
-                            <th>Telefono</th>
-                            <th>Email</th>
-                            <th>Modificar</th>
-                            <th>Eliminar</th>
-                        </thead>
-                    </table>
-                {{-- </div> --}}
+                <table id="tblListaDatos" class="table table-striped table-bordered table-sm table-hover">
+                    <thead>
+                        <th>Id</th>
+                        <th>Fecha Registro</th>
+                        <th>Cliente</th>
+                        <th>Num Hab.</th>
+                        <th>Tipo Habitacion</th>
+                        <th>Paquete</th>
+                        <th>Fecha Inicio</th>
+                        <th>Fecha Final</th>
+                        <th>Num Adulto</th>
+                        <th>Num Niño</th>
+                        <th>Pais Procedencia</th>
+                        <th>Ciudad Procedencia</th>
+                        <th>Detalle</th>
+                        <th>Estado</th>
+                        <th>Modificar</th>
+                        <th>Eliminar</th>
+                    </thead>
+                </table>
             </div>
         </div>
-        @include('partials/confirmaeliminacion',['url_base_eliminar'=>'business/cliente'])
-
-        @include('business/cliente/create_edit')
-
+        @include('partials/confirmaeliminacion',['url_base_eliminar'=>'business/reserva'])
+        @include('business/reserva/create_edit')
     @endsection
 @endsection
 
@@ -41,28 +42,33 @@
     <script>
         $(document).ready( function () {
 
-            $(document).on("click", "#btnCreateCliente", function(){ //El boton btnCreateCliente se encuentra en actionbar
+            $(document).on("click", "#btnCreateReserva", function(){ //El boton btnCreateCliente se encuentra en actionbar
                 $("#edit").val("");
-                $("#title_modal_view_cliente").text("NUEVO CLIENTE");
-                limpiarDatoCliente();
-                $('#modalViewCliente').modal('show');
+                $("#title_modal_view_cliente").text("NUEVA RESERVA");
+                limpiarDatoReserva();
+                $('#modalViewReserva').modal('show');
             });
 
             // ══════════════════════ Cargando columnas para datatables  ══════════════════════
             var columnas=[
                             {data:'id'},
+                            {data:'fecha'},
                             {data:'cliente'},
-                            {data:'doc_id'},
-                            {data:'tipo_documento'},
+                            {data:'num_habitacion'},
+                            {data:'tipo_habitacion'},
+                            {data:'paquete'},
+                            {data:'fecha_ini'},
+                            {data:'fecha_fin'},
+                            {data:'num_adulto'},
+                            {data:'num_nino'},
                             {data:'pais'},
                             {data:'ciudad'},
-                            {data:'direccion'},
-                            {data:'telefono'},
-                            {data:'email'},
+                            {data:'detalle'},
+                            {data:'estado_reserva'},
                             {data:'id',
                                 orderable:false,
                                 render: function(data){
-                                    return '<button id="'+data+ '" class="btn btn-info" onclick="dataEditCliente(this);">Editar</button></a>';
+                                    return '<button id="'+data+ '" class="btn btn-info" onclick="dataEditReserva(this);">Editar</button></a>';
                                 }
                             },
 
@@ -82,8 +88,8 @@
                 "dom": '<"table-responsive"tr><"bottom float-left"p><"clearfix">',
                 "serverSide":true,
                 "order": [[ 0, "desc" ]],
-                "ajax":"{{url('business/cliente')}}",
-                "columns":columnas
+                "ajax":"{{url('business/reserva')}}",
+                "columns":columnas,
             });
 
         });//fin ready

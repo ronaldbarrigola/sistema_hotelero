@@ -9,20 +9,26 @@ use DB;
 
 class ReservaRepository{
 
+    public function obtenerReservas(){
+        $reservas= DB::table('res_reserva as r')
+        ->join('bas_persona as p','p.id','=','r.cliente_id')
+        ->join('gob_habitacion as h','h.id','=','r.habitacion_id')
+        ->join('gob_tipo_habitacion as th','th.id','=','h.tipo_habitacion_id')
+        ->leftjoin('res_paquete as q','q.id','=','r.paquete_id')
+        ->leftjoin('res_estado_reserva as er','er.id','=','r.estado_reserva_id')
+        ->leftjoin('cli_pais as cp','cp.id','=','r.procedencia_pais_id')
+        ->leftjoin('cli_ciudad as cc','cc.id','=','r.procedencia_ciudad_id')
+        ->select('r.id',DB::raw('DATE_FORMAT(r.fecha,"%d/%m/%Y") as fecha'),DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) AS cliente'),'h.num_habitacion','th.descripcion as tipo_habitacion','q.descripcion as paquete','r.fecha_ini','r.fecha_fin','r.num_adulto','r.num_nino','cp.descripcion as pais','cc.descripcion as ciudad','r.detalle','er.descripcion as estado_reserva')
+        ->where('r.estado','=','1')
+        ->orderBy('r.id','desc')
+        ->get();
+
+        return $reservas;
+    }
+
     public function obtenerReservasDataTables(){
-        return datatables()->of(
-            DB::table('res_reserva as r')
-            ->join('bas_persona as p','p.id','=','r.cliente_id')
-            ->join('res_habitacion as h','h.id','=','r.habitacion_id')
-            ->leftjoin('res_paquete as q','q.id','=','r.paquete_id')
-            ->leftjoin('res_estado_reserva as er','er.id','=','r.estado_reserva_id')
-            ->leftjoin('cli_pais as cp','cp.id','=','r.procedencia_pais_id')
-            ->leftjoin('cli_ciudad as cc','cc.id','=','c.procedencia_ciudad_id')
-            ->select('r.id','r.fecha',DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) AS cliente'),'q.descripcion as paquete','er.descripcion as estado_reserva','r.fecha_ini','r.fecha_fin','r.detalle','r.num_adulto','r.nun_nino','h.codigo','cp.descripcion as pais','cc.descripcion as ciudad')
-            ->where('r.estado','=','1')
-            ->orderBy('r.id','desc')
-            ->get()
-        )->toJson();
+        $reservas=$this->obtenerReservas();
+        return datatables()->of($reservas)->toJson();
     }
 
     public function obtenerReservaPorId($id){
@@ -36,6 +42,8 @@ class ReservaRepository{
                 $request->request->add(['usuario_alta_id'=>Auth::user()->id]);
                 $request->request->add(['usuario_modif_id'=>Auth::user()->id]);
                 $reserva=new Reserva($request->all());
+                $reserva->estado_reserva_id=0; //0: Reserva 1:Check In 2: Stand By 3: Check Out
+                $reserva->fecha=Carbon::now('America/La_Paz')->toDateTimeString();
                 $reserva->fecha_creacion=Carbon::now('America/La_Paz')->toDateTimeString();
                 $reserva->fecha_modificacion=Carbon::now('America/La_Paz')->toDateTimeString();
                 $reserva->estado=1;
@@ -54,7 +62,7 @@ class ReservaRepository{
             DB::beginTransaction();
             $request->request->add(['usuario_modif_id'=>Auth::user()->id]);
             $reserva=$this->obtenerReservaPorId($request->get('id'));
-            if ( is_null($reserva) ){
+            if ($reserva!=null){
                 $reserva->fill($request->all());
                 $reserva->usuario_modif_id=Auth::user()->id;
                 $reserva->fecha_modificacion=Carbon::now('America/La_Paz')->toDateTimeString();

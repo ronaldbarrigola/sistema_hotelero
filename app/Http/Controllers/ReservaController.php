@@ -11,8 +11,8 @@ use App\Repositories\Business\HabitacionRepository;
 use App\Repositories\Business\MotivoRepository;
 use App\Repositories\Business\PaqueteRepository;
 use App\Repositories\Business\ReservaRepository;
-use App\Repositories\Business\CiudadRepository;
 use App\Repositories\Business\PaisRepository;
+use App\Repositories\Base\CiudadRepository;
 use Carbon\Carbon;
 
 class ReservaController extends Controller
@@ -45,14 +45,13 @@ class ReservaController extends Controller
         if($request->ajax()){
             return $this->reservaRep->obtenerReservasDataTables();
         }else{
-            $cliente=$this->clienteRep->obtenerClientes();
+            $clientes=$this->clienteRep->obtenerClientes();
             $estadoReservas=$this->estadoReservaRep->obtenerEstadoReservas();
             $habitaciones=$this->habitacionRep->obtenerHabitaciones();
             $motivos=$this->motivoRep->obtenerMotivos();
             $paquetes=$this->paqueteRep->obtenerPaquetes();
             $paises=$this->paisRep->obtenerPaises();
-            $ciudades=$this->ciudadRep->obtenerCiudades();
-            return view('business.reserva.index',['cliente'=>$cliente,'estadoReservas'=>$estadoReservas,'habitaciones'->$habitaciones,'motivos'->$motivos,'paquetes'->$paquetes,'paises'=>$paises,'ciudades'=>$ciudades]);
+            return view('business.reserva.index',['clientes'=>$clientes,'estadoReservas'=>$estadoReservas,'habitaciones'=>$habitaciones,'motivos'=>$motivos,'paquetes'=>$paquetes,'paises'=>$paises]);
         }
     }
 

@@ -11,7 +11,7 @@
                     <table id="tblListaDatos" class="table table-striped table-bordered table-sm table-hover">
                         <thead>
                             <th>Id</th>
-                            <th>Numero Hab.</th>
+                            <th>Num. Habitacion</th>
                             <th>Habitacion</th>
                             <th>Piso</th>
                             <th>Precio</th>
@@ -48,7 +48,7 @@
             // ══════════════════════ Cargando columnas para datatables  ══════════════════════
             var columnas=[
                             {data:'id'},
-                            {data:'codigo'},
+                            {data:'num_habitacion'},
                             {data:'habitacion'},
                             {data:'piso'},
                             {data:'precio'},

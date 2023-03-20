@@ -58,7 +58,6 @@
     <div class="col-lg-4 col-md-4 col-sm-4 col-12">
         <div class="form-group ">
             <label for="fecha_nac" class="my-0"><strong>Fecha Nacimiento:</strong></label>
-            {{--  usando operador ternario php (?) para validar fecha nula, si es nulo muestra vacio... si no uso operador ternario muestra fecha actual en lugar de vacio --}}
             <input type="text" name="fecha_nac" id="fecha_nac" data-target="#fecha_nac"
                     data-toggle="datetimepicker" class="form-control datetimepicker-input datetimepicker_calendario"
                     required placeholder="Fecha de Nacimiento">
@@ -80,7 +79,7 @@
     <div class="col-lg-4 col-md-4 col-sm-4 col-12">
         <div class="form-group">
             <label for="email" class="my-0"><strong>Email Personal:</strong></label>
-            <input type="text" name="email" id="email" required class="form-control" placeholder="email">
+            <input type="text" name="email" id="email" class="form-control" placeholder="email">
         </div>
     </div>
 

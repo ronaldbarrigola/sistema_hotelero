@@ -12,7 +12,7 @@
 
             <div class="modal-body">
 
-                <form id="frmHabitacion" enctype="multipart/form-data">
+                <form id="frmHabitacion" enctype="multipart/form-data" onsubmit="return submitFunction(event)">
                     @csrf
 
                     <input type="hidden" name="edit" id="edit" value="">
@@ -30,7 +30,7 @@
 
                     <div class="row">
                         <div class="col-md-4 offset-md-4 d-flex justify-content-between">
-                            <button class="btn btn-success" id="btnGuardarHabitacion" type="button">Guardar</button>
+                            <button class="btn btn-success" id="btnGuardarHabitacion" type="submit">Guardar</button>
                             <button type="button" class="btn btn-primary" data-dismiss="modal">Cancelar</button>
                         </div>
                     </div>
@@ -50,50 +50,19 @@
 @push('scripts')
   <script>
         $(document).ready(function() {
-
-          $(document).on("click", "#btnGuardarHabitacion", function(){
-             guardarHabitacion();
-          });
-
           $('#modalViewHabitacion').on('shown.bs.modal', function() {//Para enfocar input de un formulario modal
-             $("#codigo").focus();
+             $("#num_habitacion").focus();
           })
 
         });//Fin ready
 
+        function submitFunction(event) {
+            guardarHabitacion();
+            event.preventDefault(); //cancela el evento
+            return false; //Cancela el envio submit para procesar por ajax
+        }
+
         function guardarHabitacion(){
-
-            var codigo=$("#codigo").val();
-            var descripcion=$("#descripcion").val();
-            var precio=$("#precio").val();
-            var tipo_habitacion_id=$("#tipo_habitacion_id").val();
-            var agencia_id=$("#agencia_id").val();
-
-
-            if(codigo==""||codigo==null){
-                messageAlert('Debe introducir Codigo');
-                return 0;
-            }
-
-            if(descripcion==""||descripcion==null){
-                messageAlert('Debe introducir descripcion de la habitacion');
-                return 0;
-            }
-
-            if(precio==""||precio==null||precio<0){
-                messageAlert('Debe introducir precio');
-                return 0;
-            }
-
-            if(tipo_habitacion_id==""||tipo_habitacion_id==null){
-                messageAlert('Debe seleccionar Tipo de Habitacion');
-                return 0;
-            }
-
-            if(agencia_id==""||agencia_id==null){
-                messageAlert('Debe seleccionar Hotel');
-                return 0;
-            }
 
             var formdata = new FormData($("#frmHabitacion")[0]); //Serializa con imagenes multimedia
             url=URL_BASE + "/business/habitacion";
@@ -153,7 +122,7 @@
                 complete:function(result, textStatus ){
                      var data=result.responseJSON;
                      $('#habitacion_id').val(data.habitacion.id);
-                     $('#codigo').val(data.habitacion.codigo);
+                     $('#num_habitacion').val(data.habitacion.num_habitacion);
                      $('#descripcion').val(data.habitacion.descripcion);
                      $('#piso').val(data.habitacion.piso);
                      $('#precio').val(data.habitacion.precio);
@@ -169,7 +138,7 @@
         }
 
         function limpiarDatoHabitacion(){
-            $("#codigo").val("");
+            $("#num_habitacion").val("");
             $("#piso").val("");
             $("#descripcion").val("");
             $("#precio").val("");

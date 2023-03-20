@@ -12,7 +12,7 @@
 
             <div class="modal-body">
 
-                <form id="frmCliente" enctype="multipart/form-data">
+                <form id="frmCliente" enctype="multipart/form-data" onsubmit="return submitFunction(event)">
                     @csrf
 
                     <input type="hidden" name="edit" id="edit" value="">
@@ -39,7 +39,7 @@
 
                     <div class="row">
                         <div class="col-md-4 offset-md-4 d-flex justify-content-between">
-                            <button class="btn btn-success" id="btnGuardarCliente" type="button">Guardar</button>
+                            <button class="btn btn-success" id="btnGuardarCliente" type="submit">Guardar</button>
                             <button type="button" class="btn btn-primary" data-dismiss="modal">Cancelar</button>
                         </div>
                     </div>
@@ -60,12 +60,6 @@
   <script>
         $(document).ready(function() {
 
-          //$(".panel_expedido").hide();
-
-          $(document).on("click", "#btnGuardarCliente", function(){
-             guardarCliente();
-          });
-
           $(document).on("change", "#pais_id", function(){
               optenerCiudades();
           });
@@ -76,63 +70,13 @@
 
         }); //Fin ready
 
+        function submitFunction(event) {
+            guardarCliente();
+            event.preventDefault(); //cancela el evento
+            return false; //Cancela el envio submit para procesar por ajax
+        }
 
         function guardarCliente(){
-
-            var doc_id=$("#doc_id").val();
-            var tipo_doc_id=$("#tipo_doc_id").val();
-            var nombre=$("#nombre").val();
-            var paterno=$("#paterno").val();
-            var sexo_id=$("#sexo_id").val();
-            var fecha_nac=$("#fecha_nac").val();
-            var estado_civil_id=$("#estado_civil_id").val();
-            var pais_id=$("#pais_id").val();
-            var ciudad_id=$("#ciudad_id").val();
-
-            if(doc_id==""||doc_id==null){
-                messageAlert('Debe introducir Num. Doc. Id');
-                return 0;
-            }
-
-            if(tipo_doc_id==""||tipo_doc_id==null){
-                messageAlert('Debe seleccionar Tipo Documento');
-                return 0;
-            }
-
-            if(nombre==""||nombre==null){
-                messageAlert('Debe introducir nombre');
-                return 0;
-            }
-
-            if(paterno==""||paterno==null){
-                messageAlert('Debe introducir Ap. Paterno');
-                return 0;
-            }
-
-            if(sexo_id==""||sexo_id==null){
-                messageAlert('Debe seleccionar Sexo');
-                return 0;
-            }
-
-            if(fecha_nac==""||fecha_nac==null){
-                messageAlert('Debe seleccionar Fecha Nacimiento');
-                return 0;
-            }
-
-            if(estado_civil_id==""||estado_civil_id==null){
-                messageAlert('Debe seleccionar Estado Civil');
-                return 0;
-            }
-
-            if(pais_id==""||pais_id==null){
-                messageAlert('Debe seleccionar Pais');
-                return 0;
-            }
-
-            if(ciudad_id==""||ciudad_id==null){
-                messageAlert('Debe seleccionar Ciudad');
-                return 0;
-            }
 
             var formdata = new FormData($("#frmCliente")[0]); //Serializa con imagenes multimedia
             url=URL_BASE + "/business/cliente";

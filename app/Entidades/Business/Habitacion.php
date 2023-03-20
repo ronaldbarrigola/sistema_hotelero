@@ -16,7 +16,7 @@ class Habitacion extends Model
         'estado_habitacion_id',
         'usuario_alta_id',
         'usuario_modif_id',
-        'codigo',
+        'num_habitacion',
         'piso',
         'descripcion',
         'precio',

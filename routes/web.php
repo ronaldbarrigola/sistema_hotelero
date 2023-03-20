@@ -71,6 +71,7 @@ Route::get('/busines/habitacion/edithabitacion', [HabitacionController::class,'e
 Route::get('/business/habitacion/obtenerHabitaciones', [HabitacionController::class,'obtenerHabitaciones'])->name('obtenerHabitaciones');
 Route::get('/busines/categoria/editcategoria', [CategoriaController::class,'edit'])->name('editcategoria');
 Route::get('/busines/producto/editproducto', [ProductoController::class,'edit'])->name('editproducto');
+Route::get('/busines/reserva/editreserva', [ReservaController::class,'edit'])->name('editreserva');
 Route::get('/business/ciudad/listaciudades', [CiudadController::class,'obtenerCiudadesPorPaisId'])->name('listaciudades');
 Route::get('/base/persona/buscarPersonaDocId', [PersonaController::class,'buscarPersonaClientePorDocId'])->name('buscarPersonaDocId');
 

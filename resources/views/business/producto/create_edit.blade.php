@@ -12,7 +12,7 @@
 
             <div class="modal-body">
 
-                <form id="frmProducto" enctype="multipart/form-data">
+                <form id="frmProducto" enctype="multipart/form-data" onsubmit="return submitFunction(event)">
                     @csrf
 
                     <input type="hidden" name="edit" id="edit" value="">
@@ -30,7 +30,7 @@
 
                     <div class="row">
                         <div class="col-md-4 offset-md-4 d-flex justify-content-between">
-                            <button class="btn btn-success" id="btnGuardarProducto" type="button">Guardar</button>
+                            <button class="btn btn-success" id="btnGuardarProducto" type="submit">Guardar</button>
                             <button type="button" class="btn btn-primary" data-dismiss="modal">Cancelar</button>
                         </div>
                     </div>
@@ -51,36 +51,20 @@
   <script>
         $(document).ready(function() {
 
-          $(document).on("click", "#btnGuardarProducto", function(){
-             guardarProducto();
-          });
-
           $('#modalViewProducto').on('shown.bs.modal', function() {//Para enfocar input de un formulario modal
              $("#descripcion").focus();
           })
 
         });//Fin ready
 
+        function submitFunction(event) {
+            guardarProducto();
+            event.preventDefault(); //cancela el evento
+            return false; //Cancela el envio submit para procesar por ajax
+        }
+
         function guardarProducto(){
-            var descripcion=$("#descripcion").val();
-            var categoria_id=$("#categoria_id").val();
-            var precio=$("#precio").val();
-
-            if(descripcion==""||descripcion==null){
-                messageAlert('Debe introducir producto');
-                return 0;
-            }
-
-            if(categoria_id==""||categoria_id==null){
-                messageAlert('Debe seleccionar categoria');
-                return 0;
-            }
-
-            if(precio==""||precio==null){
-                messageAlert('Debe instroducir precio');
-                return 0;
-            }
-
+            var p_producto=$("#descripcion").val();
             var formdata = new FormData($("#frmProducto")[0]); //Serializa con imagenes multimedia
             url=URL_BASE + "/business/producto";
 
@@ -102,6 +86,16 @@
                     $("#btnGuardarProducto").text("Procesando");
                 },
                 success: function(result){
+                    if(result.response!="202"){  //202: producto existente
+                        $("#modalViewProducto").modal("hide");
+                        datatable_datos.ajax.reload();//recargar registro datatables.
+                        limpiarDatoProducto();
+                    } else {
+                        messageAlert(`El producto : ${p_producto}, ya esta registrado` );
+                    }
+
+                    $("#btnGuardarProducto").removeAttr('disabled');
+                    $("#btnGuardarProducto").text("Guardar");
 
                 },//End success
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -110,11 +104,7 @@
                     console.log(errorThrown);
                 }, //END error
                 complete:function(result, textStatus ){
-                    $("#modalViewProducto").modal("hide");
-                    $("#btnGuardarProducto").removeAttr('disabled');
-                    $("#btnGuardarProducto").text("Guardar");
-                    datatable_datos.ajax.reload();//recargar registro datatables.
-                    limpiarDatoProducto();
+
                 }//END complete
 
             }); //End Ajax
@@ -138,7 +128,6 @@
                     $('#descripcion').val(result.producto.descripcion);
                     $('#categoria_id').selectpicker('val',result.producto.categoria_id);
                     $("#categoria_id").selectpicker('refresh');
-                    $('#precio').val(result.producto.precio);
                     $("#modalViewProducto").modal("show");
                 },//End success
                 complete:function(result, textStatus ){
@@ -151,10 +140,10 @@
             $("#descripcion").val("");
             $('#categoria_id').selectpicker('val',"");
             $("#categoria_id").selectpicker('refresh');
-            $("#precio").val("");
         }
 
   </script>
+
 @endpush
 
 @include('partials/utilesjs')

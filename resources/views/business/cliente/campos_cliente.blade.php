@@ -6,7 +6,7 @@
     <div class="col-lg-6 col-md-6 col-sm-6 col-12">
         <div class="form-group">
             <label for="pais_id" class="my-0" ><strong>Pais:</strong></label>
-            <select name="pais_id" id="pais_id"  class="form-control selectpicker border" data-live-search="true" >
+            <select name="pais_id" id="pais_id" required class="form-control selectpicker border" data-live-search="true" >
                <option value="">--Seleccione--</option>
                @foreach($paises as $lista_pais)
                  <option value="{{$lista_pais->id}}"> {{$lista_pais->descripcion}}</option>
@@ -18,7 +18,7 @@
     <div class="col-lg-6 col-md-6 col-sm-6 col-12">
         <div class="form-group">
            <label for="ciudad_id" class="my-0" ><strong>Ciudad:</strong></label>
-           <select name="ciudad_id" id="ciudad_id"  class="form-control selectpicker border" data-live-search="true" >
+           <select name="ciudad_id" id="ciudad_id" required class="form-control selectpicker border" data-live-search="true" >
 
            </select>
         </div>

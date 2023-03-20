@@ -15,7 +15,7 @@ class HabitacionRepository{
             ->leftjoin('gob_tipo_habitacion as th','th.id','=','h.tipo_habitacion_id')
             ->leftjoin('gob_estado_habitacion as eh','eh.id','=','h.estado_habitacion_id')
             ->leftjoin('bas_agencia as a','a.id','=','h.agencia_id')
-            ->select('h.id','h.descripcion as habitacion','h.codigo','h.piso','a.nombre as agencia','th.descripcion as tipo_habitacion','eh.descripcion as estado_habitacion','h.precio','h.imagen')
+            ->select('h.id','h.descripcion as habitacion','h.num_habitacion','h.piso','a.nombre as agencia','th.descripcion as tipo_habitacion','eh.descripcion as estado_habitacion','h.precio','h.imagen')
             ->where('h.estado','=','1')
             ->orderBy('h.id','desc')
             ->get();

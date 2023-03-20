@@ -11,7 +11,7 @@ class EstadoReservaRepository{
 
     public function obtenerEstadoReservas(){
         $estadoReservas=DB::table('res_estado_reserva as r')
-        ->select('r.id','r.descripcion estado_reserva','r.color')
+        ->select('r.id','r.descripcion as estado_reserva','r.color')
         ->where('r.estado','=','1')
         ->orderBy('r.id','asc')
         ->get();

@@ -29,8 +29,8 @@ class ProductoController extends Controller
     }
 
     public function store(Request $request){
-        $producto=$this->productoRep->insertarDesdeRequest($request);
-        return response()->json(array ('producto'=>$producto));
+        $response=$this->productoRep->insertarDesdeRequest($request);
+        return response()->json(array ('response'=>$response));
     }
 
     public function edit(Request $request){
