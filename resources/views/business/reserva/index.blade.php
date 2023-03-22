@@ -15,8 +15,9 @@
                         <th>Num Hab.</th>
                         <th>Tipo Habitacion</th>
                         <th>Paquete</th>
-                        <th>Fecha Inicio</th>
-                        <th>Fecha Final</th>
+                        <th>Servicio</th>
+                        <th>Fecha Ingreso</th>
+                        <th>Fecha Salida</th>
                         <th>Num Adulto</th>
                         <th>Num Niño</th>
                         <th>Pais Procedencia</th>
@@ -57,6 +58,7 @@
                             {data:'num_habitacion'},
                             {data:'tipo_habitacion'},
                             {data:'paquete'},
+                            {data:'servicio'},
                             {data:'fecha_ini'},
                             {data:'fecha_fin'},
                             {data:'num_adulto'},

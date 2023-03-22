@@ -23,7 +23,7 @@
                         <select name="habitacion_id" id="habitacion_id"  class="form-control selectpicker border" required data-live-search="true" >
                         <option value="">--Seleccione--</option>
                         @foreach($habitaciones as $lista_habitacion)
-                            <option value="{{$lista_habitacion->id}}">{{$lista_habitacion->num_habitacion}} {{$lista_habitacion->tipo_habitacion}}</option>
+                            <option value="{{$lista_habitacion->id}}" data-precio="{{$lista_habitacion->precio}}">{{$lista_habitacion->num_habitacion}} {{$lista_habitacion->tipo_habitacion}}</option>
                         @endforeach
                         </select>
                     </div>
@@ -85,18 +85,28 @@
         </div>
         <div class="card-body py-0">
             <div class="row">
-                {{-- Colocar Day Use --}}
-
-                <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+                 <div class="col-lg-4 col-md-4 col-sm-4 col-12">
                     <div class="form-group">
-                        <label for="fecha_ini"  class="my-0"><strong>Fecha Inicio:</strong></label>
+                        <label for="producto_id" class="my-0" ><strong>Servicio:</strong></label>
+                        <select name="producto_id" id="producto_id"  class="form-control selectpicker border" required data-live-search="true" >
+                            <option value="">--Seleccione--</option>
+                            @foreach($productos as $lista_producto)
+                                <option value="{{$lista_producto->id}}"> {{$lista_producto->producto}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                    <div class="form-group">
+                        <label for="fecha_ini"  class="my-0"><strong>Fecha Ingreso:</strong></label>
                         <input type="date" id="fecha_ini" name="fecha_ini" required class="form-control">
                     </div>
                 </div>
 
-                <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+                <div class="col-lg-4 col-md-4 col-sm-4 col-12">
                     <div class="form-group">
-                        <label for="fecha_fin"  class="my-0"><strong>Fecha Final:</strong></label>
+                        <label for="fecha_fin"  class="my-0"><strong>Fecha Salida:</strong></label>
                         <input type="date" id="fecha_fin" name="fecha_fin" required class="form-control">
                     </div>
                 </div>
@@ -113,7 +123,10 @@
                 <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
                         <label for="monto" class="my-0"><strong>Precio por Unidad:</strong></label>
-                        <input type="number" name="monto" id="monto" class="form-control" required placeholder="0">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Bs.</span>
+                            <input type="number" name="monto" id="monto" class="form-control" required placeholder="0">
+                        </div>
                     </div>
                 </div>
 
@@ -127,7 +140,10 @@
                 <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
                         <label for="total" class="my-0"><strong>Total Cargo:</strong></label>
-                        <input type="number" name="total" id="total" readonly class="form-control" placeholder="0">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Bs.</span>
+                            <input type="number" name="total" id="total" readonly class="form-control" placeholder="0">
+                        </div>
                     </div>
                 </div>
             </div>

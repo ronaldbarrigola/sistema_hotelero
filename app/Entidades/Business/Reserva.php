@@ -15,6 +15,7 @@ class Reserva extends Model
         'cliente_id',
         'estado_reserva_id',
         'paquete_id',
+        'producto_id',
         'habitacion_id',
         'procedencia_ciudad_id',
         'procedencia_pais_id',

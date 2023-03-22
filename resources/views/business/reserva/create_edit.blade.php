@@ -47,6 +47,10 @@
               optenerCiudades();
           });
 
+          $(document).on("change", "#habitacion_id", function(){
+
+          });
+
           $('#modalViewReserva').on('shown.bs.modal', function() {//Para enfocar input de un formulario modal
               $("#doc_id").focus();
           })
@@ -114,27 +118,29 @@
 
                 },
                 success: function(result){
-                    $('#reserva_id').val(result.reserva.id);
-                    $('#cliente_id').selectpicker('val', result.reserva.cliente_id);
+                    $("#reserva_id").val(result.reserva.id);
+                    $("#cliente_id").selectpicker('val', result.reserva.cliente_id);
                     $("#cliente_id").selectpicker('refresh');
-                    $('#habitacion_id').selectpicker('val', result.reserva.habitacion_id);
+                    $("#habitacion_id").selectpicker('val', result.reserva.habitacion_id);
                     $("#habitacion_id").selectpicker('refresh');
-                    $('#paquete_id').selectpicker('val', result.reserva.paquete_id);
+                    $("#paquete_id").selectpicker('val', result.reserva.paquete_id);
                     $("#paquete_id").selectpicker('refresh');
-                    $('#num_adulto').val(result.reserva.num_adulto);
-                    $('#num_nino').val(result.reserva.num_nino);
-                    $('#procedencia_pais_id').selectpicker('val', result.reserva.procedencia_pais_id);
+                    $("#producto_id").selectpicker('val', result.reserva.producto_id);
+                    $("#producto_id").selectpicker('refresh');
+                    $("#num_adulto").val(result.reserva.num_adulto);
+                    $("#num_nino").val(result.reserva.num_nino);
+                    $("#procedencia_pais_id").selectpicker('val', result.reserva.procedencia_pais_id);
                     $("#procedencia_pais_id").selectpicker('refresh');
-                    $('#fecha_ini').val(result.reserva.fecha_ini);
-                    $('#fecha_fin').val(result.reserva.fecha_fin);
-                    $('#detalle').val(result.reserva.detalle);
+                    $("#fecha_ini").val(formatFecha(result.reserva.fecha_ini));
+                    $("#fecha_fin").val(formatFecha(result.reserva.fecha_fin));
+                    $("#detalle").val(result.reserva.detalle);
 
                     $("#procedencia_ciudad_id").find('option').remove();
                     $.each(result.ciudades , function(i, v) {
                         $("#procedencia_ciudad_id").append('<option  value="' + v.id + '" >' + v.descripcion + '</option>');
                     });
                     $("#procedencia_ciudad_id").selectpicker('refresh');
-                    $('#procedencia_ciudad_id').selectpicker('val', result.reserva.procedencia_ciudad_id);
+                    $("#procedencia_ciudad_id").selectpicker('val', result.reserva.procedencia_ciudad_id);
                     $("#procedencia_ciudad_id").selectpicker('refresh');
 
                     $("#modalViewReserva").modal("show");
@@ -164,6 +170,18 @@
             });
         }
 
+        function formatFecha(fecha) { //type="date" solo recibe formato "2023-03-22", caso contrario no carga
+            var fecha = new Date(fecha);
+            var mes = fecha.getMonth() + 1;
+            var dia = fecha.getDate();
+            var ano = fecha.getFullYear();
+            if (dia < 10)
+                dia = '0' + dia; //agrega cero si el menor de 10
+            if (mes < 10)
+                mes = '0' + mes //agrega cero si el menor de 10
+            return ano + "-" + mes + "-" + dia;
+        }
+
         function limpiarDatoReserva(){
             $('#reserva_id').val("");
             $('#cliente_id').selectpicker('val',"");
@@ -172,6 +190,8 @@
             $("#habitacion_id").selectpicker('refresh');
             $('#paquete_id').selectpicker('val', "");
             $("#paquete_id").selectpicker('refresh');
+            $('#producto_id').selectpicker('val', "");
+            $("#producto_id").selectpicker('refresh');
             $('#num_adulto').val("");
             $('#num_nino').val("");
             $('#procedencia_pais_id').selectpicker('val',"");

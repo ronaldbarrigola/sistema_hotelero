@@ -10,6 +10,7 @@ use App\Repositories\Business\EstadoReservaRepository;
 use App\Repositories\Business\HabitacionRepository;
 use App\Repositories\Business\MotivoRepository;
 use App\Repositories\Business\PaqueteRepository;
+use App\Repositories\Business\ProductoRepository;
 use App\Repositories\Business\ReservaRepository;
 use App\Repositories\Business\PaisRepository;
 use App\Repositories\Base\CiudadRepository;
@@ -22,12 +23,13 @@ class ReservaController extends Controller
     protected $habitacionRep;
     protected $motivoRep;
     protected $paqueteRep;
+    protected $productoRep;
     protected $reservaRep;
     protected $paisRep;
     protected $ciudadRep;
 
     //===constructor=============================================================================================
-    public function __construct(ClienteRepository $clienteRep,ReservaRepository $reservaRep,EstadoReservaRepository $estadoReservaRep,HabitacionRepository $habitacionRep,MotivoRepository $motivoRep,PaqueteRepository $paqueteRep,PaisRepository $paisRep,CiudadRepository $ciudadRep){
+    public function __construct(ClienteRepository $clienteRep,ReservaRepository $reservaRep,EstadoReservaRepository $estadoReservaRep,HabitacionRepository $habitacionRep,MotivoRepository $motivoRep,PaqueteRepository $paqueteRep,ProductoRepository $productoRep,PaisRepository $paisRep,CiudadRepository $ciudadRep){
         $this->middleware('auth');
         $this->middleware('guest');
         $this->clienteRep=$clienteRep;
@@ -35,6 +37,7 @@ class ReservaController extends Controller
         $this->habitacionRep=$habitacionRep;
         $this->motivoRep=$motivoRep;
         $this->paqueteRep=$paqueteRep;
+        $this->productoRep=$productoRep;
         $this->reservaRep=$reservaRep;
         $this->paisRep=$paisRep;
         $this->ciudadRep=$ciudadRep;
@@ -50,8 +53,9 @@ class ReservaController extends Controller
             $habitaciones=$this->habitacionRep->obtenerHabitaciones();
             $motivos=$this->motivoRep->obtenerMotivos();
             $paquetes=$this->paqueteRep->obtenerPaquetes();
+            $productos=$this->productoRep->obtenerServicios();
             $paises=$this->paisRep->obtenerPaises();
-            return view('business.reserva.index',['clientes'=>$clientes,'estadoReservas'=>$estadoReservas,'habitaciones'=>$habitaciones,'motivos'=>$motivos,'paquetes'=>$paquetes,'paises'=>$paises]);
+            return view('business.reserva.index',['clientes'=>$clientes,'estadoReservas'=>$estadoReservas,'habitaciones'=>$habitaciones,'motivos'=>$motivos,'paquetes'=>$paquetes,'productos'=>$productos,'paises'=>$paises]);
         }
     }
 
@@ -94,5 +98,15 @@ class ReservaController extends Controller
 
         return Redirect::route('business.reserva.index');
     }
+
+    public function obtenerReservasTimeLines(){
+        $response=true;
+        $reservas=$this->reservaRep->obtenerReservasTimeLines();
+        if (is_null($reservas) ){
+          $response=false;
+        }
+        return response()->json(array('reservas'=>$reservas,'response'=>$response));
+    }
+
 
 }
