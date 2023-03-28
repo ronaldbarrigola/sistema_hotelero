@@ -46,47 +46,54 @@ class ClienteController extends Controller
         if($request->ajax()){
             return $this->clienteRep->obtenerClientesDataTables();
         }else{
-            $id="";
-            $persona=$this->personaRep->obtenerPersonaPorId($id);
-            $tipo_docs=$this->tipoDocRep->obtenerTipoDocs();
-            $paises=$this->paisRep->obtenerPaises();
-            $ciudades=$this->ciudadRep->obtenerCiudades();
-            $profesiones=$this->profesionRep->obtenerProfesiones();
-            $empresas=$this->empresaRep->obtenerEmpresas();
-            $sexos=$this->sexoRep->obtenerSexos();
-            $estados_civiles=$this->estadoCivilRep->obtenerEstadosCiviles();
-            return view('business.cliente.index',['persona'=>$persona,'tipo_docs'=>$tipo_docs,'paises'=>$paises,'ciudades'=>$ciudades,'profesiones'=>$profesiones,'empresas'=>$empresas,'sexos'=>$sexos,'estados_civiles'=>$estados_civiles]);
+            return view('business.cliente.index');
         }
     }
 
-    //================================================================================================
-    public function store(Request $request){
-        $cliente=$this->clienteRep->insertarDesdeRequest($request);
-        return response()->json(array ('cliente'=>$cliente));
+    public function create(){
+        $tipo_docs=$this->tipoDocRep->obtenerTipoDocs();
+        $paises=$this->paisRep->obtenerPaises();
+        $ciudades=$this->ciudadRep->obtenerCiudades();
+        $profesiones=$this->profesionRep->obtenerProfesiones();
+        $empresas=$this->empresaRep->obtenerEmpresas();
+        $sexos=$this->sexoRep->obtenerSexos();
+        $estados_civiles=$this->estadoCivilRep->obtenerEstadosCiviles();
+        return response()->json(array ('tipo_docs'=>$tipo_docs,'paises'=>$paises,'ciudades'=>$ciudades,'profesiones'=>$profesiones,'empresas'=>$empresas,'sexos'=>$sexos,'estados_civiles'=>$estados_civiles));
     }
 
-    //================================================================================================
+    public function store(Request $request){
+        $cliente=$this->clienteRep->insertarDesdeRequest($request);
+        $clientes=$this->clienteRep->obtenerClientes();
+        return response()->json(array ('clientes'=>$clientes,'cliente'=>$cliente));
+    }
+
     public function edit(Request $request){
-        $id=$request['cliente_id'];//El mismo id se usa mapra persona y cliente
+        $id=$request['persona_id'];//El mismo id se usa mapra persona y cliente
         $persona=$this->personaRep->obtenerPersonaPorId($id);
         $cliente=$this->clienteRep->obtenerClientePorId($id);
+
+        $tipo_docs=$this->tipoDocRep->obtenerTipoDocs();
+        $paises=$this->paisRep->obtenerPaises();
+        $profesiones=$this->profesionRep->obtenerProfesiones();
+        $empresas=$this->empresaRep->obtenerEmpresas();
+        $sexos=$this->sexoRep->obtenerSexos();
+        $estados_civiles=$this->estadoCivilRep->obtenerEstadosCiviles();
 
         $ciudades=null;
         if( $cliente!=null){
             $ciudades=$this->ciudadRep->obtenerCiudadesPorPaisId($cliente->pais_id);
         }
 
-        return response()->json(array ('persona'=>$persona,'cliente'=>$cliente,'ciudades'=>$ciudades));
+        return response()->json(array ('persona'=>$persona,'cliente'=>$cliente,'tipo_docs'=>$tipo_docs,'paises'=>$paises,'ciudades'=>$ciudades,'profesiones'=>$profesiones,'empresas'=>$empresas,'sexos'=>$sexos,'estados_civiles'=>$estados_civiles));
     }
 
-    //================================================================================================
     public function update(Request $request,$id){
         $request->request->add(['id'=>$id]);//El mismo id se usa mapra persona y cliente
         $cliente=$this->clienteRep->modificarDesdeRequest($request);
-        return  $cliente;
+        $clientes=$this->clienteRep->obtenerClientes();
+        return response()->json(array ('cliente'=>$cliente,'clientes'=>$clientes));
     }
 
-   //================================================================================================
     public function destroy(Request $request,$id){
         $cliente=$this->clienteRep->eliminar($id);
 

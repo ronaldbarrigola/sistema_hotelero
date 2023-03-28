@@ -32,6 +32,7 @@
         </div>
         @include('partials/confirmaeliminacion',['url_base_eliminar'=>'business/reserva'])
         @include('business/reserva/create_edit')
+        @include('business/cliente/create_edit')
     @endsection
 @endsection
 
@@ -44,10 +45,7 @@
         $(document).ready( function () {
 
             $(document).on("click", "#btnCreateReserva", function(){ //El boton btnCreateCliente se encuentra en actionbar
-                $("#edit").val("");
-                $("#title_modal_view_cliente").text("NUEVA RESERVA");
-                limpiarDatoReserva();
-                $('#modalViewReserva').modal('show');
+                createReserva();
             });
 
             // ══════════════════════ Cargando columnas para datatables  ══════════════════════
@@ -70,7 +68,7 @@
                             {data:'id',
                                 orderable:false,
                                 render: function(data){
-                                    return '<button id="'+data+ '" class="btn btn-info" onclick="dataEditReserva(this);">Editar</button></a>';
+                                    return '<button id="'+data+ '" class="btn btn-info" onclick="editReserva(this);">Editar</button></a>';
                                 }
                             },
 

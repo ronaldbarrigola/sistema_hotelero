@@ -22,24 +22,22 @@ class ProductoRepository{
         return $productos;
     }
 
-    public function obtenerServicios(){
-        $productos=DB::table('pro_producto as p')
-        ->join('pro_categoria as c','c.id','=','p.categoria_id')
-        ->select('p.id','p.descripcion as producto','c.descripcion as categoria')
-        ->where('c.descripcion','=','HABITACION') //servicio Habitacion
-        ->where('p.estado','=','1')
-        ->where('c.estado','=','1')
-        ->orderBy('p.id','desc')
-        ->get();
-        return $productos;
-    }
+    // public function obtenerServicios(){
+    //     $productos=DB::table('pro_producto as p')
+    //     ->join('pro_categoria as c','c.id','=','p.categoria_id')
+    //     ->select('p.id','p.descripcion as producto','c.descripcion as categoria')
+    //     ->where('c.descripcion','=','HABITACION') //servicio Habitacion
+    //     ->where('p.estado','=','1')
+    //     ->where('c.estado','=','1')
+    //     ->orderBy('p.id','desc')
+    //     ->get();
+    //     return $productos;
+    // }
 
     public function obtenerProductoDataTables(){
         $productos=$this->obtenerProductos();
         return datatables()->of($productos)->toJson();
     }
-
-
 
     public function obtenerProductoPorId($id){
         return Producto::find($id);

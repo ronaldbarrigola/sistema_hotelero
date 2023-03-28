@@ -5,15 +5,19 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Auth;
 
-use App\Repositories\Business\ClienteRepository;
 use App\Repositories\Business\EstadoReservaRepository;
 use App\Repositories\Business\HabitacionRepository;
 use App\Repositories\Business\MotivoRepository;
 use App\Repositories\Business\PaqueteRepository;
-use App\Repositories\Business\ProductoRepository;
+use App\Repositories\Business\ServicioRepository;
 use App\Repositories\Business\ReservaRepository;
-use App\Repositories\Business\PaisRepository;
+
+//Para cliente
 use App\Repositories\Base\CiudadRepository;
+use App\Repositories\Business\ClienteRepository;
+use App\Repositories\Business\PaisRepository;
+
+
 use Carbon\Carbon;
 
 class ReservaController extends Controller
@@ -23,13 +27,14 @@ class ReservaController extends Controller
     protected $habitacionRep;
     protected $motivoRep;
     protected $paqueteRep;
-    protected $productoRep;
+    protected $servicioRep;
     protected $reservaRep;
     protected $paisRep;
     protected $ciudadRep;
+    //Para cliente
 
     //===constructor=============================================================================================
-    public function __construct(ClienteRepository $clienteRep,ReservaRepository $reservaRep,EstadoReservaRepository $estadoReservaRep,HabitacionRepository $habitacionRep,MotivoRepository $motivoRep,PaqueteRepository $paqueteRep,ProductoRepository $productoRep,PaisRepository $paisRep,CiudadRepository $ciudadRep){
+    public function __construct(ClienteRepository $clienteRep,ReservaRepository $reservaRep,EstadoReservaRepository $estadoReservaRep,HabitacionRepository $habitacionRep,MotivoRepository $motivoRep,PaqueteRepository $paqueteRep,ServicioRepository $servicioRep,PaisRepository $paisRep,CiudadRepository $ciudadRep){
         $this->middleware('auth');
         $this->middleware('guest');
         $this->clienteRep=$clienteRep;
@@ -37,7 +42,7 @@ class ReservaController extends Controller
         $this->habitacionRep=$habitacionRep;
         $this->motivoRep=$motivoRep;
         $this->paqueteRep=$paqueteRep;
-        $this->productoRep=$productoRep;
+        $this->servicioRep=$servicioRep;
         $this->reservaRep=$reservaRep;
         $this->paisRep=$paisRep;
         $this->ciudadRep=$ciudadRep;
@@ -48,44 +53,53 @@ class ReservaController extends Controller
         if($request->ajax()){
             return $this->reservaRep->obtenerReservasDataTables();
         }else{
-            $clientes=$this->clienteRep->obtenerClientes();
-            $estadoReservas=$this->estadoReservaRep->obtenerEstadoReservas();
-            $habitaciones=$this->habitacionRep->obtenerHabitaciones();
-            $motivos=$this->motivoRep->obtenerMotivos();
-            $paquetes=$this->paqueteRep->obtenerPaquetes();
-            $productos=$this->productoRep->obtenerServicios();
-            $paises=$this->paisRep->obtenerPaises();
-            return view('business.reserva.index',['clientes'=>$clientes,'estadoReservas'=>$estadoReservas,'habitaciones'=>$habitaciones,'motivos'=>$motivos,'paquetes'=>$paquetes,'productos'=>$productos,'paises'=>$paises]);
+            return view('business.reserva.index');
         }
     }
 
-    //================================================================================================
+    public function create(){
+        $clientes=$this->clienteRep->obtenerClientes();
+        $estadoReservas=$this->estadoReservaRep->obtenerEstadoReservas();
+        $habitaciones=$this->habitacionRep->obtenerHabitaciones();
+        $motivos=$this->motivoRep->obtenerMotivos();
+        $paquetes=$this->paqueteRep->obtenerPaquetes();
+        $servicios=$this->servicioRep->obtenerServicios();
+        $paises=$this->paisRep->obtenerPaises();
+        return response()->json(array ('clientes'=>$clientes,'estadoReservas'=>$estadoReservas,'habitaciones'=>$habitaciones,'motivos'=>$motivos,'paquetes'=>$paquetes,'servicios'=>$servicios,'paises'=>$paises));
+    }
+
     public function store(Request $request){
         $reserva=$this->reservaRep->insertarDesdeRequest($request);
         return response()->json(array ('reserva'=>$reserva));
     }
 
-    //================================================================================================
     public function edit(Request $request){
         $id=$request['reserva_id'];
         $reserva=$this->reservaRep->obtenerReservaPorId($id);
+
+        $clientes=$this->clienteRep->obtenerClientes();
+        $estadoReservas=$this->estadoReservaRep->obtenerEstadoReservas();
+        $habitaciones=$this->habitacionRep->obtenerHabitaciones();
+        $motivos=$this->motivoRep->obtenerMotivos();
+        $paquetes=$this->paqueteRep->obtenerPaquetes();
+        $servicios=$this->servicioRep->obtenerServicios();
+        $paises=$this->paisRep->obtenerPaises();
 
         $ciudades=null;
         if( $reserva!=null){
             $ciudades=$this->ciudadRep->obtenerCiudadesPorPaisId($reserva->procedencia_pais_id);
         }
 
-        return response()->json(array('reserva'=>$reserva,'ciudades'=>$ciudades));
+        return response()->json(array ('reserva'=>$reserva,'ciudades'=>$ciudades,'clientes'=>$clientes,'estadoReservas'=>$estadoReservas,'habitaciones'=>$habitaciones,'motivos'=>$motivos,'paquetes'=>$paquetes,'servicios'=>$servicios,'paises'=>$paises));
+
     }
 
-    //================================================================================================
     public function update(Request $request,$id){
         $request->request->add(['id'=>$id]);
         $reserva=$this->reservaRep->modificarDesdeRequest($request);
         return  $reserva;
     }
 
-   //================================================================================================
     public function destroy(Request $request,$id){
         $reserva=$this->reservaRep->eliminar($id);
 

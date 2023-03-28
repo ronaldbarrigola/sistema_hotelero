@@ -74,10 +74,7 @@
     <div class="col-lg-4 col-md-4 col-sm-4 col-12">
         <div class="form-group ">
             <label for="fecha_nac" class="my-0"><strong>Fecha Nacimiento:</strong></label>
-            {{--  usando operador ternario php (?) para validar fecha nula, si es nulo muestra vacio... si no uso operador ternario muestra fecha actual en lugar de vacio --}}
-            <input type="text" name="fecha_nac" id="fecha_nac" data-target="#fecha_nac"
-                    data-toggle="datetimepicker" class="form-control datetimepicker-input datetimepicker_calendario"
-                    required value="{{$persona!=null && $persona->fecha_nac? Carbon\Carbon::parse($persona->fecha_nac)->format('d/m/Y'):null}}" placeholder="Fecha de Nacimiento">
+            <input type="date" id="fecha_nac" name="fecha_nac" value="{{$persona!=null?$persona->fecha_nac:''}}" required class="form-control">
         </div>
     </div>
 

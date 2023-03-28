@@ -56,7 +56,6 @@ class PersonaRepository{
     public function insertarDesdeRequest(Request $request){
         $persona=new Persona($request->all());//CREA OBJETO CON TODOS LOS CAMPOS RECIBIDOS DEL REQUEST
         $persona->estado=1;
-        $this->llenarDatosComunesStoreUpdate($persona,$request);
         $persona->save();
         return $persona;
     }
@@ -68,7 +67,7 @@ class PersonaRepository{
 
             $persona=$this->obtenerPersonaPorId($request->get('id'));
             $persona->fill($request->all()); //llena datos desde el array entrante en el request.
-            $this->llenarDatosComunesStoreUpdate($persona,$request);
+           // $this->llenarDatosComunesStoreUpdate($persona,$request);
             $persona->update();
             DB::commit();
             return $persona;
@@ -92,8 +91,5 @@ class PersonaRepository{
         return $persona;
     }
 
-    private function llenarDatosComunesStoreUpdate($persona,Request $request){
-        $persona->fecha_nac=Carbon::createFromFormat('d/m/Y', $request->get('fecha_nac'))->toDateTimeString();
-    }
 
 }//fin clase

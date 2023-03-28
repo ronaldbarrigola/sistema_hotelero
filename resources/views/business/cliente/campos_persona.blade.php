@@ -13,11 +13,8 @@
     <div class="col-lg-4 col-md-4 col-sm-4 col-12">
         <div class="form-group">
             <label for="tipo_doc_id" class="my-0" ><strong>Tipo Documento Id.:</strong></label>
-            <select name="tipo_doc_id" id="tipo_doc_id" required class="form-control selectpicker border" data-live-search="true" >
-                <option value="">--Seleccione--</option>
-                @foreach($tipo_docs as $tip)
-                    <option value="{{$tip->id}}">{{$tip->nombre}}</option>
-                @endforeach
+            <select name="tipo_doc_id" id="tipo_doc_id" required class="form-control selectpicker border" data-live-search="true">
+                 <!--Llenar campos por ajax-->
             </select>
         </div>
     </div>
@@ -47,10 +44,7 @@
         <div class="form-group">
             <label for="sexo_id" class="my-0" ><strong>Sexo:</strong></label>
             <select name="sexo_id" id="sexo_id" required class="form-control selectpicker border" data-live-search="true" >
-                <option value="">--Seleccione--</option>
-                @foreach($sexos as $sex)
-                    <option value="{{$sex->id}}">{{$sex->nombre}}</option>
-                @endforeach
+                <!--Llenar campos por ajax-->
             </select>
         </div>
     </div>
@@ -58,20 +52,15 @@
     <div class="col-lg-4 col-md-4 col-sm-4 col-12">
         <div class="form-group ">
             <label for="fecha_nac" class="my-0"><strong>Fecha Nacimiento:</strong></label>
-            <input type="text" name="fecha_nac" id="fecha_nac" data-target="#fecha_nac"
-                    data-toggle="datetimepicker" class="form-control datetimepicker-input datetimepicker_calendario"
-                    required placeholder="Fecha de Nacimiento">
+            <input type="date" id="fecha_nac" name="fecha_nac" required class="form-control">
         </div>
     </div>
 
     <div class="col-lg-4 col-md-4 col-sm-4 col-12">
         <div class="form-group">
             <label for="estado_civil_id" class="my-0" ><strong>Estado Civil:</strong></label>
-            <select name="estado_civil_id" id="estado_civil_id" class="form-control selectpicker border" data-live-search="true" >
-                <option value="">--Seleccione--</option>
-                @foreach($estados_civiles as $est_civ)
-                    <option value="{{$est_civ->id}}"> {{$est_civ->nombre}}</option>
-                @endforeach
+            <select name="estado_civil_id" id="estado_civil_id" required class="form-control selectpicker border" data-live-search="true" >
+                 <!--Llenar campos por ajax-->
             </select>
         </div>
     </div>
@@ -86,7 +75,7 @@
     <div class="col-lg-4 col-md-4 col-sm-4 col-12">
         <div class="form-group">
             <label for="telefono" class="my-0"><strong>Telefono Personal:</strong></label>
-            <input type="text" name="telefono" id="telefono" required class="form-control" placeholder="Telefono">
+            <input type="text" name="telefono" required id="telefono" class="form-control" placeholder="Telefono">
         </div>
     </div>
 
@@ -104,7 +93,7 @@
             $('#doc_id').on('blur keypress',function(e){
                 // se ejecuta al salir del cuadro de texto
                 if (e.type == 'blur' || e.keyCode == 13) {
-                    if($("#edit").val()==''){
+                    if($("#editCliente").val()==''){
                         buscarPorNumDocId($(this).val());
                     }
                 }
@@ -128,9 +117,10 @@
                     var data=result.responseJSON;
                     if(data.response){
                         messageAlert("El cliente con el numro de documento " + num_doc_id + ", ya esta registrado");
-                        $("#edit").val("modificar");
+                        $("#editCliente").val("modificar");
                         $("#title_modal_view_cliente").text("MODIFICAR CLIENTE");
                         //Datos persona
+                        $('#persona_id').val(data.persona.id);
                         $('#doc_id').val(data.persona.doc_id);
                         $('#tipo_doc_id').selectpicker('val',data.persona.tipo_doc_id);
                         $("#tipo_doc_id").selectpicker('refresh');
@@ -147,7 +137,6 @@
                         $('#direccion').val(data.persona.direccion);
 
                         //Datos cliente
-                        $('#cliente_id').val(data.persona.id);
                         $('#pais_id').selectpicker('val',data.persona.pais_id);
                         $("#pais_id").selectpicker('refresh');
                         $('#profesion_id').selectpicker('val',data.persona.profesion_id);
@@ -158,8 +147,7 @@
                         $('#ciudad_id').selectpicker('val',data.persona.ciudad_id);
                         $("#ciudad_id").selectpicker('refresh');
                     } else {
-                        $("#edit").val("");
-                        //$("#title_modal_view_cliente").text("NUEVO CLIENTE");
+                        $("#editCliente").val("");
                         limpiarDatoCliente();
                     }
                 }

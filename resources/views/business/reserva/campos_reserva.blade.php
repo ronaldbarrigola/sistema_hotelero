@@ -5,15 +5,17 @@
         </div>
         <div class="card-body py-0">
             <div class="row">
-                <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                     <div class="form-group">
                         <label for="cliente_id" class="my-0" ><strong>Reservado por:</strong></label>
-                        <select name="cliente_id" id="cliente_id"  class="form-control selectpicker border" required data-live-search="true" >
-                        <option value="">--Seleccione--</option>
-                        @foreach($clientes as $lista_clientes)
-                            <option value="{{$lista_clientes->id}}"> {{$lista_clientes->cliente}}</option>
-                        @endforeach
-                        </select>
+                        <div class="input-group-append">
+                            <select name="cliente_id" id="cliente_id" required class="form-control selectpicker border" data-live-search="true" >
+                               <!--Se carga los datos por ajax-->
+                            </select>
+                            <button type="button" id="btnModalInfoCliente" class="input-group-btn btn btn-light"><span class="icon-table2"></span></button>
+                            <button type="button" id="btnModalCreateCliente" class="input-group-btn btn btn-light"><span class="icon-plus"></span></button>
+                        </div>
                     </div>
                 </div>
 
@@ -21,10 +23,7 @@
                     <div class="form-group">
                         <label for="habitacion_id" class="my-0" ><strong>Habitacion:</strong></label>
                         <select name="habitacion_id" id="habitacion_id"  class="form-control selectpicker border" required data-live-search="true" >
-                        <option value="">--Seleccione--</option>
-                        @foreach($habitaciones as $lista_habitacion)
-                            <option value="{{$lista_habitacion->id}}" data-precio="{{$lista_habitacion->precio}}">{{$lista_habitacion->num_habitacion}} {{$lista_habitacion->tipo_habitacion}}</option>
-                        @endforeach
+                            <!--Se carga los datos por ajax-->
                         </select>
                     </div>
                 </div>
@@ -33,10 +32,7 @@
                     <div class="form-group">
                         <label for="paquete_id" class="my-0" ><strong>Paquete:</strong></label>
                         <select name="paquete_id" id="paquete_id"  class="form-control selectpicker border" data-live-search="true" >
-                        <option value="">--Seleccione--</option>
-                        @foreach($paquetes as $lista_paquete)
-                            <option value="{{$lista_paquete->id}}"> {{$lista_paquete->descripcion}}</option>
-                        @endforeach
+                             <!--Se carga los datos por ajax-->
                         </select>
                     </div>
                 </div>
@@ -44,34 +40,31 @@
                 <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
                         <label for="num_adulto" class="my-0"><strong>Numeros de adultos:</strong></label>
-                        <input type="number" name="num_adulto" id="num_adulto" class="form-control" placeholder="0">
+                        <input type="number" name="num_adulto" id="num_adulto" max="99" class="form-control" placeholder="0">
                     </div>
                 </div>
 
                 <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
                         <label for="num_nino" class="my-0"><strong>Numero de Niños:</strong></label>
-                        <input type="number" name="num_nino" id="num_nino" class="form-control" placeholder="0">
+                        <input type="number" name="num_nino" id="num_nino" max="99" class="form-control" placeholder="0">
                     </div>
                 </div>
 
                 <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
-                        <label for="procedencia_pais_id" class="my-0" ><strong>Pais:</strong></label>
+                        <label for="procedencia_pais_id" class="my-0" ><strong>Pais Procedencia:</strong></label>
                         <select name="procedencia_pais_id" id="procedencia_pais_id"  class="form-control selectpicker border" data-live-search="true" >
-                        <option value="">--Seleccione--</option>
-                        @foreach($paises as $lista_pais)
-                            <option value="{{$lista_pais->id}}"> {{$lista_pais->descripcion}}</option>
-                        @endforeach
+                             <!--Se carga los datos por ajax-->
                         </select>
                     </div>
                 </div>
 
                 <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
-                    <label for="procedencia_ciudad_id" class="my-0" ><strong>Ciudad:</strong></label>
+                    <label for="procedencia_ciudad_id" class="my-0" ><strong>Ciudad Procedencia:</strong></label>
                     <select name="procedencia_ciudad_id" id="procedencia_ciudad_id"  class="form-control selectpicker border" data-live-search="true" >
-
+                          <!--Se carga los datos por ajax-->
                     </select>
                     </div>
                 </div>
@@ -85,26 +78,32 @@
         </div>
         <div class="card-body py-0">
             <div class="row">
-                 <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                 <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
-                        <label for="producto_id" class="my-0" ><strong>Servicio:</strong></label>
-                        <select name="producto_id" id="producto_id"  class="form-control selectpicker border" required data-live-search="true" >
-                            <option value="">--Seleccione--</option>
-                            @foreach($productos as $lista_producto)
-                                <option value="{{$lista_producto->id}}"> {{$lista_producto->producto}}</option>
-                            @endforeach
+                        <label for="servicio_id" class="my-0" ><strong>Servicio:</strong></label>
+                        <select name="servicio_id" id="servicio_id"  class="form-control selectpicker border" required data-live-search="true" >
+                            <!--Se carga los datos por ajax-->
                         </select>
                     </div>
                 </div>
 
-                <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label for="motivo_id" class="my-0" ><strong>Motivo:</strong></label>
+                        <select name="motivo_id" id="motivo_id"  class="form-control selectpicker border" required data-live-search="true" >
+                            <!--Se carga los datos por ajax-->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
                         <label for="fecha_ini"  class="my-0"><strong>Fecha Ingreso:</strong></label>
                         <input type="date" id="fecha_ini" name="fecha_ini" required class="form-control">
                     </div>
                 </div>
 
-                <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
                         <label for="fecha_fin"  class="my-0"><strong>Fecha Salida:</strong></label>
                         <input type="date" id="fecha_fin" name="fecha_fin" required class="form-control">

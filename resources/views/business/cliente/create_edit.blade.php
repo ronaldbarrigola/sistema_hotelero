@@ -1,5 +1,6 @@
 
-<div class="modal fade modal-slide-in-right" aria-hidden="true" role="dialog" tabindex="-1" id="modalViewCliente">
+<div class="modal fade modal-slide-in-right" aria-hidden="true" role="dialog" tabindex="-1" data-backdrop="static" data-keyboard="false" id="modalViewCliente">
+    <!--Los parametros: data-backdrop="static" data-keyboard="false" es para que no se cierre el mormulario modal al hacer click en cualquier parte-->
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
 
@@ -12,10 +13,10 @@
 
             <div class="modal-body">
 
-                <form id="frmCliente" enctype="multipart/form-data" onsubmit="return submitFunction(event)">
+                <form id="frmCliente" enctype="multipart/form-data" onsubmit="return submitFormCliente(event)">
                     @csrf
 
-                    <input type="hidden" name="edit" id="edit" value="">
+                    <input type="hidden" name="editCliente" id="editCliente" value="">
 
                     <div class="panel_ordenante card">
                         <div class="card-header py-0">
@@ -61,7 +62,7 @@
         $(document).ready(function() {
 
           $(document).on("change", "#pais_id", function(){
-              optenerCiudades();
+              obtenerCiudades();
           });
 
           $('#modalViewCliente').on('shown.bs.modal', function() {//Para enfocar input de un formulario modal
@@ -70,7 +71,7 @@
 
         }); //Fin ready
 
-        function submitFunction(event) {
+        function submitFormCliente(event) {
             guardarCliente();
             event.preventDefault(); //cancela el evento
             return false; //Cancela el envio submit para procesar por ajax
@@ -81,8 +82,8 @@
             var formdata = new FormData($("#frmCliente")[0]); //Serializa con imagenes multimedia
             url=URL_BASE + "/business/cliente";
 
-            if($("#edit").val()=="modificar"){
-                url= url + "/" + $("#cliente_id").val();
+            if($("#editCliente").val()=="modificar"){
+                url= url + "/" + $("#persona_id").val();
                 formdata.append('_method','patch');
             }
 
@@ -100,83 +101,188 @@
                 },
                 success: function(result){
 
-                },//End success
-                error: function(XMLHttpRequest, textStatus, errorThrown) {
-                    console.log(XMLHttpRequest);
-                    console.log(textStatus);
-                    console.log(errorThrown);
-                }, //END error
-                complete:function(result, textStatus ){
+                    //BEGIN:Es para cuando se hace el llamado al formulario modal desde otro modulo
+                    $("#cliente_id").find('option').remove();
+                    $.each(result.clientes , function(i, v) {
+                        $("#cliente_id").append('<option  value="' + v.id + '" >' + v.cliente + "|"+ v.doc_id + '</option>');
+                    });
+                    $("#cliente_id").selectpicker('refresh');
+                    $("#cliente_id").selectpicker('val', result.cliente.id);
+                    $("#cliente_id").selectpicker('refresh');
+                    //END:Es para cuando se hace el llamado al formulario modal desde otro modulo
+
                     $("#modalViewCliente").modal("hide");
                     $("#btnGuardarCliente").removeAttr('disabled');
                     $("#btnGuardarCliente").text("Guardar");
                     datatable_datos.ajax.reload();//recargar registro datatables.
                     $("#doc_id").val("");
                     limpiarDatoCliente();
+                },//End success
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+
+                }, //END error
+                complete:function(result, textStatus ){
+
                 }//END complete
 
             }); //End Ajax
        }
 
-       function dataEditCliente($boton){
+       function createCliente(){
+            $("#editCliente").val("");
+            $("#title_modal_view_cliente").text("NUEVO CLIENTE");
+
+            $("#doc_id").val("");
             limpiarDatoCliente();
-            var cliente_id=$boton.id;
-            $("#edit").val("modificar");
-            $("#title_modal_view_cliente").text("MODIFICAR CLIENTE");
+
             $.ajax({
                 type: "GET",
-                url: "{{route('editcliente')}}",
-                data:{cliente_id:cliente_id,'_token': '{{ csrf_token() }}'},
+                url: "{{route('createcliente')}}",
+                data:{'_token': '{{ csrf_token() }}'},
                 dataType: 'json',
                 beforeSend: function () {
 
                 },
                 success: function(result){
 
+                    $("#tipo_doc_id").find('option').remove();
+                    $.each(result.tipo_docs, function(i, v) {
+                        $("#tipo_doc_id").append('<option  value="' + v.id + '" >' + v.nombre + '</option>');
+                    });
+                    $("#tipo_doc_id").selectpicker('refresh');
+
+                    $("#sexo_id").find('option').remove();
+                    $.each(result.sexos, function(i, v) {
+                        $("#sexo_id").append('<option  value="' + v.id + '" >' + v.nombre + '</option>');
+                    });
+                    $("#sexo_id").selectpicker('refresh');
+
+                    $("#estado_civil_id").find('option').remove();
+                    $.each(result.estados_civiles, function(i, v) {
+                        $("#estado_civil_id").append('<option  value="' + v.id + '" >' + v.nombre + '</option>');
+                    });
+                    $("#estado_civil_id").selectpicker('refresh');
+
+                    $("#pais_id").find('option').remove();
+                    $.each(result.paises, function(i, v) {
+                        $("#pais_id").append('<option  value="' + v.id + '" >' + v.descripcion + '</option>');
+                    });
+                    $("#pais_id").selectpicker('refresh');
+
+                    $("#profesion_id").find('option').remove();
+                    $.each(result.profesiones, function(i, v) {
+                        $("#profesion_id").append('<option  value="' + v.id + '" >' + v.descripcion + '</option>');
+                    });
+                    $("#profesion_id").selectpicker('refresh');
+
+                    $("#empresa_id").find('option').remove();
+                    $.each(result.empresas, function(i, v) {
+                        $("#empresa_id").append('<option  value="' + v.id + '" >' + v.descripcion + '</option>');
+                    });
+                    $("#empresa_id").selectpicker('refresh');
+
+                    $('#modalViewCliente').modal('show');
                 },//End success
                 complete:function(result, textStatus ){
-                    var data=result.responseJSON;
-                        //Datos persona
-                    $('#doc_id').val(data.persona.doc_id);
-                    $('#tipo_doc_id').selectpicker('val', data.persona.tipo_doc_id);
+
+                }
+            }); //End Ajax
+        }
+
+       function editCliente($boton){
+            limpiarDatoCliente();
+
+            var persona_id=$boton.id;
+            $("#editCliente").val("modificar");
+            $("#title_modal_view_cliente").text("MODIFICAR CLIENTE");
+            $.ajax({
+                type: "GET",
+                url: "{{route('editcliente')}}",
+                data:{persona_id:persona_id,'_token': '{{ csrf_token() }}'},
+                dataType: 'json',
+                beforeSend: function () {
+
+                },
+                success: function(result){
+                    $("#tipo_doc_id").find('option').remove();
+                    $.each(result.tipo_docs, function(i, v) {
+                        $("#tipo_doc_id").append('<option  value="' + v.id + '" >' + v.nombre + '</option>');
+                    });
                     $("#tipo_doc_id").selectpicker('refresh');
-                    $('#nombre').val(data.persona.nombre);
-                    $('#paterno').val(data.persona.paterno);
-                    $('#materno').val(data.persona.materno);
-                    $('#sexo_id').selectpicker('val', data.persona.sexo_id);
+
+                    $("#sexo_id").find('option').remove();
+                    $.each(result.sexos, function(i, v) {
+                        $("#sexo_id").append('<option  value="' + v.id + '" >' + v.nombre + '</option>');
+                    });
                     $("#sexo_id").selectpicker('refresh');
-                    $('#fecha_nac').val( formatFecha(data.persona.fecha_nac));
-                    $('#estado_civil_id').selectpicker('val', data.persona.estado_civil_id);
+
+                    $("#estado_civil_id").find('option').remove();
+                    $.each(result.estados_civiles, function(i, v) {
+                        $("#estado_civil_id").append('<option  value="' + v.id + '" >' + v.nombre + '</option>');
+                    });
                     $("#estado_civil_id").selectpicker('refresh');
-                    $('#email').val(data.persona.email);
-                    $('#telefono').val(data.persona.telefono);
-                    $('#direccion').val(data.persona.direccion);
+
+                    $("#pais_id").find('option').remove();
+                    $.each(result.paises, function(i, v) {
+                        $("#pais_id").append('<option  value="' + v.id + '" >' + v.descripcion + '</option>');
+                    });
+                    $("#pais_id").selectpicker('refresh');
+
+                    $("#profesion_id").find('option').remove();
+                    $.each(result.profesiones, function(i, v) {
+                        $("#profesion_id").append('<option  value="' + v.id + '" >' + v.descripcion + '</option>');
+                    });
+                    $("#profesion_id").selectpicker('refresh');
+
+                    $("#empresa_id").find('option').remove();
+                    $.each(result.empresas, function(i, v) {
+                        $("#empresa_id").append('<option  value="' + v.id + '" >' + v.descripcion + '</option>');
+                    });
+                    $("#empresa_id").selectpicker('refresh');
+
+                    //Datos persona
+                    $('#persona_id').val(result.persona.id);
+                    $('#doc_id').val(result.persona.doc_id);
+                    $('#tipo_doc_id').selectpicker('val', result.persona.tipo_doc_id);
+                    $("#tipo_doc_id").selectpicker('refresh');
+                    $('#nombre').val(result.persona.nombre);
+                    $('#paterno').val(result.persona.paterno);
+                    $('#materno').val(result.persona.materno);
+                    $('#sexo_id').selectpicker('val', result.persona.sexo_id);
+                    $("#sexo_id").selectpicker('refresh');
+                    $('#fecha_nac').val(result.persona.fecha_nac);
+                    $('#estado_civil_id').selectpicker('val', result.persona.estado_civil_id);
+                    $("#estado_civil_id").selectpicker('refresh');
+                    $('#email').val(result.persona.email);
+                    $('#telefono').val(result.persona.telefono);
+                    $('#direccion').val(result.persona.direccion);
 
                     //Datos cliente
-                    $('#cliente_id').val(data.cliente.id);
-                    $('#pais_id').selectpicker('val', data.cliente.pais_id);
+                    $('#pais_id').selectpicker('val', result.cliente.pais_id);
                     $("#pais_id").selectpicker('refresh');
-                    $('#profesion_id').selectpicker('val', data.cliente.profesion_id);
+                    $('#profesion_id').selectpicker('val', result.cliente.profesion_id);
                     $("#profesion_id").selectpicker('refresh');
-                    $('#empresa_id').selectpicker('val', data.cliente.empresa_id);
+                    $('#empresa_id').selectpicker('val', result.cliente.empresa_id);
                     $("#empresa_id").selectpicker('refresh');
-                    $('#detalle').val(data.cliente.detalle);
+                    $('#detalle').val(result.cliente.detalle);
 
                     $("#ciudad_id").find('option').remove();
-                    $.each( data.ciudades , function(i, v) {
+                    $.each( result.ciudades , function(i, v) {
                         $("#ciudad_id").append('<option  value="' + v.id + '" >' + v.descripcion + '</option>');
                     });
                     $("#ciudad_id").selectpicker('refresh');
-                    $('#ciudad_id').selectpicker('val', data.cliente.ciudad_id);
+                    $('#ciudad_id').selectpicker('val', result.cliente.ciudad_id);
                     $("#ciudad_id").selectpicker('refresh');
 
                     $("#modalViewCliente").modal("show");
+                },//End success
+                complete:function(result, textStatus ){
+
                 }
             }); //End Ajax
-
         }
 
-        function optenerCiudades(){
+        function obtenerCiudades(){
             var pais_id= $("#pais_id").val();
             $.ajax({
                 type: "get",
@@ -195,6 +301,7 @@
         }
 
         function limpiarDatoCliente(){
+            $('#persona_id').val("");
             $('#tipo_doc_id').selectpicker('val',"");
             $('#nombre').val("");
             $('#paterno').val("");
@@ -207,7 +314,6 @@
             $('#direccion').val("");
 
             //Datos cliente
-            $('#cliente_id').val("");
             $('#pais_id').selectpicker('val',"");
             $('#ciudad_id').selectpicker('val',"");
             $('#profesion_id').selectpicker('val',"");
@@ -223,18 +329,6 @@
             $("#profesion_id").selectpicker('refresh');
             $("#empresa_id").selectpicker('refresh');
 
-        }
-
-        function formatFecha(fecha) {
-            var fecha = new Date(fecha); //Fecha actual
-            var mes = fecha.getMonth() + 1; //obteniendo mes
-            var dia = fecha.getDate(); //obteniendo dia
-            var ano = fecha.getFullYear(); //obteniendo año
-            if (dia < 10)
-                dia = '0' + dia; //agrega cero si el menor de 10
-            if (mes < 10)
-                mes = '0' + mes //agrega cero si el menor de 10
-            return dia + "/" + mes + "/" + ano;
         }
 
   </script>

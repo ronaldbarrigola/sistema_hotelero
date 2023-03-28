@@ -27,6 +27,18 @@ function fechaActual() {
     return ano + "-" + mes + "-" + dia;
 }
 
+function formatFecha(fecha) { //type="date" solo recibe formato "2023-03-22", caso contrario no carga
+    var fecha = new Date(fecha);
+    var mes = fecha.getMonth() + 1;
+    var dia = fecha.getDate();
+    var ano = fecha.getFullYear();
+    if (dia < 10)
+        dia = '0' + dia; //agrega cero si el menor de 10
+    if (mes < 10)
+        mes = '0' + mes //agrega cero si el menor de 10
+    return ano + "-" + mes + "-" + dia;
+}
+
 function messageAlert(mensaje) {
     boot4.alert({
         msg: mensaje,
@@ -38,15 +50,6 @@ function messageAlert(mensaje) {
 }
 
 
-//funcion valida numeros
-
-// $('.campoNumeroDecimal').keyup(function (){
-//     this.value = (this.value + '').replace(/[^0-9.]/g, '');
-// });
-
-// $('.campoNumeroEntero').keyup(function (){
-//     this.value = (this.value + '').replace(/[^0-9]/g, '');
-// });
 
 
 

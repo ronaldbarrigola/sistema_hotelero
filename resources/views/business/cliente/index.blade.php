@@ -42,10 +42,7 @@
         $(document).ready( function () {
 
             $(document).on("click", "#btnCreateCliente", function(){ //El boton btnCreateCliente se encuentra en actionbar
-                $("#edit").val("");
-                $("#title_modal_view_cliente").text("NUEVO CLIENTE");
-                limpiarDatoCliente();
-                $('#modalViewCliente').modal('show');
+                createCliente();
             });
 
             // ══════════════════════ Cargando columnas para datatables  ══════════════════════
@@ -62,7 +59,7 @@
                             {data:'id',
                                 orderable:false,
                                 render: function(data){
-                                    return '<button id="'+data+ '" class="btn btn-info" onclick="dataEditCliente(this);">Editar</button></a>';
+                                    return '<button id="'+data+ '" class="btn btn-info" onclick="editCliente(this);">Editar</button></a>';
                                 }
                             },
 
