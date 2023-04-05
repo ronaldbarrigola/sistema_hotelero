@@ -97,7 +97,7 @@
                 dataType: 'json',
                 beforeSend: function () {
                     $("#btnGuardarCliente").attr('disabled','disabled');
-                    $("#btnGuardarCliente").text("Procesando");
+                    $("#btnGuardarCliente").val("Procesando");
                 },
                 success: function(result){
 
@@ -113,10 +113,17 @@
 
                     $("#modalViewCliente").modal("hide");
                     $("#btnGuardarCliente").removeAttr('disabled');
-                    $("#btnGuardarCliente").text("Guardar");
-                    datatable_datos.ajax.reload();//recargar registro datatables.
+                    $("#btnGuardarCliente").val("Guardar");
                     $("#doc_id").val("");
                     limpiarDatoCliente();
+
+                    try {
+                        datatable_datos.ajax.reload();//recargar registro datatables.
+                    }
+                    catch(err) {
+                      //Sin acciones
+                      //En caso de que se cree la reserva desde el TimeLines
+                    }
                 },//End success
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
 
@@ -144,43 +151,7 @@
 
                 },
                 success: function(result){
-
-                    $("#tipo_doc_id").find('option').remove();
-                    $.each(result.tipo_docs, function(i, v) {
-                        $("#tipo_doc_id").append('<option  value="' + v.id + '" >' + v.nombre + '</option>');
-                    });
-                    $("#tipo_doc_id").selectpicker('refresh');
-
-                    $("#sexo_id").find('option').remove();
-                    $.each(result.sexos, function(i, v) {
-                        $("#sexo_id").append('<option  value="' + v.id + '" >' + v.nombre + '</option>');
-                    });
-                    $("#sexo_id").selectpicker('refresh');
-
-                    $("#estado_civil_id").find('option').remove();
-                    $.each(result.estados_civiles, function(i, v) {
-                        $("#estado_civil_id").append('<option  value="' + v.id + '" >' + v.nombre + '</option>');
-                    });
-                    $("#estado_civil_id").selectpicker('refresh');
-
-                    $("#pais_id").find('option').remove();
-                    $.each(result.paises, function(i, v) {
-                        $("#pais_id").append('<option  value="' + v.id + '" >' + v.descripcion + '</option>');
-                    });
-                    $("#pais_id").selectpicker('refresh');
-
-                    $("#profesion_id").find('option').remove();
-                    $.each(result.profesiones, function(i, v) {
-                        $("#profesion_id").append('<option  value="' + v.id + '" >' + v.descripcion + '</option>');
-                    });
-                    $("#profesion_id").selectpicker('refresh');
-
-                    $("#empresa_id").find('option').remove();
-                    $.each(result.empresas, function(i, v) {
-                        $("#empresa_id").append('<option  value="' + v.id + '" >' + v.descripcion + '</option>');
-                    });
-                    $("#empresa_id").selectpicker('refresh');
-
+                    loadDataClienteAjax(result);
                     $('#modalViewCliente').modal('show');
                 },//End success
                 complete:function(result, textStatus ){
@@ -191,7 +162,6 @@
 
        function editCliente($boton){
             limpiarDatoCliente();
-
             var persona_id=$boton.id;
             $("#editCliente").val("modificar");
             $("#title_modal_view_cliente").text("MODIFICAR CLIENTE");
@@ -204,42 +174,7 @@
 
                 },
                 success: function(result){
-                    $("#tipo_doc_id").find('option').remove();
-                    $.each(result.tipo_docs, function(i, v) {
-                        $("#tipo_doc_id").append('<option  value="' + v.id + '" >' + v.nombre + '</option>');
-                    });
-                    $("#tipo_doc_id").selectpicker('refresh');
-
-                    $("#sexo_id").find('option').remove();
-                    $.each(result.sexos, function(i, v) {
-                        $("#sexo_id").append('<option  value="' + v.id + '" >' + v.nombre + '</option>');
-                    });
-                    $("#sexo_id").selectpicker('refresh');
-
-                    $("#estado_civil_id").find('option').remove();
-                    $.each(result.estados_civiles, function(i, v) {
-                        $("#estado_civil_id").append('<option  value="' + v.id + '" >' + v.nombre + '</option>');
-                    });
-                    $("#estado_civil_id").selectpicker('refresh');
-
-                    $("#pais_id").find('option').remove();
-                    $.each(result.paises, function(i, v) {
-                        $("#pais_id").append('<option  value="' + v.id + '" >' + v.descripcion + '</option>');
-                    });
-                    $("#pais_id").selectpicker('refresh');
-
-                    $("#profesion_id").find('option').remove();
-                    $.each(result.profesiones, function(i, v) {
-                        $("#profesion_id").append('<option  value="' + v.id + '" >' + v.descripcion + '</option>');
-                    });
-                    $("#profesion_id").selectpicker('refresh');
-
-                    $("#empresa_id").find('option').remove();
-                    $.each(result.empresas, function(i, v) {
-                        $("#empresa_id").append('<option  value="' + v.id + '" >' + v.descripcion + '</option>');
-                    });
-                    $("#empresa_id").selectpicker('refresh');
-
+                    loadDataClienteAjax(result);
                     //Datos persona
                     $('#persona_id').val(result.persona.id);
                     $('#doc_id').val(result.persona.doc_id);
@@ -270,6 +205,7 @@
                     $.each( result.ciudades , function(i, v) {
                         $("#ciudad_id").append('<option  value="' + v.id + '" >' + v.descripcion + '</option>');
                     });
+
                     $("#ciudad_id").selectpicker('refresh');
                     $('#ciudad_id').selectpicker('val', result.cliente.ciudad_id);
                     $("#ciudad_id").selectpicker('refresh');
@@ -280,6 +216,44 @@
 
                 }
             }); //End Ajax
+        }
+
+        function loadDataClienteAjax(result){
+            $("#tipo_doc_id").find('option').remove();
+            $.each(result.tipo_docs, function(i, v) {
+                $("#tipo_doc_id").append('<option  value="' + v.id + '" >' + v.nombre + '</option>');
+            });
+            $("#tipo_doc_id").selectpicker('refresh');
+
+            $("#sexo_id").find('option').remove();
+            $.each(result.sexos, function(i, v) {
+                $("#sexo_id").append('<option  value="' + v.id + '" >' + v.nombre + '</option>');
+            });
+            $("#sexo_id").selectpicker('refresh');
+
+            $("#estado_civil_id").find('option').remove();
+            $.each(result.estados_civiles, function(i, v) {
+                $("#estado_civil_id").append('<option  value="' + v.id + '" >' + v.nombre + '</option>');
+            });
+            $("#estado_civil_id").selectpicker('refresh');
+
+            $("#pais_id").find('option').remove();
+            $.each(result.paises, function(i, v) {
+                $("#pais_id").append('<option  value="' + v.id + '" >' + v.descripcion + '</option>');
+            });
+            $("#pais_id").selectpicker('refresh');
+
+            $("#profesion_id").find('option').remove();
+            $.each(result.profesiones, function(i, v) {
+                $("#profesion_id").append('<option  value="' + v.id + '" >' + v.descripcion + '</option>');
+            });
+            $("#profesion_id").selectpicker('refresh');
+
+            $("#empresa_id").find('option').remove();
+            $.each(result.empresas, function(i, v) {
+                $("#empresa_id").append('<option  value="' + v.id + '" >' + v.descripcion + '</option>');
+            });
+            $("#empresa_id").selectpicker('refresh');
         }
 
         function obtenerCiudades(){

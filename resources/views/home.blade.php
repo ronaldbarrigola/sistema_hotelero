@@ -4,13 +4,19 @@
         {{App\Entidades\Base\Sistema::nombreVersion()}}
     @endsection
 
-
     @section('panelCuerpo')
+        @if (session('status'))
+            <div class="alert alert-success">
+                {{ session('status') }}
+            </div>
+        @endif
+
         <button id="enfo">ir a id</button>
         <div id="visualization"></div>
         <div id="log"></div>
 
         @include('business/reserva/create_edit')
+        @include('business/cliente/create_edit')
     @endsection
 @endsection
 
@@ -34,11 +40,25 @@
         var max = new Date(2023, 5, 31); //
 
         $(document).ready(function(){
-            loadGroups();
+
+            loadGroups(); //Cargar Habitaciones
+            loadItems(); //Cargar reservas realizadas
+            loadOptions();
+            timeline = new vis.Timeline(container, items, groups, options);
+
+            // add event listener
+            timeline.on('select', onSelect);
+
+            //evita mostrar menu contextual del navegador al presionar click derecho.
+            timeline.on('contextmenu', function (props) {
+                alert('mostrar menu contextual');
+                props.event.preventDefault();
+            });
         }); //End ready
 
         function loadGroups(){
             $.ajax({
+                async: false, //Evitar la ejecucion  Asincrona
                 type: "GET",
                 url: "{{route('obtenerHabitaciones')}}",
                 data:{'_token':'{{ csrf_token() }}'},
@@ -56,13 +76,14 @@
 
                 },//End success
                 complete:function(result, textStatus ){
-                    loadItems();
+
                 }
             }); //End Ajax
         }
 
         function loadItems(){
             $.ajax({
+                async: false, //Evitar la ejecucion  Asincrona
                 type: "GET",
                 url: "{{route('obtenerReservas')}}",
                 data:{'_token':'{{ csrf_token() }}'},
@@ -74,24 +95,13 @@
                     if(result.response){
                         $.each(result.reservas,function(i, v) {
                             dataItems.push({id:v.id,title:v.cliente,content:v.paterno,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className: 'bg-info text-white'})
-
-
-                            //dataItems.push({id:v.id,content:v.paterno,start:'2023-03-21T12:00:00', end: '2023-03-22T12:00:00',group:v.habitacion_id,className: 'bg-info text-white'})
                         });
                         items = new vis.DataSet(dataItems);
                     }
 
                 },//End success
                 complete:function(result, textStatus ){
-                    loadOptions();
-                    timeline = new vis.Timeline(container, items, groups, options);
-                    // add event listener
-                    timeline.on('select', onSelect);
-                        //evita mostrar menu contextual del navegador al presionar click derecho.
-                        timeline.on('contextmenu', function (props) {
-                        alert('mostrar menu contextual');
-                        props.event.preventDefault();
-                    });
+
                 }
             }); //End Ajax
         }
@@ -153,11 +163,6 @@
 
                 //---------- EVENTO ADICIONAR ITEM -----------------------
                 onAdd: function (item, callback) {
-                    var fecha_ini=item.start;
-                    var fecha_fin=item.end;
-                    var habitacion_id=item.group;
-
-
                     if (item.end == null) {
                         // solo ingresa aca cuando se a���ade con doble click , por tanto no se tiene fecha final(box) y se debe convertir en rango(range)
                         //pedir cuantas noches se quedara
@@ -168,22 +173,29 @@
                         item.end = new Date(f.getFullYear(), f.getMonth(), f.getDate() + 1, 12, 0, 0);
                     }
 
-                    callback(item); // send back adjusted new item
-                    createFormModalReserva(); //Visualizar formulario modal reserva, se encuentra en reserva/crete_edit
+                    var fecha_ini=item.start;
+                    var fecha_fin=item.end;
+                    var habitacion_id=item.group;
+
+                    createReserva(); //Visualizar formulario modal reserva, se encuentra en reserva/crete_edit
                     setDateReserva(fecha_ini,fecha_fin); //la funcion setDateReserva, se encuentra en reserva/crete_edit
                     selectHabitacion(habitacion_id) //la funcion selectHabitacion se, encuentra en reserva/crete_edit
+                    callback(item); // send back adjusted new item
 
                 },
 
                 //---------- EVENTO MOVER ITEM -----------------------
                 onMove: function (item, callback) {
-                    var title = 'Do you really want to move the item to\n' +
-                    'start: ' + item.start + '\n' +
-                    'end: ' + item.end + '?';
+                    var title = 'Se modificara las fechas y el cargo \n' +
+                    'Fecha Ingreso: ' + formatFecha(item.start) + '\n' +
+                    'Fecha Salida: ' + formatFecha(item.end) + '?';
 
-                    prettyConfirm('Move item', title, function (ok) {
+                    prettyConfirm('Modificar reserva', title, function (ok) {
                     if (ok) {
-                        callback(item); // send back item as confirmation (can be changed)
+                        editReserva(item.id);
+                        var fecha_ini=item.start;
+                        var fecha_fin=item.end;
+                        setDateReserva(fecha_ini,fecha_fin); //la funcion setDateReserva, se encuentra en reserva/crete_edit
                     }
                     else {
                         callback(null); // cancel editing item
@@ -202,22 +214,26 @@
 
                 //---------- EVENTO ACTUALIZANDO ITEM -----------------------
                 onUpdate: function (item, callback) {
-                    prettyPrompt('Update item', 'Edit items text:', item.content, function (value) {
-                    if (value) {
-                        item.content = value;
-                        callback(item); // send back adjusted item
-                    }
-                    else {
-                        callback(null); // cancel updating the item
-                    }
-                    });
+                    // prettyPrompt('Desea modificar la reserva del cliente : ' + item.content, function (value) {
+                    // if (value) {
+                    //     // item.content = value;
+                    //     // callback(item); // send back adjusted item
+                    // }
+                    // else {
+                    //     callback(null); // cancel updating the item
+                    // }
+                    // });
+
+                    editReserva(item.id);
+
                 },
 
                 //---------- EVENTO ELIMINAR ITEM -----------------------
                 onRemove: function (item, callback) {
-                    prettyConfirm('Remove item', 'Do you really want to remove item ' + item.content + '?', function (ok) {
+                    prettyConfirm('Eliminar Reserva', 'Esta seguro de eliminar la reserva ' + item.content + '?', function (ok) {
                     if (ok) {
                         callback(item); // confirm deletion
+                        deleteReserva(item.id)
                     }
                     else {
                         callback(null); // cancel deletion

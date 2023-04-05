@@ -98,14 +98,14 @@
 
                 <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
-                        <label for="fecha_ini"  class="my-0"><strong>Fecha Ingreso:</strong></label>
+                        <label for="fecha_ini"  class="my-0"><strong>Fecha Inicial:</strong></label>
                         <input type="date" id="fecha_ini" name="fecha_ini" required class="form-control">
                     </div>
                 </div>
 
                 <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
-                        <label for="fecha_fin"  class="my-0"><strong>Fecha Salida:</strong></label>
+                        <label for="fecha_fin"  class="my-0"><strong>Fecha Final:</strong></label>
                         <input type="date" id="fecha_fin" name="fecha_fin" required class="form-control">
                     </div>
                 </div>
@@ -121,27 +121,47 @@
             <div class="row">
                 <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
-                        <label for="monto" class="my-0"><strong>Precio por Unidad:</strong></label>
+                        <label for="cantidad" class="my-0"><strong>Cantidad:</strong></label>
+                        <input type="number" name="cantidad" id="cantidad" min="1" required class="form-control" onkeydown="return false;" style="background-color: #f6f6f6;" placeholder="0">
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label for="precio_unidad" class="my-0"><strong>Precio Unidad:</strong></label>
                         <div class="input-group-prepend">
-                            <span class="input-group-text">Bs.</span>
-                            <input type="number" name="monto" id="monto" class="form-control" required placeholder="0">
+                            <span class="input-group-text"><strong>Bs.</strong></span>
+                            <input type="number" name="precio_unidad" id="precio_unidad" min="1" required class="form-control" onkeydown="return false;" style="background-color: #f6f6f6;" placeholder="0">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                    <div class="form-group">
+                        <label for="descuento_porcentaje" class="my-0"><strong>Descuento:</strong></label>
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><strong>%</strong></span>
+                            <input type="number" name="descuento_porcentaje" min="0"  max="100" step="0.1" id="descuento_porcentaje" class="form-control" placeholder="0">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                    <div class="form-group">
+                        <label for="descuento" class="my-0"><strong>Descuento:</strong></label>
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><strong>Bs.</strong></span>
+                            <input type="number" name="descuento"  id="descuento" min="0" step="0.1" class="form-control" placeholder="0">
                         </div>
                     </div>
                 </div>
 
                 <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
-                        <label for="descuento" class="my-0"><strong>Descuento %:</strong></label>
-                        <input type="number" name="descuento" id="descuento" class="form-control" placeholder="0">
-                    </div>
-                </div>
-
-                <div class="col-lg-6 col-md-6 col-sm-6 col-12">
-                    <div class="form-group">
-                        <label for="total" class="my-0"><strong>Total Cargo:</strong></label>
+                        <label for="total_cargo" class="my-0"><strong>Total Cargo:</strong></label>
                         <div class="input-group-prepend">
-                            <span class="input-group-text">Bs.</span>
-                            <input type="number" name="total" id="total" readonly class="form-control" placeholder="0">
+                            <span class="input-group-text"><strong>Bs.</strong></span>
+                            <input type="number" name="total_cargo" id="total_cargo" min="1" required class="readonly form-control" onkeydown="return false;" style="background-color: #f6f6f6;" placeholder="0">
                         </div>
                     </div>
                 </div>
@@ -157,5 +177,10 @@
             </div>
         </div>
     </div>
+
+
+
+
+
 
 

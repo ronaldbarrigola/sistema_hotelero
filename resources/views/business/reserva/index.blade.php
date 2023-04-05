@@ -16,8 +16,8 @@
                         <th>Tipo Habitacion</th>
                         <th>Paquete</th>
                         <th>Servicio</th>
-                        <th>Fecha Ingreso</th>
-                        <th>Fecha Salida</th>
+                        <th>Fecha Inicial</th>
+                        <th>Fecha Final</th>
                         <th>Num Adulto</th>
                         <th>Num Niño</th>
                         <th>Pais Procedencia</th>
@@ -42,6 +42,7 @@
 
 @push('scripts')
     <script>
+
         $(document).ready( function () {
 
             $(document).on("click", "#btnCreateReserva", function(){ //El boton btnCreateCliente se encuentra en actionbar
@@ -68,7 +69,7 @@
                             {data:'id',
                                 orderable:false,
                                 render: function(data){
-                                    return '<button id="'+data+ '" class="btn btn-info" onclick="editReserva(this);">Editar</button></a>';
+                                    return '<button id="'+data+ '" class="btn btn-info" onclick="editReserva(id);">Editar</button></a>';
                                 }
                             },
 

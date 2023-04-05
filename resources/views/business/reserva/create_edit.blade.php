@@ -24,7 +24,7 @@
                     <div class="row">
                         <div class="col-md-4 offset-md-4 d-flex justify-content-between">
                             <button class="btn btn-success" id="btnGuardarReserva" type="submit">Guardar</button>
-                            <button type="button" class="btn btn-primary" data-dismiss="modal">Cancelar</button>
+                            <button type="button" id="btnGuardarReservaCancel" class="btn btn-primary" data-dismiss="modal">Cancelar</button>
                         </div>
                     </div>
 
@@ -45,7 +45,7 @@
         $(document).ready(function() {
 
           $(document).on("change", "#procedencia_pais_id", function(){
-            obtenerProcedenciaCiudades();
+              obtenerProcedenciaCiudades();
           });
 
           $(document).on("click", "#btnModalCreateCliente", function(){ //El boton btnCreateCliente se encuentra en actionbar
@@ -53,29 +53,48 @@
           });
 
           $(document).on("change", "#habitacion_id", function(){
-
+               calcularCargo();
           });
 
           $('#modalViewReserva').on('shown.bs.modal', function() {//Para enfocar input de un formulario modal
               $("#cliente_id").focus();
           })
 
+          $(document).on("change", "#fecha_ini", function(){
+              calcularCargo()
+          });
+
+          $(document).on("change", "#fecha_fin", function(){
+             calcularCargo()
+          });
+
+          $(document).on("keyup", "#descuento_porcentaje", function(){
+             descuentoPorcentaje();
+          });
+
+          $(document).on("keyup", "#descuento", function(){
+             descuento();
+          });
+
         }); //Fin ready
 
         function submitFormReserva(event) {
             guardarReserva();
+            datatable_datos.ajax.reload();//recargar registro datatables.
             event.preventDefault(); //cancela el evento
             return false; //Cancela el envio submit para procesar por ajax
         }
 
         function setDateReserva(fecha_ini,fecha_fin){
-              $("#fecha_ini").val(formatFecha(fecha_ini));
-              $("#fecha_fin").val(formatFecha(fecha_fin));
+            $("#fecha_ini").val(formatFecha(fecha_ini));
+            $("#fecha_fin").val(formatFecha(fecha_fin));
+            calcularCargo()
         }
 
         function selectHabitacion(habitacion_id){
             $("#habitacion_id").selectpicker('val',habitacion_id);
             $("#habitacion_id").selectpicker('refresh');
+            calcularCargo()
         }
 
         function guardarReserva(){
@@ -88,6 +107,7 @@
             }
 
             $.ajax({
+                async: false, //Evitar la ejecucion  Asincrona
                 type: "POST",
                 processData: false, //importante para enviar imagen
                 contentType: false, //importante para enviar imagen
@@ -97,14 +117,20 @@
                 dataType: 'json',
                 beforeSend: function () {
                     $("#btnGuardarReserva").attr('disabled','disabled');
-                    $("#btnGuardarReserva").text("Procesando");
+                    $("#btnGuardarReserva").val("Procesando");  //En un input tipo submit el texto se cambia en val() antes $("#btnGuardarReserva").text("Procesando");
                 },
                 success: function(result){
                     $("#modalViewReserva").modal("hide");
                     $("#btnGuardarReserva").removeAttr('disabled');
-                    $("#btnGuardarReserva").text("Guardar");
-                    datatable_datos.ajax.reload();//recargar registro datatables.
+                    $("#btnGuardarReserva").val("Guardar");
                     limpiarDatoReserva();
+
+                    try {
+                        datatable_datos.ajax.reload();//recargar registro datatables.
+                    }
+                    catch(err) {
+                      //En caso de que se cree la reserva desde el TimeLines
+                    }
                 },//End success
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
 
@@ -121,6 +147,7 @@
             $("#title_modal_view_reserva").text("NUEVA RESERVA");
             limpiarDatoReserva();
             $.ajax({
+                async: false, //Evitar la ejecucion  Asincrona
                 type: "GET",
                 url: "{{route('createreserva')}}",
                 data:{'_token': '{{ csrf_token() }}'},
@@ -129,49 +156,7 @@
 
                 },
                 success: function(result){
-
-                    $("#cliente_id").find('option').remove();
-                    $("#cliente_id").append('<option  value="">--Seleccione--</option>');
-                    $.each(result.clientes, function(i, v) {
-                        $("#cliente_id").append('<option  value="' + v.id + '" >' + v.cliente + " | " + v.doc_id + '</option>');
-                    });
-                    $("#cliente_id").selectpicker('refresh');
-
-                    $("#habitacion_id").find('option').remove();
-                    $("#habitacion_id").append('<option  value="">--Seleccione--</option>');
-                    $.each(result.habitaciones, function(i, v) {
-                        $("#habitacion_id").append('<option  value="' + v.id + '" >' + v.num_habitacion + " " + v.tipo_habitacion + '</option>');
-                    });
-                    $("#habitacion_id").selectpicker('refresh');
-
-                    $("#paquete_id").find('option').remove();
-                    $("#paquete_id").append('<option  value="">--Seleccione--</option>');
-                    $.each(result.paquetes, function(i, v) {
-                        $("#paquete_id").append('<option  value="' + v.id + '" >' + v.descripcion + '</option>');
-                    });
-                    $("#paquete_id").selectpicker('refresh');
-
-                    $("#procedencia_pais_id").find('option').remove();
-                    $("#procedencia_pais_id").append('<option  value="">--Seleccione--</option>');
-                    $.each(result.paises, function(i, v) {
-                        $("#procedencia_pais_id").append('<option  value="' + v.id + '" >' + v.descripcion + '</option>');
-                    });
-                    $("#procedencia_pais_id").selectpicker('refresh');
-
-                    $("#servicio_id").find('option').remove();
-                    $("#servicio_id").append('<option  value="">--Seleccione--</option>');
-                    $.each(result.servicios, function(i, v) {
-                        $("#servicio_id").append('<option  value="' + v.id + '" >' + v.servicio + '</option>');
-                    });
-                    $("#servicio_id").selectpicker('refresh');
-
-                    $("#motivo_id").find('option').remove();
-                    $("#motivo_id").append('<option  value="">--Seleccione--</option>');
-                    $.each(result.motivos, function(i, v) {
-                        $("#motivo_id").append('<option  value="' + v.id + '" >' + v.descripcion + '</option>');
-                    });
-                    $("#motivo_id").selectpicker('refresh');
-
+                    loadDataReservaAjax(result)
                     $("#modalViewReserva").modal("show");
                 },//End success
                 complete:function(result, textStatus ){
@@ -181,12 +166,13 @@
 
         }
 
-       function editReserva($boton){
+        function editReserva($id){
             limpiarDatoReserva();
-            var reserva_id=$boton.id;
+            var reserva_id=$id;
             $("#editReserva").val("modificar");
             $("#title_modal_view_reserva").text("MODIFICAR RESERVA");
             $.ajax({
+                async: false, //Evitar la ejecucion  Asincrona
                 type: "GET",
                 url: "{{route('editreserva')}}",
                 data:{reserva_id:reserva_id,'_token': '{{ csrf_token() }}'},
@@ -196,48 +182,7 @@
                 },
                 success: function(result){
 
-                    $("#cliente_id").find('option').remove();
-                    $("#cliente_id").append('<option  value=""></option>');
-                    $.each(result.clientes, function(i, v) {
-                        $("#cliente_id").append('<option  value="' + v.id + '" >' + v.cliente + " | " + v.doc_id + '</option>');
-                    });
-                    $("#cliente_id").selectpicker('refresh');
-
-                    $("#habitacion_id").find('option').remove();
-                    $("#habitacion_id").append('<option  value=""></option>');
-                    $.each(result.habitaciones, function(i, v) {
-                        $("#habitacion_id").append('<option  value="' + v.id + '" >' + v.num_habitacion + " " + v.tipo_habitacion + '</option>');
-                    });
-                    $("#habitacion_id").selectpicker('refresh');
-
-                    $("#paquete_id").find('option').remove();
-                    $("#paquete_id").append('<option  value=""></option>');
-                    $.each(result.paquetes, function(i, v) {
-                        $("#paquete_id").append('<option  value="' + v.id + '" >' + v.descripcion + '</option>');
-                    });
-                    $("#paquete_id").selectpicker('refresh');
-
-                    $("#procedencia_pais_id").find('option').remove();
-                    $("#procedencia_pais_id").append('<option  value=""></option>');
-                    $.each(result.paises, function(i, v) {
-                        $("#procedencia_pais_id").append('<option  value="' + v.id + '" >' + v.descripcion + '</option>');
-                    });
-                    $("#procedencia_pais_id").selectpicker('refresh');
-
-                    $("#servicio_id").find('option').remove();
-                    $("#servicio_id").append('<option  value=""></option>');
-                    $.each(result.servicios, function(i, v) {
-                        $("#servicio_id").append('<option  value="' + v.id + '" >' + v.servicio + '</option>');
-                    });
-                    $("#servicio_id").selectpicker('refresh');
-
-                    $("#motivo_id").find('option').remove();
-                    $("#motivo_id").append('<option  value=""></option>');
-                    $.each(result.motivos, function(i, v) {
-                        $("#motivo_id").append('<option  value="' + v.id + '" >' + v.descripcion + '</option>');
-                    });
-                    $("#motivo_id").selectpicker('refresh');
-
+                    loadDataReservaAjax(result)
 
                     $("#reserva_id").val(result.reserva.id);
                     $("#cliente_id").selectpicker('val', result.reserva.cliente_id);
@@ -269,11 +214,79 @@
                     $("#modalViewReserva").modal("show");
                 },//End success
                 complete:function(result, textStatus ){
-
+                    calcularCargo(); // Despues quitar esta llama por que debe cargar desde base de
                 }
             }); //End Ajax
 
         }
+
+        function deleteReserva($id){
+                url=URL_BASE + "/business/reserva";
+                url_delete= url + "/" + $id;
+
+                $.ajax({
+                    type: "POST",
+                    url: url_delete,
+                    data:{'_method':'DELETE','_token': '{{ csrf_token() }}'},
+                    dataType: 'json',
+                    success: function(result){
+                        try {
+                            datatable_datos.ajax.reload();//recargar registro datatables.
+                        }
+                        catch(err) {
+                        //En caso de que se cree la reserva desde el TimeLines
+                        }
+                    },
+                    error:function(resultado){
+
+                    }
+                });
+        }
+
+        function loadDataReservaAjax(result){
+            $("#cliente_id").find('option').remove();
+            $("#cliente_id").append('<option  value="">--Seleccione--</option>');
+            $.each(result.clientes, function(i, v) {
+                $("#cliente_id").append('<option  value="' + v.id + '" >' + v.cliente + " | " + v.doc_id + '</option>');
+            });
+            $("#cliente_id").selectpicker('refresh');
+
+            $("#habitacion_id").find('option').remove();
+            $("#habitacion_id").append('<option  value="">--Seleccione--</option>');
+            $.each(result.habitaciones, function(i, v) {
+                $("#habitacion_id").append('<option data-precio="'+ v.precio +'"  value="' + v.id + '" >' + v.num_habitacion + " " + v.tipo_habitacion + '</option>');
+            });
+            $("#habitacion_id").selectpicker('refresh');
+
+            $("#paquete_id").find('option').remove();
+            $("#paquete_id").append('<option  value="">--Seleccione--</option>');
+            $.each(result.paquetes, function(i, v) {
+                $("#paquete_id").append('<option  value="' + v.id + '" >' + v.descripcion + '</option>');
+            });
+            $("#paquete_id").selectpicker('refresh');
+
+            $("#procedencia_pais_id").find('option').remove();
+            $("#procedencia_pais_id").append('<option  value="">--Seleccione--</option>');
+            $.each(result.paises, function(i, v) {
+                $("#procedencia_pais_id").append('<option  value="' + v.id + '" >' + v.descripcion + '</option>');
+            });
+            $("#procedencia_pais_id").selectpicker('refresh');
+
+            $("#servicio_id").find('option').remove();
+            $("#servicio_id").append('<option  value="">--Seleccione--</option>');
+            $.each(result.servicios, function(i, v) {
+                $("#servicio_id").append('<option  value="' + v.id + '" >' + v.servicio + '</option>');
+            });
+            $("#servicio_id").selectpicker('refresh');
+
+            $("#motivo_id").find('option').remove();
+            $("#motivo_id").append('<option  value="">--Seleccione--</option>');
+            $.each(result.motivos, function(i, v) {
+                $("#motivo_id").append('<option  value="' + v.id + '" >' + v.descripcion + '</option>');
+            });
+            $("#motivo_id").selectpicker('refresh');
+
+       }
 
         function obtenerProcedenciaCiudades(){
             var pais_id= $("#procedencia_pais_id").val();
@@ -292,6 +305,96 @@
                 }
             });
         }
+
+
+        function cantidadReserva(){
+            var fecha_ini=$("#fecha_ini").val();
+            var fecha_fin=$("#fecha_fin").val();
+            var timeStart = new Date(fecha_ini);
+            var timeEnd = new Date(fecha_fin);
+            var dias=0;
+            if (timeEnd >= timeStart)
+            {
+                var diff = timeEnd.getTime() - timeStart.getTime();
+                dias= Math.round(diff / (1000 * 60 * 60 * 24));
+                dias=(dias!=0)?dias:1; //Validar cuando sean la misma fecha
+            }
+            else if (timeEnd != null && timeEnd < timeStart) {
+                messageAlert("La fecha de salida debe ser mayor a la fecha de ingreso");
+            }
+            $("#cantidad").val(dias);
+        }
+
+        function precioUnidadReserva(){
+            var precio=$('#habitacion_id option:selected').data("precio")
+            var precio_unidad=(precio!=null&&precio!=""&&precio>0)?precio:0;
+            $("#precio_unidad").val(precio_unidad);
+        }
+
+
+        function descuentoPorcentaje(){
+            var cantidad=$("#cantidad").val();
+            var precio_unidad=$("#precio_unidad").val();
+            var total_cargo=0;
+            var porcentaje=$("#descuento_porcentaje").val();
+            var descuento=0;
+
+            cantidad=(cantidad!=null&&cantidad!=""&&cantidad>0)?cantidad:0;
+            precio_unidad=(precio_unidad!=null&&precio_unidad!=""&&precio_unidad>0)?precio_unidad:0;
+            total_cargo=cantidad*precio_unidad;
+            porcentaje=(porcentaje!=null&&porcentaje!=""&&porcentaje>0)?porcentaje:0;
+            if(porcentaje>0&&porcentaje<=100){
+                descuento=Math.round(parseFloat((total_cargo*porcentaje)/100));
+            } else if(porcentaje>100) {
+                $("#descuento_porcentaje").val(100);
+                descuento=total_cargo;
+            } else {
+                $("#descuento_porcentaje").val("");
+            }
+            $("#descuento").val(descuento);
+            calcularCargo();
+
+        }
+
+        function descuento(){
+            var cantidad=$("#cantidad").val();
+            var precio_unidad=$("#precio_unidad").val();
+            var total_cargo=0;
+            var descuento=$("#descuento").val();
+            var porcentaje=0;
+
+            cantidad=(cantidad!=null&&cantidad!=""&&cantidad>0)?cantidad:0;
+            precio_unidad=(precio_unidad!=null&&precio_unidad!=""&&precio_unidad>0)?precio_unidad:0;
+            total_cargo=cantidad*precio_unidad;
+            descuento=(descuento!=null&&descuento!=""&&descuento>0)?descuento:0;
+            if(descuento>0&&descuento<=total_cargo){
+                porcentaje=Math.round(parseFloat((descuento/total_cargo)*100));
+            } else if(descuento>total_cargo) {
+                $("#descuento").val(total_cargo);
+                porcentaje=100;
+            } else {
+                $("#descuento").val("");
+            }
+            $("#descuento_porcentaje").val(porcentaje);
+            calcularCargo();
+        }
+
+        function calcularCargo(){
+             cantidadReserva()
+             precioUnidadReserva();
+             var cargo=0;
+             var cantidad=$("#cantidad").val();
+             var precio_unidad=$("#precio_unidad").val();
+             var descuento=$("#descuento").val();
+             //validacion de datos
+             cantidad=(cantidad!=null&&cantidad!=""&&cantidad>0)?cantidad:0;
+             precio_unidad=(precio_unidad!=null&&precio_unidad!=""&&precio_unidad>0)?precio_unidad:0;
+             descuento=(descuento!=null&&descuento!=""&&descuento>0)?descuento:0;
+             cargo= cantidad*precio_unidad-descuento;
+             $("#total_cargo").val(cargo.toFixed(2));
+        }
+
+
 
         function limpiarDatoReserva(){
             $('#reserva_id').val("");
