@@ -79,7 +79,7 @@
         }); //Fin ready
 
         function submitFormReserva(event) {
-            guardarReserva();
+            storeReserva();
             datatable_datos.ajax.reload();//recargar registro datatables.
             event.preventDefault(); //cancela el evento
             return false; //Cancela el envio submit para procesar por ajax
@@ -96,51 +96,6 @@
             $("#habitacion_id").selectpicker('refresh');
             calcularCargo()
         }
-
-        function guardarReserva(){
-            var formdata = new FormData($("#frmReserva")[0]); //Serializa con imagenes multimedia
-            url=URL_BASE + "/business/reserva";
-
-            if($("#editReserva").val()=="modificar"){
-                url= url + "/" + $("#reserva_id").val();
-                formdata.append('_method','patch');
-            }
-
-            $.ajax({
-                async: false, //Evitar la ejecucion  Asincrona
-                type: "POST",
-                processData: false, //importante para enviar imagen
-                contentType: false, //importante para enviar imagen
-                enctype: 'multipart/form-data', //importante para enviar imagen
-                url:url,
-                data:formdata,
-                dataType: 'json',
-                beforeSend: function () {
-                    $("#btnGuardarReserva").attr('disabled','disabled');
-                    $("#btnGuardarReserva").val("Procesando");  //En un input tipo submit el texto se cambia en val() antes $("#btnGuardarReserva").text("Procesando");
-                },
-                success: function(result){
-                    $("#modalViewReserva").modal("hide");
-                    $("#btnGuardarReserva").removeAttr('disabled');
-                    $("#btnGuardarReserva").val("Guardar");
-                    limpiarDatoReserva();
-
-                    try {
-                        datatable_datos.ajax.reload();//recargar registro datatables.
-                    }
-                    catch(err) {
-                      //En caso de que se cree la reserva desde el TimeLines
-                    }
-                },//End success
-                error: function(XMLHttpRequest, textStatus, errorThrown) {
-
-                }, //END error
-                complete:function(result, textStatus ){
-
-                }//END complete
-
-            }); //End Ajax
-       }
 
        function createReserva(){
             $("#editReserva").val("");
@@ -172,7 +127,6 @@
             $("#editReserva").val("modificar");
             $("#title_modal_view_reserva").text("MODIFICAR RESERVA");
             $.ajax({
-                async: false, //Evitar la ejecucion  Asincrona
                 type: "GET",
                 url: "{{route('editreserva')}}",
                 data:{reserva_id:reserva_id,'_token': '{{ csrf_token() }}'},
@@ -201,6 +155,11 @@
                     $("#procedencia_pais_id").selectpicker('refresh');
                     $("#fecha_ini").val(formatFecha(result.reserva.fecha_ini));
                     $("#fecha_fin").val(formatFecha(result.reserva.fecha_fin));
+                    $("#cantidad").val(result.transaccion.cantidad);
+                    $("#precio_unidad").val(result.transaccion.precio_unidad);
+                    $("#descuento_porcentaje").val(result.transaccion.descuento_porcentaje);
+                    $("#descuento").val(result.transaccion.descuento);
+                    $("#monto").val(result.transaccion.monto);
                     $("#detalle").val(result.reserva.detalle);
 
                     $("#procedencia_ciudad_id").find('option').remove();
@@ -214,13 +173,56 @@
                     $("#modalViewReserva").modal("show");
                 },//End success
                 complete:function(result, textStatus ){
-                    calcularCargo(); // Despues quitar esta llama por que debe cargar desde base de
+
                 }
             }); //End Ajax
 
         }
 
-        function deleteReserva($id){
+        function storeReserva(){
+            var formdata = new FormData($("#frmReserva")[0]); //Serializa con imagenes multimedia
+            url=URL_BASE + "/business/reserva";
+
+            if($("#editReserva").val()=="modificar"){
+                url= url + "/" + $("#reserva_id").val();
+                formdata.append('_method','patch');
+            }
+
+            $.ajax({
+                type: "POST",
+                processData: false, //importante para enviar imagen
+                contentType: false, //importante para enviar imagen
+                enctype: 'multipart/form-data', //importante para enviar imagen
+                url:url,
+                data:formdata,
+                dataType: 'json',
+                beforeSend: function () {
+                    $("#btnGuardarReserva").attr('disabled','disabled');
+                    $("#btnGuardarReserva").html("Procesando");  //En un input tipo submit el texto se cambia en val() antes $("#btnGuardarReserva").text("Procesando");
+                },
+                success: function(result){
+                    limpiarDatoReserva();
+
+                    try {
+                        datatable_datos.ajax.reload();//recargar registro datatables.
+                    }
+                    catch(err) {
+                      //En caso de que se cree la reserva desde el TimeLines
+                    }
+                },//End success
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+
+                }, //END error
+                complete:function(result, textStatus ){
+                    $("#btnGuardarReserva").removeAttr('disabled');
+                    $("#btnGuardarReserva").html("Guardar");
+                    $("#modalViewReserva").modal("hide");
+                }//END complete
+
+            }); //End Ajax
+       }
+
+       function deleteReserva($id){
                 url=URL_BASE + "/business/reserva";
                 url_delete= url + "/" + $id;
 
@@ -391,10 +393,8 @@
              precio_unidad=(precio_unidad!=null&&precio_unidad!=""&&precio_unidad>0)?precio_unidad:0;
              descuento=(descuento!=null&&descuento!=""&&descuento>0)?descuento:0;
              cargo= cantidad*precio_unidad-descuento;
-             $("#total_cargo").val(cargo.toFixed(2));
+             $("#monto").val(cargo.toFixed(2));
         }
-
-
 
         function limpiarDatoReserva(){
             $('#reserva_id').val("");
@@ -416,6 +416,11 @@
             $("#procedencia_ciudad_id").selectpicker('refresh');
             $('#fecha_ini').val("");
             $('#fecha_fin').val("");
+            $('#cantidad').val("");
+            $('#precio_unidad').val("");
+            $('#descuento_porcentaje').val("");
+            $('#descuento').val("");
+            $('#monto').val("");
             $('#detalle').val("");
         }
 

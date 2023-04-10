@@ -4,10 +4,21 @@ namespace App\Repositories\Business;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Entidades\Business\Reserva;
+use App\Repositories\Business\TransaccionRepository;
+use App\Repositories\Business\CargoRepository;
 use Carbon\Carbon;
 use DB;
 
 class ReservaRepository{
+
+    protected $transaccionRep;
+    protected $cargoRep;
+
+    //===constructor=============================================================================================
+    public function __construct(TransaccionRepository $transaccionRep,CargoRepository $cargoRep){
+        $this->transaccionRep=$transaccionRep;
+        $this->cargoRep=$cargoRep;
+    }
 
     public function obtenerReservas(){
         $reservas= DB::table('res_reserva as r')
@@ -76,64 +87,100 @@ class ReservaRepository{
     }
 
     public function insertarDesdeRequest(Request $request){
+        $reserva=null;
+        try{
+            DB::beginTransaction();
 
-        $fecha_ini=$request->get('fecha_ini');
-        $fecha_fin=$request->get('fecha_fin');
+            $fecha_ini=$request->get('fecha_ini');
+            $fecha_fin=$request->get('fecha_fin');
 
-        $starDate = Carbon::parse($fecha_ini);
-        $endDate = Carbon::parse($fecha_fin);
+            $starDate = Carbon::parse($fecha_ini);
+            $endDate = Carbon::parse($fecha_fin);
 
-        $diferencia_en_dias=$starDate->diffInDays($endDate);
+            $diferencia_en_dias=$starDate->diffInDays($endDate);
 
-        if($diferencia_en_dias==0){
-            $fecha_ini=$fecha_ini."T03:00:00"; //03:00 am
-            $fecha_fin=$fecha_fin."T21:00:00"; //21:00 pm
-        } else {
-            $fecha_ini=$fecha_ini."T12:00:00";
-            $fecha_fin=$fecha_fin."T12:00:00";
+            if($diferencia_en_dias==0){
+                $fecha_ini=$fecha_ini."T03:00:00"; //03:00 am
+                $fecha_fin=$fecha_fin."T21:00:00"; //21:00 pm
+            } else {
+                $fecha_ini=$fecha_ini."T12:00:00";
+                $fecha_fin=$fecha_fin."T12:00:00";
+            }
+
+
+            $reserva=new Reserva($request->all());
+            $reserva->fecha_ini=$fecha_ini;
+            $reserva->fecha_fin=$fecha_fin;
+            $reserva->usuario_alta_id=Auth::user()->id;
+            $reserva->usuario_modif_id=Auth::user()->id;
+            $reserva->estado_reserva_id=0; //0: Reserva 1:Check In 2: Stand By 3: Check Out
+            $reserva->fecha=Carbon::now('America/La_Paz')->toDateTimeString();
+            $reserva->fecha_creacion=Carbon::now('America/La_Paz')->toDateTimeString();
+            $reserva->fecha_modificacion=Carbon::now('America/La_Paz')->toDateTimeString();
+            $reserva->estado=1;
+            $reserva->save();
+
+            //Patos para realizar la transaccion
+            $request->request->add(['tipo_transaccion_id'=>"C"]); //Cargo
+            $request->request->add(['reserva_id'=>$reserva->id]);
+            $request->request->add(['venta_id'=>0]);
+            $request->request->add(['hotel_producto_id'=>$reserva->servicio_id]);
+            $transaccion=$this->transaccionRep->insertarDesdeRequest($request);
+
+            //Para vincular los datos de cantidad, precio_unidad_descuento y monto con la tabla res_reserva
+            $this->cargoRep->insertar($reserva->id,$transaccion->id);
+
+
+            DB::commit();
+        }catch(\Exception $e){
+            DB::rollback();
         }
-
-        $reserva=new Reserva($request->all());
-        $reserva->fecha_ini=$fecha_ini;
-        $reserva->fecha_fin=$fecha_fin;
-        $reserva->usuario_alta_id=Auth::user()->id;
-        $reserva->usuario_modif_id=Auth::user()->id;
-        $reserva->estado_reserva_id=0; //0: Reserva 1:Check In 2: Stand By 3: Check Out
-        $reserva->fecha=Carbon::now('America/La_Paz')->toDateTimeString();
-        $reserva->fecha_creacion=Carbon::now('America/La_Paz')->toDateTimeString();
-        $reserva->fecha_modificacion=Carbon::now('America/La_Paz')->toDateTimeString();
-        $reserva->estado=1;
-        $reserva->save();
 
         return $reserva;
     }
 
     public function modificarDesdeRequest(Request $request){
+        $reserva=null;
+        try{
+            DB::beginTransaction();
 
-        $fecha_ini=$request->get('fecha_ini');
-        $fecha_fin=$request->get('fecha_fin');
+            $fecha_ini=$request->get('fecha_ini');
+            $fecha_fin=$request->get('fecha_fin');
 
-        $starDate = Carbon::parse($fecha_ini);
-        $endDate = Carbon::parse($fecha_fin);
+            $starDate = Carbon::parse($fecha_ini);
+            $endDate = Carbon::parse($fecha_fin);
 
-        $diferencia_en_dias=$starDate->diffInDays($endDate);
+            $diferencia_en_dias=$starDate->diffInDays($endDate);
 
-        if($diferencia_en_dias==0){
-            $fecha_ini=$fecha_ini."T03:00:00"; //03:00 am
-            $fecha_fin=$fecha_fin."T21:00:00"; //21:00 pm
-        } else {
-            $fecha_ini=$fecha_ini."T12:00:00";
-            $fecha_fin=$fecha_fin."T12:00:00";
-        }
+            if($diferencia_en_dias==0){
+                $fecha_ini=$fecha_ini."T03:00:00"; //03:00 am
+                $fecha_fin=$fecha_fin."T21:00:00"; //21:00 pm
+            } else {
+                $fecha_ini=$fecha_ini."T12:00:00";
+                $fecha_fin=$fecha_fin."T12:00:00";
+            }
 
-        $reserva=$this->obtenerReservaPorId($request->get('id'));
-        if ($reserva!=null){
-            $reserva->fill($request->all());
-            $reserva->fecha_ini=$fecha_ini;
-            $reserva->fecha_fin=$fecha_fin;
-            $reserva->usuario_modif_id=Auth::user()->id;
-            $reserva->fecha_modificacion=Carbon::now('America/La_Paz')->toDateTimeString();
-            $reserva->update();
+            $reserva=$this->obtenerReservaPorId($request->get('id'));
+            if ($reserva!=null){
+                $reserva->fill($request->all());
+                $reserva->fecha_ini=$fecha_ini;
+                $reserva->fecha_fin=$fecha_fin;
+                $reserva->usuario_modif_id=Auth::user()->id;
+                $reserva->fecha_modificacion=Carbon::now('America/La_Paz')->toDateTimeString();
+                $reserva->update();
+            }
+
+            $cargo=$this->cargoRep->obtenerCargoPorId($reserva->id);
+            if ($cargo!=null){
+                //Patos para realizar la transaccion
+                $request->request->add(['transaccion_id'=>$cargo->transaccion_id]); //Cargo
+                $request->request->add(['hotel_producto_id'=>$reserva->servicio_id]);
+                $this->transaccionRep->modificarDesdeRequest($request);
+            }
+
+            DB::commit();
+        }catch(\Exception $e){
+            DB::rollback();
         }
 
         return  $reserva;

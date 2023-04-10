@@ -26,6 +26,8 @@ class Reserva extends Model
         'usuario_modif_id',
         'fecha_ini',
         'fecha_fin',
+        'hora_ini',
+        'hora_fin',
         'detalle',
         'num_adulto',
         'num_nino',
