@@ -8,8 +8,15 @@ class Servicio extends Model
     protected $primaryKey="id";
     public $timestamps=false;
 
-    protected $fillable=['estado',
+    protected $fillable=['descripcion',
+                         'estado',
                          'fecha_creacion',
                          'fecha_modificacion'
                         ];
+
+    //Relacion 1 a uno
+    public function reservas()
+    {
+        return $this->hasMany(Reserva::class,'servicio_id','id');
+    }
 }

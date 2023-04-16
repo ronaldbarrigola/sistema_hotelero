@@ -14,10 +14,8 @@ class Transaccion extends Model
         'fecha',
         'hotel_producto_id',
         'venta_id',
-        'reserva_id',
+        'cargo_id',
         'detalle',
-        'tipo_transaccion_id',
-        'factor',
         'cantidad',
         'precio_unidad',
         'descuento_porcentaje',
@@ -25,6 +23,7 @@ class Transaccion extends Model
         'monto',
         'usuario_alta_id',
         'usuario_modif_id',
+        'estado',
         'fecha_creacion',
         'fecha_modificacion'
     ];

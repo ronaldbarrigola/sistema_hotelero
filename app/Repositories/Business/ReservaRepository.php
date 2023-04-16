@@ -4,20 +4,20 @@ namespace App\Repositories\Business;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Entidades\Business\Reserva;
-use App\Repositories\Business\TransaccionRepository;
 use App\Repositories\Business\CargoRepository;
+use App\Repositories\Business\HotelProductoRepository;
 use Carbon\Carbon;
 use DB;
 
 class ReservaRepository{
 
-    protected $transaccionRep;
     protected $cargoRep;
+    protected $hotelProductoRep;
 
     //===constructor=============================================================================================
-    public function __construct(TransaccionRepository $transaccionRep,CargoRepository $cargoRep){
-        $this->transaccionRep=$transaccionRep;
+    public function __construct(CargoRepository $cargoRep,HotelProductoRepository $hotelProductoRep){
         $this->cargoRep=$cargoRep;
+        $this->hotelProductoRep=$hotelProductoRep;
     }
 
     public function obtenerReservas(){
@@ -31,7 +31,7 @@ class ReservaRepository{
         ->leftjoin('res_paquete as q','q.id','=','r.paquete_id')
         ->leftjoin('cli_pais as cp','cp.id','=','r.procedencia_pais_id')
         ->leftjoin('cli_ciudad as cc','cc.id','=','r.procedencia_ciudad_id')
-        ->select('r.id',DB::raw('DATE_FORMAT(r.fecha,"%d/%m/%Y %H:%i:%s") as fecha'),DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) AS cliente'),'h.num_habitacion','th.descripcion as tipo_habitacion','q.descripcion as paquete','prod.descripcion as servicio',DB::raw('DATE_FORMAT(r.fecha_ini,"%d/%m/%Y") as fecha_ini'),DB::raw('DATE_FORMAT(r.fecha_fin,"%d/%m/%Y") as fecha_fin'),'r.num_adulto','r.num_nino','cp.descripcion as pais','cc.descripcion as ciudad','r.detalle','er.descripcion as estado_reserva')
+        ->select('r.id',DB::raw('DATE_FORMAT(r.fecha,"%d/%m/%Y %H:%i:%s") as fecha'),DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) AS cliente'),'h.num_habitacion','th.descripcion as tipo_habitacion','q.descripcion as paquete','prod.descripcion as servicio',DB::raw('DATE_FORMAT(r.fecha_ini,"%d/%m/%Y") as fecha_ini'),DB::raw('DATE_FORMAT(r.fecha_fin,"%d/%m/%Y") as fecha_fin'),'r.num_adulto','r.num_nino','cp.descripcion as pais','cc.descripcion as ciudad','r.detalle','er.descripcion as estado_reserva','r.servicio_id')
         ->where('h.agencia_id','=',Auth::user()->agencia_id)
         ->where('r.estado','=','1')
         ->where('p.estado','=','1')
@@ -71,7 +71,7 @@ class ReservaRepository{
         ->join('bas_persona as p','p.id','=','r.cliente_id')
         ->join('gob_habitacion as h','h.id','=','r.habitacion_id')
         ->join('res_estado_reserva as er','er.id','=','r.estado_reserva_id')
-        ->select('r.id',DB::raw('DATE_FORMAT(r.fecha,"%d/%m/%Y") as fecha'),'p.paterno',DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) AS cliente'),'r.habitacion_id','h.num_habitacion',DB::raw('DATE_FORMAT(r.fecha_ini,"%Y-%m-%d %H:%i:%s") as fecha_ini'),DB::raw('DATE_FORMAT(r.fecha_fin,"%Y-%m-%d %H:%i:%s") as fecha_fin'),'er.descripcion as estado_reserva','er.color')
+        ->select('r.id',DB::raw('DATE_FORMAT(r.fecha,"%d/%m/%Y") as fecha'),'p.paterno',DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) AS cliente'),'r.habitacion_id','h.num_habitacion',DB::raw('DATE_FORMAT(r.fecha_ini,"%Y-%m-%d %H:%i:%s") as fecha_ini'),DB::raw('DATE_FORMAT(r.fecha_fin,"%Y-%m-%d %H:%i:%s") as fecha_fin'),'er.descripcion as estado_reserva','er.color','r.servicio_id')
         ->whereDate('r.fecha_ini','>=',$fecha_filtro)
         ->where('r.estado','=','1')
         ->where('p.estado','=','1')
@@ -107,8 +107,19 @@ class ReservaRepository{
                 $fecha_fin=$fecha_fin."T12:00:00";
             }
 
+            //Validaciones
+            $cantidad=($request['cantidad']!=null)?$request['cantidad']:0;
+            $precio_unidad=($request['precio_unidad']!=null)?$request['precio_unidad']:0;
+            $descuento_porcentaje=($request['descuento_porcentaje']!=null)?$request['descuento_porcentaje']:0;
+            $descuento=($request['descuento']!=null)?$request['descuento']:0;
+            $monto=($request['monto']!=null)?$request['monto']:0;
 
             $reserva=new Reserva($request->all());
+            $reserva->cantidad=$cantidad;
+            $reserva->precio_unidad=$precio_unidad;
+            $reserva->descuento_porcentaje=$descuento_porcentaje;
+            $reserva->descuento=$descuento;
+            $reserva->monto=$monto;
             $reserva->fecha_ini=$fecha_ini;
             $reserva->fecha_fin=$fecha_fin;
             $reserva->usuario_alta_id=Auth::user()->id;
@@ -120,16 +131,15 @@ class ReservaRepository{
             $reserva->estado=1;
             $reserva->save();
 
-            //Patos para realizar la transaccion
-            $request->request->add(['tipo_transaccion_id'=>"C"]); //Cargo
+            $descripcion=$reserva->servicio->descripcion; //obtiene datos mediante la relacion 1:N
+            $hotel_producto=$this->hotelProductoRep->obtenerProductoPorDescripcion($descripcion);
+
+            $request->request->add(['reserva_base'=>1]);//Para obtener datos de cantidad, precio unidad, descuento y monto de la tabla transaccion
             $request->request->add(['reserva_id'=>$reserva->id]);
             $request->request->add(['venta_id'=>0]);
-            $request->request->add(['hotel_producto_id'=>$reserva->servicio_id]);
-            $transaccion=$this->transaccionRep->insertarDesdeRequest($request);
-
-            //Para vincular los datos de cantidad, precio_unidad_descuento y monto con la tabla res_reserva
-            $this->cargoRep->insertar($reserva->id,$transaccion->id);
-
+            $request->request->add(['hotel_producto_id'=>$hotel_producto->id]);
+            $request->request->add(['detalle'=>$descripcion]);
+            $this->cargoRep->insertarDesdeRequest($request);
 
             DB::commit();
         }catch(\Exception $e){
@@ -160,22 +170,38 @@ class ReservaRepository{
                 $fecha_fin=$fecha_fin."T12:00:00";
             }
 
+            //Validaciones
+            $cantidad=($request['cantidad']!=null)?$request['cantidad']:0;
+            $precio_unidad=($request['precio_unidad']!=null)?$request['precio_unidad']:0;
+            $descuento_porcentaje=($request['descuento_porcentaje']!=null)?$request['descuento_porcentaje']:0;
+            $descuento=($request['descuento']!=null)?$request['descuento']:0;
+            $monto=($request['monto']!=null)?$request['monto']:0;
+
             $reserva=$this->obtenerReservaPorId($request->get('id'));
             if ($reserva!=null){
                 $reserva->fill($request->all());
+                $reserva->cantidad=$cantidad;
+                $reserva->precio_unidad=$precio_unidad;
+                $reserva->descuento_porcentaje=$descuento_porcentaje;
+                $reserva->descuento=$descuento;
+                $reserva->monto=$monto;
                 $reserva->fecha_ini=$fecha_ini;
                 $reserva->fecha_fin=$fecha_fin;
                 $reserva->usuario_modif_id=Auth::user()->id;
                 $reserva->fecha_modificacion=Carbon::now('America/La_Paz')->toDateTimeString();
                 $reserva->update();
-            }
 
-            $cargo=$this->cargoRep->obtenerCargoPorId($reserva->id);
-            if ($cargo!=null){
-                //Patos para realizar la transaccion
-                $request->request->add(['transaccion_id'=>$cargo->transaccion_id]); //Cargo
-                $request->request->add(['hotel_producto_id'=>$reserva->servicio_id]);
-                $this->transaccionRep->modificarDesdeRequest($request);
+                //Modificar cargo
+                $descripcion=$reserva->servicio->descripcion; //obtiene datos mediante la relacion 1:N
+                $hotel_producto=$this->hotelProductoRep->obtenerProductoPorDescripcion($descripcion);
+                $cargo=$reserva->cargos->where("reserva_base",1)->first();//Obtiene reserva base de la tabla cargo
+
+                $request->request->add(['reserva_id'=>$reserva->id]);
+                $request->request->add(['hotel_producto_id'=>$hotel_producto->id]);
+                $request->request->add(['detalle'=>$descripcion]);
+                $request->request->add(['cargo_id'=>$cargo->id]);
+                $this->cargoRep->modificarDesdeRequest($request);
+
             }
 
             DB::commit();

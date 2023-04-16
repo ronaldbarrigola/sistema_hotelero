@@ -93,8 +93,14 @@
                 },
                 success: function(result){
                     if(result.response){
+                        console.log(result);
                         $.each(result.reservas,function(i, v) {
-                            dataItems.push({id:v.id,title:v.cliente,content:v.paterno,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className: 'bg-info text-white'})
+                            let tipoGrafico='range';
+                            if(v.servicio_id==2) //DAY USE
+                            {
+                                tipoGrafico='point';
+                            }
+                            dataItems.push({id:v.id,title:v.cliente,content:v.paterno,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className: 'bg-info text-white',type:tipoGrafico})
                         });
                         items = new vis.DataSet(dataItems);
                     }
@@ -176,6 +182,7 @@
                     var fecha_ini=item.start;
                     var fecha_fin=item.end;
                     var habitacion_id=item.group;
+
 
                     createReserva(); //Visualizar formulario modal reserva, se encuentra en reserva/crete_edit
                     setDateReserva(fecha_ini,fecha_fin); //la funcion setDateReserva, se encuentra en reserva/crete_edit

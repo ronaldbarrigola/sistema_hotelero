@@ -31,8 +31,26 @@ class Reserva extends Model
         'detalle',
         'num_adulto',
         'num_nino',
+        'cantidad',
+        'precio_unidad',
+        'descuento_porcentaje',
+        'descuento',
+        'monto',
         'estado',
         'fecha_creacion',
         'fecha_modificacion'
     ];
+
+    //Relacion 1 a muchos (Inversa)
+    public function servicio()
+    {
+        return $this->belongsTo(Servicio::class,'servicio_id','id');
+    }
+
+    //Relacion 1 a muchos
+    public function cargos()
+    {
+       return $this->hasMany(Cargo::class,'reserva_id','id');
+    }
+
 }

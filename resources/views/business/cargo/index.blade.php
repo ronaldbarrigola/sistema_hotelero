@@ -1,7 +1,7 @@
 @extends('layouts.plantillaFormExtendido')
 @section('contenido')
     @section('panelCabecera')
-        @include('business/reserva/actionbar',['','titulo'=>'RESERVAS'])
+        @include('business/cargo/actionbar',['','titulo'=>'CARGOS'])
     @endsection
 
     @section('panelCuerpo')
@@ -9,21 +9,18 @@
             <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                 <table id="tblListaDatos" class="table table-striped table-bordered table-sm table-hover">
                     <thead>
-                        <th>Id</th>
-                        <th>Fecha Registro</th>
-                        <th>Cliente</th>
-                        <th>Num Hab.</th>
-                        <th>Tipo Habitacion</th>
-                        <th>Paquete</th>
-                        <th>Servicio</th>
-                        <th>Fecha Ingreso</th>
-                        <th>Fecha Salida</th>
-                        <th>Num Adulto</th>
-                        <th>Num Niño</th>
-                        <th>Pais Procedencia</th>
-                        <th>Ciudad Procedencia</th>
+                        <th>Nro. Cargo</th>
+                        <th>Transaccion</th>
+                        <th>Fecha</th>
+                        <th>Producto</th>
                         <th>Detalle</th>
-                        <th>Estado</th>
+                        <th>Cantidad</th>
+                        <th>Precio Unidad</th>
+                        <th>Total</th>
+                        <th>Descuento</th>
+                        <th>Cargo</th>
+                        <th>Pago</th>
+                        <th>Saldo</th>
                         <th>Modificar</th>
                         <th>Eliminar</th>
                     </thead>
@@ -31,8 +28,7 @@
             </div>
         </div>
         @include('partials/confirmaeliminacion',['url_base_eliminar'=>'business/reserva'])
-        @include('business/reserva/create_edit')
-        @include('business/cliente/create_edit')
+        @include('business/cargo/create_edit')
     @endsection
 @endsection
 
@@ -45,41 +41,35 @@
 
         $(document).ready( function () {
 
-            $(document).on("click", "#btnCreateReserva", function(){ //El boton btnCreateCliente se encuentra en actionbar
-                createReserva();
+            $(document).on("click", "#btnCreateCargo", function(){
+                createCargo();
             });
 
             // ══════════════════════ Cargando columnas para datatables  ══════════════════════
-            var columnas=[
+            var columnas=[  {data:'cargo_id'},
                             {data:'id'},
                             {data:'fecha'},
-                            {data:'cliente'},
-                            {data:'num_habitacion'},
-                            {data:'tipo_habitacion'},
-                            {data:'paquete'},
-                            {data:'servicio'},
-                            {data:'fecha_ini'},
-                            {data:'fecha_fin'},
-                            {data:'num_adulto'},
-                            {data:'num_nino'},
-                            {data:'pais'},
-                            {data:'ciudad'},
+                            {data:'producto'},
                             {data:'detalle'},
-                            {data:'estado_reserva'},
+                            {data:'cantidad'},
+                            {data:'precio_unidad'},
+                            {data:'total'},
+                            {data:'descuento'},
+                            {data:'cargo'},
+                            {data:'pago'},
+                            {data:'saldo'},
                             {data:'id',
                                 orderable:false,
                                 render: function(data){
-                                    return '<button id="'+data+ '" class="btn btn-info" onclick="editReserva(id);">Editar</button></a>';
+                                    return '<button id="'+data+ '" class="btn btn-info" onclick="editCargo(id);">Editar</button></a>';
                                 }
                             },
-
                             {data:'id',
                                 orderable:false,
                                 render: function(data){
                                     return "<a href='' class='preguntaeliminar btn btn-danger' data-target='#modaleliminar' data-toggle='modal' data-idmodelo='"+data+"'>Eliminar</a>";
                                 }
                             },
-
                         ];
             // ══════════════════════ CARGANDO DataTable por AJAX  ══════════════════════
             datatable_datos=$('#tblListaDatos').DataTable({
@@ -89,7 +79,7 @@
                 "dom": '<"table-responsive"tr><"bottom float-left"p><"clearfix">',
                 "serverSide":true,
                 "order": [[ 0, "desc" ]],
-                "ajax":"{{url('business/reserva')}}",
+                "ajax":"{{url('business/cargo')}}",
                 "columns":columnas,
             });
 

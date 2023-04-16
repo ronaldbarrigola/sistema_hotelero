@@ -12,7 +12,6 @@ use App\Repositories\Business\PaqueteRepository;
 use App\Repositories\Business\ServicioRepository;
 use App\Repositories\Business\ReservaRepository;
 use App\Repositories\Business\TransaccionRepository;
-use App\Repositories\Business\CargoRepository;
 
 //Para cliente
 use App\Repositories\Base\CiudadRepository;
@@ -34,11 +33,9 @@ class ReservaController extends Controller
     protected $paisRep;
     protected $ciudadRep;
     protected $transaccionRep;
-    protected $cargoRep;
-    //Para cliente
 
     //===constructor=============================================================================================
-    public function __construct(ClienteRepository $clienteRep,ReservaRepository $reservaRep,EstadoReservaRepository $estadoReservaRep,HabitacionRepository $habitacionRep,MotivoRepository $motivoRep,PaqueteRepository $paqueteRep,ServicioRepository $servicioRep,PaisRepository $paisRep,CiudadRepository $ciudadRep,TransaccionRepository $transaccionRep,CargoRepository $cargoRep){
+    public function __construct(ClienteRepository $clienteRep,ReservaRepository $reservaRep,EstadoReservaRepository $estadoReservaRep,HabitacionRepository $habitacionRep,MotivoRepository $motivoRep,PaqueteRepository $paqueteRep,ServicioRepository $servicioRep,PaisRepository $paisRep,CiudadRepository $ciudadRep,TransaccionRepository $transaccionRep){
         $this->middleware('auth');
         $this->middleware('guest');
         $this->clienteRep=$clienteRep;
@@ -51,7 +48,6 @@ class ReservaController extends Controller
         $this->paisRep=$paisRep;
         $this->ciudadRep=$ciudadRep;
         $this->transaccionRep=$transaccionRep;
-        $this->cargoRep=$cargoRep;
     }
 
      //===========================================================================================================
@@ -82,19 +78,6 @@ class ReservaController extends Controller
     public function edit(Request $request){
         $id=$request['reserva_id'];
         $reserva=$this->reservaRep->obtenerReservaPorId($id);
-
-        $cargo=null;
-        if (!is_null($reserva) ){
-            $cargo=$this->cargoRep->obtenerCargoPorId($id);
-
-        }
-
-        $transaccion=null; //Obtener la rtansaccion que corresponde al cargo
-        if (!is_null($cargo) ){
-            $transaccion=$this->transaccionRep->obtenerTransaccionPorId($cargo->transaccion_id);
-        }
-
-
         $clientes=$this->clienteRep->obtenerClientes();
         $estadoReservas=$this->estadoReservaRep->obtenerEstadoReservas();
         $habitaciones=$this->habitacionRep->obtenerHabitaciones();
@@ -108,7 +91,7 @@ class ReservaController extends Controller
             $ciudades=$this->ciudadRep->obtenerCiudadesPorPaisId($reserva->procedencia_pais_id);
         }
 
-        return response()->json(array ('reserva'=>$reserva,'transaccion'=>$transaccion,'ciudades'=>$ciudades,'clientes'=>$clientes,'estadoReservas'=>$estadoReservas,'habitaciones'=>$habitaciones,'motivos'=>$motivos,'paquetes'=>$paquetes,'servicios'=>$servicios,'paises'=>$paises));
+        return response()->json(array ('reserva'=>$reserva,'ciudades'=>$ciudades,'clientes'=>$clientes,'estadoReservas'=>$estadoReservas,'habitaciones'=>$habitaciones,'motivos'=>$motivos,'paquetes'=>$paquetes,'servicios'=>$servicios,'paises'=>$paises));
 
     }
 
@@ -139,6 +122,5 @@ class ReservaController extends Controller
         }
         return response()->json(array('reservas'=>$reservas,'response'=>$response));
     }
-
 
 }

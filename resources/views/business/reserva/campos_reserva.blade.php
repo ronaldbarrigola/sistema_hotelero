@@ -30,6 +30,16 @@
 
                 <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
+                        <label for="precio_unidad_ref" class="my-0"><strong>Precio Unidad Habitacion:</strong></label>
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><strong>Bs.</strong></span>
+                            <input type="number" name="precio_unidad_ref" id="precio_unidad_ref" readonly class="form-control" placeholder="0">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
                         <label for="paquete_id" class="my-0" ><strong>Paquete:</strong></label>
                         <select name="paquete_id" id="paquete_id"  class="form-control selectpicker border" data-live-search="true" >
                              <!--Se carga los datos por ajax-->
@@ -54,7 +64,7 @@
                 <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
                         <label for="procedencia_pais_id" class="my-0" ><strong>Pais Procedencia:</strong></label>
-                        <select name="procedencia_pais_id" id="procedencia_pais_id"  class="form-control selectpicker border" data-live-search="true" >
+                        <select name="procedencia_pais_id" id="procedencia_pais_id" required class="form-control selectpicker border" data-live-search="true" >
                              <!--Se carga los datos por ajax-->
                         </select>
                     </div>
@@ -63,7 +73,7 @@
                 <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
                     <label for="procedencia_ciudad_id" class="my-0" ><strong>Ciudad Procedencia:</strong></label>
-                    <select name="procedencia_ciudad_id" id="procedencia_ciudad_id"  class="form-control selectpicker border" data-live-search="true" >
+                    <select name="procedencia_ciudad_id" id="procedencia_ciudad_id" required class="form-control selectpicker border" data-live-search="true" >
                           <!--Se carga los datos por ajax-->
                     </select>
                     </div>
@@ -98,15 +108,29 @@
 
                 <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
-                        <label for="fecha_ini"  class="my-0"><strong>Fecha Inicial:</strong></label>
+                        <label for="fecha_ini"  class="my-0"><strong>Fecha Ingreso:</strong></label>
                         <input type="date" id="fecha_ini" name="fecha_ini" required class="form-control">
                     </div>
                 </div>
 
                 <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
-                        <label for="fecha_fin"  class="my-0"><strong>Fecha Final:</strong></label>
+                        <label for="hora_ini"  class="my-0"><strong>Hora Ingreso:</strong></label>
+                        <input type="time" id="hora_ini" name="hora_ini" required class="form-control">
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label for="fecha_fin"  class="my-0"><strong>Fecha Salida:</strong></label>
                         <input type="date" id="fecha_fin" name="fecha_fin" required class="form-control">
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label for="hora_fin"  class="my-0"><strong>Hora Salida:</strong></label>
+                        <input type="time" id="hora_fin" name="hora_fin" required class="form-control">
                     </div>
                 </div>
            </div>
@@ -122,7 +146,7 @@
                 <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
                         <label for="cantidad" class="my-0"><strong>Cantidad:</strong></label>
-                        <input type="number" name="cantidad" id="cantidad" min="1" required class="form-control" onkeydown="return false;" style="background-color: #f6f6f6;" placeholder="0">
+                        <input type="number" name="cantidad" id="cantidad" min="1" required class="form-control"  onkeydown="event.preventDefault()" style="background-color: #f6f6f6;" placeholder="0">
                     </div>
                 </div>
 
@@ -131,7 +155,7 @@
                         <label for="precio_unidad" class="my-0"><strong>Precio Unidad:</strong></label>
                         <div class="input-group-prepend">
                             <span class="input-group-text"><strong>Bs.</strong></span>
-                            <input type="number" name="precio_unidad" id="precio_unidad" min="1" required class="form-control" onkeydown="return false;" style="background-color: #f6f6f6;" placeholder="0">
+                            <input type="number" name="precio_unidad" id="precio_unidad" min="1" required readonly class="form-control" placeholder="0">
                         </div>
                     </div>
                 </div>
@@ -141,7 +165,7 @@
                         <label for="descuento_porcentaje" class="my-0"><strong>Descuento:</strong></label>
                         <div class="input-group-prepend">
                             <span class="input-group-text"><strong>%</strong></span>
-                            <input type="number" name="descuento_porcentaje" min="0"  max="100" step="0.1" id="descuento_porcentaje" class="form-control" placeholder="0">
+                            <input type="number" name="descuento_porcentaje" min="0"  max="100" step="0.01" id="descuento_porcentaje" class="form-control" placeholder="0">
                         </div>
                     </div>
                 </div>
@@ -151,7 +175,7 @@
                         <label for="descuento" class="my-0"><strong>Descuento:</strong></label>
                         <div class="input-group-prepend">
                             <span class="input-group-text"><strong>Bs.</strong></span>
-                            <input type="number" name="descuento"  id="descuento" min="0" step="0.1" class="form-control" placeholder="0">
+                            <input type="number" name="descuento"  id="descuento" min="0" step="0.01" class="form-control" placeholder="0">
                         </div>
                     </div>
                 </div>
@@ -161,7 +185,7 @@
                         <label for="monto" class="my-0"><strong>Total Cargo:</strong></label>
                         <div class="input-group-prepend">
                             <span class="input-group-text"><strong>Bs.</strong></span>
-                            <input type="number" name="monto" id="monto" min="1" required class="readonly form-control" onkeydown="return false;" style="background-color: #f6f6f6;" placeholder="0">
+                            <input type="number" name="monto" id="monto" min="1" required class="form-control" onkeydown="event.preventDefault()" style="background-color: #f6f6f6;" placeholder="0">
                         </div>
                     </div>
                 </div>

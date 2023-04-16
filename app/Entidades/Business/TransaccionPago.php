@@ -4,21 +4,18 @@ namespace App\Entidades\Business;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Cargo extends Model
+class TransaccionPago extends Model
 {
-    protected $table="con_pago";
+    protected $table="con_transaccion_pago";
     protected $primaryKey="id";
     public $timestamps=false;
 
     protected $fillable=[
         'fecha',
-        'comprobante_pago_id',
-        'forma_pago_id',
-        'venta_id',
-        'reserva_id',
-        'cargo_id',
+        'pago_id',
+        'transaccion_id',
         'detalle',
-        'importe',
+        'monto',
         'usuario_alta_id',
         'usuario_modif_id',
         'estado',

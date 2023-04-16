@@ -53,7 +53,11 @@
           });
 
           $(document).on("change", "#habitacion_id", function(){
-               calcularCargo();
+              var precio=$('#habitacion_id option:selected').data("precio");
+              var precio_unidad_ref=(precio!=null&&precio!=""&&precio>0)?precio:0;
+              $("#precio_unidad_ref").val(precio_unidad_ref);
+              servicioReserva();
+              calcularCargo();
           });
 
           $('#modalViewReserva').on('shown.bs.modal', function() {//Para enfocar input de un formulario modal
@@ -61,26 +65,35 @@
           })
 
           $(document).on("change", "#fecha_ini", function(){
-              calcularCargo()
+              calcularCargo();
           });
 
           $(document).on("change", "#fecha_fin", function(){
-             calcularCargo()
+              calcularCargo();
           });
 
           $(document).on("keyup", "#descuento_porcentaje", function(){
-             descuentoPorcentaje();
+              descuentoPorcentaje();
           });
 
           $(document).on("keyup", "#descuento", function(){
-             descuento();
+              descuento();
+          });
+
+          $(document).on("keyup", "#precio_unidad", function(){
+             calcularCargo();
+          });
+
+          $(document).on("change", "#servicio_id", function(){
+             servicioReserva();
+             calcularCargo();
           });
 
         }); //Fin ready
 
         function submitFormReserva(event) {
             storeReserva();
-            datatable_datos.ajax.reload();//recargar registro datatables.
+            //datatable_datos.ajax.reload();//recargar registro datatables.
             event.preventDefault(); //cancela el evento
             return false; //Cancela el envio submit para procesar por ajax
         }
@@ -94,7 +107,13 @@
         function selectHabitacion(habitacion_id){
             $("#habitacion_id").selectpicker('val',habitacion_id);
             $("#habitacion_id").selectpicker('refresh');
-            calcularCargo()
+
+            //Cargar precio de habitacion
+            var precio=$('#habitacion_id option:selected').data("precio");
+            var precio_unidad_ref=(precio!=null&&precio!=""&&precio>0)?precio:0;
+            $("#precio_unidad_ref").val(precio_unidad_ref);
+            servicioReserva();
+            calcularCargo();
         }
 
        function createReserva(){
@@ -147,6 +166,11 @@
                     $("#paquete_id").selectpicker('refresh');
                     $("#servicio_id").selectpicker('val', result.reserva.servicio_id);
                     $("#servicio_id").selectpicker('refresh');
+                    if(result.reserva.servicio_id!=null&&result.reserva.servicio_id==2){ //1:HOSPEDAJE 2:DAY USE
+                       $("#precio_unidad").removeAttr('readonly');
+                    } else {
+                       $("#precio_unidad").attr('readonly','readonly');
+                    }
                     $("#motivo_id").selectpicker('val', result.reserva.motivo_id);
                     $("#motivo_id").selectpicker('refresh');
                     $("#num_adulto").val(result.reserva.num_adulto);
@@ -155,11 +179,18 @@
                     $("#procedencia_pais_id").selectpicker('refresh');
                     $("#fecha_ini").val(formatFecha(result.reserva.fecha_ini));
                     $("#fecha_fin").val(formatFecha(result.reserva.fecha_fin));
-                    $("#cantidad").val(result.transaccion.cantidad);
-                    $("#precio_unidad").val(result.transaccion.precio_unidad);
-                    $("#descuento_porcentaje").val(result.transaccion.descuento_porcentaje);
-                    $("#descuento").val(result.transaccion.descuento);
-                    $("#monto").val(result.transaccion.monto);
+                    $("#hora_ini").val(result.reserva.hora_ini);
+                    $("#hora_fin").val(result.reserva.hora_fin);
+                    $("#cantidad").val(result.reserva.cantidad);
+                    $("#precio_unidad").val(result.reserva.precio_unidad);
+                    //BEGIN:Precio unidad habitacion referencial
+                    var precio=$('#habitacion_id option:selected').data("precio");
+                    var precio_unidad_ref=(precio!=null&&precio!=""&&precio>0)?precio:0;
+                    $("#precio_unidad_ref").val(precio_unidad_ref);
+                    //END:Precio unidad habitacion referencial
+                    $("#descuento_porcentaje").val(result.reserva.descuento_porcentaje);
+                    $("#descuento").val(result.reserva.descuento);
+                    $("#monto").val(result.reserva.monto);
                     $("#detalle").val(result.reserva.detalle);
 
                     $("#procedencia_ciudad_id").find('option').remove();
@@ -180,6 +211,31 @@
         }
 
         function storeReserva(){
+
+            //Validacion de fecha HOSPEDAJE Y DAY USE
+            var servicio_id=$("#servicio_id").val();
+            var fecha_ini=$("#fecha_ini").val();
+            var fecha_fin=$("#fecha_fin").val();
+            var timeStart = new Date(fecha_ini);
+            var timeEnd = new Date(fecha_fin);
+
+            if (timeEnd != null && timeEnd < timeStart) {
+                messageAlert("La fecha ingreso debe ser mayor a la fecha de salida");
+                return 0;
+            }
+
+            if(servicio_id==2){ //1: HOSPEDAJE 2:DAY USE
+                if (timeEnd != null && timeEnd > timeStart){
+                    messageAlert("SERVICIO DAY USE : \n La fecha de ingreso debe ser igual a la fecha de salida");
+                    return 0;
+                }
+            } else {
+                if (timeEnd <= timeStart){
+                    messageAlert("SERVICIO HOSPEDAJE : \n La fecha de ingreso debe ser mayor a la fecha de salida");
+                    return 0;
+                }
+            }
+
             var formdata = new FormData($("#frmReserva")[0]); //Serializa con imagenes multimedia
             url=URL_BASE + "/business/reserva";
 
@@ -277,7 +333,7 @@
             $("#servicio_id").find('option').remove();
             $("#servicio_id").append('<option  value="">--Seleccione--</option>');
             $.each(result.servicios, function(i, v) {
-                $("#servicio_id").append('<option  value="' + v.id + '" >' + v.servicio + '</option>');
+                $("#servicio_id").append('<option   value="' + v.id + '"  data-hora_ini="' + v.hora_ini + '" data-hora_fin="' + v.hora_fin + '">' + v.servicio + '</option>');
             });
             $("#servicio_id").selectpicker('refresh');
 
@@ -308,6 +364,51 @@
             });
         }
 
+        function servicioReserva(){
+            var servicio_id=$("#servicio_id").val();
+            var fecha_ini=$("#fecha_ini").val();
+            var fecha_fin=$("#fecha_fin").val();
+            var hora_ini=$('#servicio_id option:selected').data("hora_ini");
+            var hora_fin=$('#servicio_id option:selected').data("hora_fin");
+            var edit_reserva=$("#editReserva").val();
+            var fecha_actual=fechaActual();
+            if(servicio_id==2){ //1: HOSPEDAJE 2:DAY USE
+                if(edit_reserva!="modificar"){
+                    $("#fecha_ini").val(fecha_actual);
+                    $("#fecha_fin").val(fecha_actual);
+                    $("#hora_ini").val(hora_ini);
+                    $("#hora_fin").val(hora_fin);
+                }
+
+                var precio=$('#habitacion_id option:selected').data("precio")
+                var precio_unidad=(precio!=null&&precio!=""&&precio>0)?precio:0;
+                var precio_day_use=precio_unidad-precio_unidad*0.5; //Descontando el 50% por precio day use
+                $("#precio_unidad").val(precio_day_use.toFixed(2));
+
+            } else {
+                if(edit_reserva!="modificar"){
+                    if(fecha_ini==null||fecha_ini==""){
+                        $("#fecha_ini").val(fecha_actual);
+                        $("#fecha_fin").val(addDaysToDate(fecha_actual,2));
+                    }
+
+                    $("#hora_ini").val(hora_ini);
+                    $("#hora_fin").val(hora_fin);
+                }
+            }
+        }
+
+        function addDaysToDate(fecha,dias){
+            var fecha = new Date(fecha);
+            var mes = fecha.getMonth() + 1;
+            var dia = fecha.getDate() + dias;
+            var ano = fecha.getFullYear();
+            if (dia < 10)
+                dia = '0' + dia; //agrega cero si el menor de 10
+            if (mes < 10)
+                mes = '0' + mes //agrega cero si el menor de 10
+            return ano + "-" + mes + "-" + dia;
+        }
 
         function cantidadReserva(){
             var fecha_ini=$("#fecha_ini").val();
@@ -322,17 +423,22 @@
                 dias=(dias!=0)?dias:1; //Validar cuando sean la misma fecha
             }
             else if (timeEnd != null && timeEnd < timeStart) {
-                messageAlert("La fecha de salida debe ser mayor a la fecha de ingreso");
+                messageAlert("La fecha ingreso debe ser mayor a la fecha de salida");
             }
             $("#cantidad").val(dias);
         }
 
         function precioUnidadReserva(){
-            var precio=$('#habitacion_id option:selected').data("precio")
-            var precio_unidad=(precio!=null&&precio!=""&&precio>0)?precio:0;
-            $("#precio_unidad").val(precio_unidad);
+            var servicio_id=$("#servicio_id").val();
+            if(servicio_id==2){ //1: HOSPEDAJE 2:DAY USE
+                $("#precio_unidad").removeAttr('readonly');
+            } else {
+                var precio=$('#habitacion_id option:selected').data("precio");
+                var precio_unidad=(precio!=null&&precio!=""&&precio>0)?precio:0;
+                $("#precio_unidad").val(precio_unidad);
+                $("#precio_unidad").attr('readonly','readonly');
+            }
         }
-
 
         function descuentoPorcentaje(){
             var cantidad=$("#cantidad").val();
@@ -346,7 +452,8 @@
             total_cargo=cantidad*precio_unidad;
             porcentaje=(porcentaje!=null&&porcentaje!=""&&porcentaje>0)?porcentaje:0;
             if(porcentaje>0&&porcentaje<=100){
-                descuento=Math.round(parseFloat((total_cargo*porcentaje)/100));
+                //descuento=Math.round(parseFloat((total_cargo*porcentaje)/100));
+                descuento=Math.round(parseFloat((total_cargo*porcentaje)/100)*100.0)/100.0;
             } else if(porcentaje>100) {
                 $("#descuento_porcentaje").val(100);
                 descuento=total_cargo;
@@ -370,7 +477,8 @@
             total_cargo=cantidad*precio_unidad;
             descuento=(descuento!=null&&descuento!=""&&descuento>0)?descuento:0;
             if(descuento>0&&descuento<=total_cargo){
-                porcentaje=Math.round(parseFloat((descuento/total_cargo)*100));
+                //porcentaje=Math.round(parseFloat((descuento/total_cargo)*100));
+                porcentaje=Math.round(parseFloat((descuento/total_cargo)*100)*100.0)/100.0;
             } else if(descuento>total_cargo) {
                 $("#descuento").val(total_cargo);
                 porcentaje=100;
@@ -416,8 +524,11 @@
             $("#procedencia_ciudad_id").selectpicker('refresh');
             $('#fecha_ini').val("");
             $('#fecha_fin').val("");
+            $('#hora_ini').val("");
+            $('#hora_fin').val("");
             $('#cantidad').val("");
             $('#precio_unidad').val("");
+            $('#precio_unidad_ref').val("");
             $('#descuento_porcentaje').val("");
             $('#descuento').val("");
             $('#monto').val("");

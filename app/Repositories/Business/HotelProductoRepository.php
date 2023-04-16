@@ -4,6 +4,7 @@ namespace App\Repositories\Business;
 
 use Illuminate\Http\Request;
 use App\Entidades\Business\HotelProducto;
+use App\Entidades\Business\Producto;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use DB;
@@ -23,6 +24,11 @@ class HotelProductoRepository{
 
     public function obtenerHotelProductoPorId($id){
         return HotelProducto::find($id);
+    }
+
+    public function obtenerProductoPorDescripcion($descripcion){
+        $producto=Producto::where("descripcion",$descripcion)->where("estado",1)->first();
+        return $producto->hotelProductos->where("agencia_id",Auth::user()->agencia_id)->where("estado",1)->first();
     }
 
     public function insertarDesdeRequest(Request $request){

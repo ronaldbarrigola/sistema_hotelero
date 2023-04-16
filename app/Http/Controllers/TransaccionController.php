@@ -18,7 +18,7 @@ class TransaccionController extends Controller
 
      public function index(Request $request){
         if($request->ajax()){
-            return $this->transaccionRep->obtenerTransaccionesDataTables();
+            return $this->transaccionRep->obtenerTransaccionPorReservaId(58);
         }else{
             return view('business.transaccion.index');
         }
