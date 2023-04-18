@@ -27,7 +27,7 @@
 
                 </tbody>
                 <tfoot>
-                    <th>TOTAL</th>
+                    <th>TOTALES</th>
                     <th style="text-align:center"><strong id="cantidad_total">0</strong></th>
                     <th style="text-align:center"><strong id="precio_unidad_total">0</strong></th>
                     <th style="text-align:center"><strong id="descuento_porcentaje_total">0</strong></th>
@@ -46,19 +46,18 @@
             sub_total=cantidad*precio_unidad;
             $('#tbl_detalle').append($('<tr>')
                .append($('<td>').append('<input type="hidden" name="vec_transaccion_id[]" value="'+transaccion_id+'"><input type="hidden" name="vec_hotel_producto_id[]" value="'+hotel_producto_id+'">'+producto))
-               .append($('<td style="text-align:center">').append('<input type="text" name="vec_cantidad[]" class="form-control" required value="'+cantidad+'" onkeyup="calcularSubTotal(this)" style="text-align:center" placeholder="0">'))
-               .append($('<td style="text-align:center">').append('<input type="text" name="vec_precio_unidad[]" class="form-control" required value="'+precio_unidad+'" onkeyup="calcularSubTotal(this)" style="text-align:center" placeholder="0">'))
-               .append($('<td style="text-align:center">').append('<input type="text" name="vec_descuento_porcentaje[]" class="form-control" value="'+descuento_porcentaje+'" onkeyup="descuentoPorcentaje(this)" style="text-align:center" placeholder="0">'))
-               .append($('<td style="text-align:center">').append('<input type="text" name="vec_descuento[]" class="form-control" value="'+descuento+'" onkeyup="descuento(this)" style="text-align:center" placeholder="0">'))
+               .append($('<td style="text-align:center">').append('<input type="text" name="vec_cantidad[]" class="form-control" required value="'+cantidad+'" onkeyup="transaccionSubTotal(this)" style="text-align:center" placeholder="0">'))
+               .append($('<td style="text-align:center">').append('<input type="text" name="vec_precio_unidad[]" class="form-control" required value="'+precio_unidad+'" onkeyup="transaccionSubTotal(this)" style="text-align:center" placeholder="0">'))
+               .append($('<td style="text-align:center">').append('<input type="text" name="vec_descuento_porcentaje[]" class="form-control" value="'+descuento_porcentaje+'" onkeyup="transaccionDescuentoPorcentaje(this)" style="text-align:center" placeholder="0">'))
+               .append($('<td style="text-align:center">').append('<input type="text" name="vec_descuento[]" class="form-control" value="'+descuento+'" onkeyup="transaccionDescuento(this)" style="text-align:center" placeholder="0">'))
                .append($('<td style="text-align:center">').append('<input type="text" name="vec_monto[]" readonly class="form-control" value="'+ sub_total.toFixed(2) +'" style="text-align:center">'))
                .append($('<td style="text-align:center">').append('<input type="hidden" name="vec_estado[]" value="'+estado+'"><button type="button" class="btn btn-danger" onclick="eliminarFilaTransaccion(this);">Eliminar</button>'))
             );
-            calcularSubTotal();
+            transaccionSubTotal();
         }
 
-        function descuentoPorcentaje($this){
+        function transaccionDescuentoPorcentaje($this){
             fila=$($this).closest("tr");
-
             var sub_total=0;
             var porcentaje=$("#descuento_porcentaje").val();
             var descuento=0;
@@ -99,11 +98,11 @@
             }
             $(input_descuento).val(descuento);
 
-            calcularSubTotal($this)
+            transaccionSubTotal($this)
 
         }
 
-        function descuento($this){
+        function transaccionDescuento($this){
             fila=$($this).closest("tr");
             var sub_total=0;
             var porcentaje=0;
@@ -143,10 +142,10 @@
                 $(input_descuento).val("");
             }
             $(input_descuento_porcentaje).val(porcentaje);
-            calcularSubTotal($this)
+            transaccionSubTotal($this)
         }
 
-        function calcularSubTotal($this){
+        function transaccionSubTotal($this){
             fila=$($this).closest("tr");
 
             //valores cantidad
@@ -173,11 +172,11 @@
             var input_monto=vec_monto[0];
             $(input_monto).val(sub_total);
 
-            calcularTotales();
+            transaccionTotales();
 
         }
 
-        function calcularTotales(){
+        function transaccionTotales(){
             var cantidadTotal=0;
             var precioUnidadTotal=0;
             var descuentoPorcentajeTotal=0;
@@ -245,7 +244,7 @@
                             //adicionar una fila a bancos disponibles
                         }
 
-                        calcularTotales();
+                        transaccionTotales();
                         validateSave();
 
                     }// fin if

@@ -17,7 +17,6 @@
                 </div>
                 <div class="carousel-item">
                     @include('business/transaccion/datatable_transaccion')
-                    <button id= "btnPrevious" class="btn btn-secondary">Volver</button>
                 </div>
             </div>
         </div>

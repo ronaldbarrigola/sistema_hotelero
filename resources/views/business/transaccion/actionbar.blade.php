@@ -3,6 +3,7 @@
 
     <div class="btn-group" role="group" aria-label="First group">
         <button id= "btnCreateTransaccion" class="btn btn-success">NUEVO</button>
+        <button id= "btnPrevious" class="btn btn-secondary">Volver</button>
     </div>
 
     {{-- CHECKBOX BUSQUEDA EXACTA --}}

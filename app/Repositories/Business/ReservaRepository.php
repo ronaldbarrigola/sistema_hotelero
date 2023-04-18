@@ -108,11 +108,11 @@ class ReservaRepository{
             }
 
             //Validaciones
-            $cantidad=($request['cantidad']!=null)?$request['cantidad']:0;
-            $precio_unidad=($request['precio_unidad']!=null)?$request['precio_unidad']:0;
-            $descuento_porcentaje=($request['descuento_porcentaje']!=null)?$request['descuento_porcentaje']:0;
-            $descuento=($request['descuento']!=null)?$request['descuento']:0;
-            $monto=($request['monto']!=null)?$request['monto']:0;
+            $cantidad=($request['reserva_cantidad']!=null)?$request['reserva_cantidad']:0;
+            $precio_unidad=($request['reserva_precio_unidad']!=null)?$request['reserva_precio_unidad']:0;
+            $descuento_porcentaje=($request['reserva_descuento_porcentaje']!=null)?$request['reserva_descuento_porcentaje']:0;
+            $descuento=($request['reserva_descuento']!=null)?$request['reserva_descuento']:0;
+            $monto=($request['reserva_monto']!=null)?$request['reserva_monto']:0;
 
             $reserva=new Reserva($request->all());
             $reserva->cantidad=$cantidad;
@@ -172,11 +172,11 @@ class ReservaRepository{
             }
 
             //Validaciones
-            $cantidad=($request['cantidad']!=null)?$request['cantidad']:0;
-            $precio_unidad=($request['precio_unidad']!=null)?$request['precio_unidad']:0;
-            $descuento_porcentaje=($request['descuento_porcentaje']!=null)?$request['descuento_porcentaje']:0;
-            $descuento=($request['descuento']!=null)?$request['descuento']:0;
-            $monto=($request['monto']!=null)?$request['monto']:0;
+            $cantidad=($request['reserva_cantidad']!=null)?$request['reserva_cantidad']:0;
+            $precio_unidad=($request['reserva_precio_unidad']!=null)?$request['reserva_precio_unidad']:0;
+            $descuento_porcentaje=($request['reserva_descuento_porcentaje']!=null)?$request['reserva_descuento_porcentaje']:0;
+            $descuento=($request['reserva_descuento']!=null)?$request['reserva_descuento']:0;
+            $monto=($request['reserva_monto']!=null)?$request['reserva_monto']:0;
 
             $reserva=$this->obtenerReservaPorId($request->get('id'));
             if ($reserva!=null){

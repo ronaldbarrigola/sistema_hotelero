@@ -18,7 +18,15 @@
                     <input type="hidden" name="transaccion_id" id="transaccion_id" value="">
                     <input type="hidden" name="modulo" id="modulo" value="RESERVA">
                     <input type="hidden" name="foreign_reserva_id" id="foreign_reserva_id" value="">
-                    @include('business/transaccion/detalle_transaccion')
+
+                    <div id="panel_detalle_transaccion">
+                        @include('business/transaccion/detalle_transaccion')
+                    </div>
+
+                    <div id="panel_campos_transaccion" style="display:none">
+                        @include('business/transaccion/campos_transaccion')
+                    </div>
+
                     <br>
                     <div class="row">
                         <div class="col-md-4 offset-md-4 d-flex justify-content-between">
@@ -27,37 +35,6 @@
                         </div>
                     </div>
                 </form>
-            </div>
-
-            <div class="modal-footer">
-
-            </div>
-
-        </div>
-    </div>
-</div> <!--End Modal-->
-
-
-<div class="modal fade modal-slide-in-right" aria-hidden="true" role="dialog" tabindex="-1" id="modalViewEditTransaccion">
-    <div class="modal-dialog modal-xl">  <!--Small clase: modal-sm width: 300px  |  Por defecto clase: None width: 500px  | Large clase: modal-lg width: 800px | Extra large clase: modal-xl width: 1140px -->
-        <div class="modal-content">
-
-            <div class="modal-header">
-                <h5 id="title_modal_view_edit_transaccion" class="modal-title">EDITAR TRANSACCION</h5>
-                <button id='cerrarModal' type="button"  class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">X</span>
-                </button>
-            </div>
-
-            <div class="modal-body">
-                @include('business/transaccion/campos_transaccion')
-                <br>
-                <div class="row">
-                    <div class="col-md-4 offset-md-4 d-flex justify-content-between">
-                        <button class="btn btn-success" id="btnModificarTransaccion" type="button">Guardar</button>
-                        <button type="button" class="btn btn-primary" data-dismiss="modal">Cancelar</button>
-                    </div>
-                </div>
             </div>
 
             <div class="modal-footer">
@@ -152,6 +129,8 @@
 
        function createTransaccion(){
             $("#editTransaccion").val("");
+            $("#panel_detalle_transaccion").show();
+            $("#panel_campos_transaccion").hide();
             $("#title_modal_view_transaccion").text("NUEVA TRANSACCION");
             limpiarDatoTransaccion();
 
@@ -176,26 +155,26 @@
        function editTransaccion($id){
             var transaccion_id=$id;
             $("#editTransaccion").val("modificar");
-            // $("#title_modal_view_transaccion").text("MODIFICAR TRANSACCION");
+            $("#panel_detalle_transaccion").hide();
+            $("#panel_campos_transaccion").show();
+            $("#title_modal_view_transaccion").text("MODIFICAR TRANSACCION");
             $.ajax({
                 type: "GET",
                 url: "{{route('edittransaccion')}}",
                 data:{transaccion_id:transaccion_id,'_token': '{{ csrf_token() }}'},
                 dataType: 'json',
                 beforeSend: function () {
-                    limpiarDatomodalViewEditTransaccion();
+                    limpiarDatoTransaccion();
                 },
                 success: function(result){
-                    loadDatamodalViewEditTransaccionAjax(result);
+                    loadDataTransaccionAjax(result);
                     $("#transaccion_id").val(result.transaccion.id);
+                    $("#cantidad").val(result.transaccion.cantidad);
+                    $("#precio_unidad").val(result.transaccion.precio_unidad);
                     $("#descuento_porcentaje").val(result.transaccion.descuento_porcentaje);
                     $("#descuento").val(result.transaccion.descuento);
-
-                    $(result.detalle).each(function(i, v){ // indice, valor
-                        cargarFilaTransaccion(v.transaccion_id,v.hotel_producto_id,v.producto,v.cantidad,v.precio_unidad,v.descuento_porcentaje,v.descuento,v.monto,"guardado");
-                    })
-
-                    $("#modalViewEditTransaccion").modal("show");
+                    $("#monto").val(result.transaccion.monto);
+                    $("#modalViewTransaccion").modal("show");
                 },//End success
                 complete:function(result, textStatus ){
 

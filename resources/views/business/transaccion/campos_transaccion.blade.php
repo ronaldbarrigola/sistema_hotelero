@@ -2,7 +2,7 @@
     <div class="col-lg-6 col-md-6 col-sm-6 col-12">
         <div class="form-group">
             <label for="cantidad" class="my-0"><strong>Cantidad:</strong></label>
-            <input type="number" name="cantidad" id="cantidad" min="1" required class="form-control"  onkeydown="event.preventDefault()" style="background-color: #f6f6f6;" placeholder="0">
+            <input type="number" name="cantidad" id="cantidad" min="1" class="form-control" placeholder="0">
         </div>
     </div>
 
@@ -11,7 +11,7 @@
             <label for="precio_unidad" class="my-0"><strong>Precio Unidad:</strong></label>
             <div class="input-group-prepend">
                 <span class="input-group-text"><strong>Bs.</strong></span>
-                <input type="number" name="precio_unidad" id="precio_unidad" min="1" required readonly class="form-control" placeholder="0">
+                <input type="number" name="precio_unidad" id="precio_unidad" min="1" readonly class="form-control" placeholder="0">
             </div>
         </div>
     </div>
@@ -41,7 +41,7 @@
             <label for="monto" class="my-0"><strong>Total Cargo:</strong></label>
             <div class="input-group-prepend">
                 <span class="input-group-text"><strong>Bs.</strong></span>
-                <input type="number" name="monto" id="monto" min="1" required class="form-control" onkeydown="event.preventDefault()" style="background-color: #f6f6f6;" placeholder="0">
+                <input type="number" name="monto" id="monto" min="1" step="0.01" class="form-control" onkeydown="event.preventDefault()" style="background-color: #f6f6f6;" placeholder="0">
             </div>
         </div>
     </div>
