@@ -1,10 +1,10 @@
 
-<div class="modal fade modal-slide-in-right" aria-hidden="true" role="dialog" tabindex="-1" data-backdrop="static" data-keyboard="false" id="modalViewCargo">
+<div class="modal fade modal-slide-in-right" aria-hidden="true" role="dialog" tabindex="-1" data-backdrop="static" data-keyboard="false" id="modalViewTransaccion">
     <div class="modal-dialog modal-xl">  <!--Small clase: modal-sm width: 300px  |  Por defecto clase: None width: 500px  | Large clase: modal-lg width: 800px | Extra large clase: modal-xl width: 1140px -->
         <div class="modal-content">
 
             <div class="modal-header">
-                <h5 id="title_modal_view_cargo" class="modal-title">CARGO</h5>
+                <h5 id="title_modal_view_transaccion" class="modal-title">TRANSACCION</h5>
                 <button id='cerrarModal' type="button"  class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">X</span>
                 </button>
@@ -12,19 +12,17 @@
 
             <div class="modal-body">
 
-                <form id="frmCargo" enctype="multipart/form-data" onsubmit="return submitFormCargo(event)">
+                <form id="frmTransaccion" enctype="multipart/form-data" onsubmit="return submitFormTransaccion(event)">
                     @csrf
-                    <input type="hidden" name="editCargo" id="editCargo" value="">
-                    <input type="hidden" name="cargo_id" id="cargo_id" value="">
-                    <input type="hidden" name="detalle" id="detalle" value="CARGO">
-
-                    @include('business/cargo/detalle_transaccion')
-
+                    <input type="hidden" name="editTransaccion" id="editTransaccion" value="">
+                    <input type="hidden" name="transaccion_id" id="transaccion_id" value="">
+                    <input type="hidden" name="modulo" id="modulo" value="RESERVA">
+                    <input type="hidden" name="foreign_reserva_id" id="foreign_reserva_id" value="">
+                    @include('business/transaccion/detalle_transaccion')
                     <br>
-
                     <div class="row">
                         <div class="col-md-4 offset-md-4 d-flex justify-content-between">
-                            <button class="btn btn-success" id="btnGuardarCargo" type="submit">Guardar</button>
+                            <button class="btn btn-success" id="btnGuardarTransaccion" type="submit">Guardar</button>
                             <button type="button" class="btn btn-primary" data-dismiss="modal">Cancelar</button>
                         </div>
                     </div>
@@ -40,25 +38,23 @@
 </div> <!--End Modal-->
 
 
-<div class="modal fade modal-slide-in-right" aria-hidden="true" role="dialog" tabindex="-1" id="modalViewCamposCargo">
+<div class="modal fade modal-slide-in-right" aria-hidden="true" role="dialog" tabindex="-1" id="modalViewEditTransaccion">
     <div class="modal-dialog modal-xl">  <!--Small clase: modal-sm width: 300px  |  Por defecto clase: None width: 500px  | Large clase: modal-lg width: 800px | Extra large clase: modal-xl width: 1140px -->
         <div class="modal-content">
 
             <div class="modal-header">
-                <h5 id="title_modal_view_campos_transaccion" class="modal-title">DATOS CARGO</h5>
+                <h5 id="title_modal_view_edit_transaccion" class="modal-title">EDITAR TRANSACCION</h5>
                 <button id='cerrarModal' type="button"  class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">X</span>
                 </button>
             </div>
 
             <div class="modal-body">
-                @include('business/cargo/campos_cargo')
-
+                @include('business/transaccion/campos_transaccion')
                 <br>
-
                 <div class="row">
                     <div class="col-md-4 offset-md-4 d-flex justify-content-between">
-                        <button class="btn btn-success" id="btnAdicionarCargo" type="button">Aceptar</button>
+                        <button class="btn btn-success" id="btnModificarTransaccion" type="button">Guardar</button>
                         <button type="button" class="btn btn-primary" data-dismiss="modal">Cancelar</button>
                     </div>
                 </div>
@@ -76,7 +72,7 @@
   <script>
         $(document).ready(function() {
 
-            $('#modalViewCargo').on('shown.bs.modal', function() {//Para enfocar input de un formulario modal
+            $('#modalViewTransaccion').on('shown.bs.modal', function() {//Para enfocar input de un formulario modal
                 $("#hotel_producto_id").focus();
             })
 
@@ -103,7 +99,6 @@
 
                 $('#hotel_producto_id').selectpicker('val',"");
                 $("#hotel_producto_id").selectpicker('refresh');
-                //$("#hotel_producto_id").focus();
 
                 if(!registrado) {
                     cargarFilaTransaccion(0,hotel_producto_id,producto,cantidad,precio_unidad,"","","","nuevo")
@@ -111,19 +106,19 @@
             });
         });//Fin ready
 
-        function submitFormCargo(event) {
-            storeCargo();
+        function submitFormTransaccion(event) {
+            storeTransaccion();
             event.preventDefault(); //cancela el evento
             return false; //Cancela el envio submit para procesar por ajax
         }
 
-        function storeCargo(){
+        function storeTransaccion(){
 
-            var formdata = new FormData($("#frmCargo")[0]); //Serializa con imagenes multimedia
-            url=URL_BASE + "/business/cargo";
+            var formdata = new FormData($("#frmTransaccion")[0]); //Serializa con imagenes multimedia
+            url=URL_BASE + "/business/transaccion";
 
-            if($("#editCargo").val()=="modificar"){
-                url= url + "/" + $("#cargo_id").val();
+            if($("#editTransaccion").val()=="modificar"){
+                url= url + "/" + $("#transaccion_id").val();
                 formdata.append('_method','patch');
             }
 
@@ -136,8 +131,8 @@
                 data:formdata,
                 dataType: 'json',
                 beforeSend: function () {
-                    $("#btnGuardarCargo").attr('disabled','disabled');
-                    $("#btnGuardarCargo").html("Procesando");
+                    $("#btnGuardarTransaccion").attr('disabled','disabled');
+                    $("#btnGuardarTransaccion").html("Procesando");
                 },
                 success: function(result){
 
@@ -146,36 +141,53 @@
 
                 }, //END error
                 complete:function(result, textStatus ){
-                    $("#modalViewCargo").modal("hide");
-                    $("#btnGuardarCargo").removeAttr('disabled');
-                    $("#btnGuardarCargo").html("Guardar");
-                    datatable_datos.ajax.reload();//recargar registro datatables.
+                    $("#modalViewTransaccion").modal("hide");
+                    $("#btnGuardarTransaccion").removeAttr('disabled');
+                    $("#btnGuardarTransaccion").html("Guardar");
+                    datatable_transaccion.ajax.reload();;//recargar registro datatables.
                 }//END complete
 
             }); //End Ajax
        }
 
-       function createCargo(){
-            $("#editCargo").val("");
-            $("#title_modal_view_cargo").text("NUEVO CARGO");
-            limpiarDatoCargo();
-            $('#modalViewCargo').modal('show');
-       }
+       function createTransaccion(){
+            $("#editTransaccion").val("");
+            $("#title_modal_view_transaccion").text("NUEVA TRANSACCION");
+            limpiarDatoTransaccion();
 
-       function editCargo($id){
-            var transaccion_id=$id;
-            $("#editCargo").val("modificar");
-            $("#title_modal_view_cargo").text("MODIFICAR CARGO");
             $.ajax({
                 type: "GET",
-                url: "{{route('editcargo')}}",
+                url: "{{route('createtransaccion')}}",
+                data:{'_token': '{{ csrf_token() }}'},
+                dataType: 'json',
+                beforeSend: function () {
+
+                },
+                success: function(result){
+                    loadDataTransaccionAjax(result);
+                    $('#modalViewTransaccion').modal('show');
+                },//End success
+                complete:function(result, textStatus ){
+
+                }
+            }); //End Ajax
+        }
+
+       function editTransaccion($id){
+            var transaccion_id=$id;
+            $("#editTransaccion").val("modificar");
+            // $("#title_modal_view_transaccion").text("MODIFICAR TRANSACCION");
+            $.ajax({
+                type: "GET",
+                url: "{{route('edittransaccion')}}",
                 data:{transaccion_id:transaccion_id,'_token': '{{ csrf_token() }}'},
                 dataType: 'json',
                 beforeSend: function () {
-                    limpiarDatoCargo();
+                    limpiarDatomodalViewEditTransaccion();
                 },
                 success: function(result){
-                    $("#cargo_id").val(result.cargo.id);
+                    loadDatamodalViewEditTransaccionAjax(result);
+                    $("#transaccion_id").val(result.transaccion.id);
                     $("#descuento_porcentaje").val(result.transaccion.descuento_porcentaje);
                     $("#descuento").val(result.transaccion.descuento);
 
@@ -183,7 +195,7 @@
                         cargarFilaTransaccion(v.transaccion_id,v.hotel_producto_id,v.producto,v.cantidad,v.precio_unidad,v.descuento_porcentaje,v.descuento,v.monto,"guardado");
                     })
 
-                    $("#modalViewCargo").modal("show");
+                    $("#modalViewEditTransaccion").modal("show");
                 },//End success
                 complete:function(result, textStatus ){
 
@@ -191,17 +203,26 @@
             });//End Ajax
         }
 
+        function loadDataTransaccionAjax(result){
+            $("#hotel_producto_id").find('option').remove();
+            $("#hotel_producto_id").append('<option  value="">--Seleccione--</option>');
+            $.each(result.hotel_productos, function(i, v) {
+                $("#hotel_producto_id").append('<option  value="' + v.id + '" data-precio="'+ v.precio +'">' + v.producto +'</option>');
+            });
+            $("#hotel_producto_id").selectpicker('refresh');
+       }
+
         function validateSave(){
             if($('#tbl_detalle>tbody>tr:visible').length > 0){
-                $("#btnGuardarCargo").removeAttr("disabled");
+                $("#btnGuardarTransaccion").removeAttr("disabled");
             }
             else {
-                $("#btnGuardarCargo").attr("disabled","disabled");
+                $("#btnGuardarTransaccion").attr("disabled","disabled");
             }
         }
 
-        function limpiarDatoCargo(){
-            $("#cargo_id").val("");
+        function limpiarDatoTransaccion(){
+            $("#transaccion_id").val("");
             $("#cantidad").val("");
             $("#precio_unidad").val("");
             $("#descuento_porcentaje").val("");

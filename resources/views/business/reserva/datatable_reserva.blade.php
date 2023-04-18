@@ -1,0 +1,89 @@
+<div class="row">
+    <div class="col">
+        <table id="tbl_reserva" class="table table-striped table-bordered table-sm table-hover" style="width:100%">
+            <thead>
+                <th>Id</th>
+                <th>Fecha Registro</th>
+                <th>Cliente</th>
+                <th>Num Hab.</th>
+                <th>Tipo Habitacion</th>
+                <th>Paquete</th>
+                <th>Servicio</th>
+                <th>Fecha Ingreso</th>
+                <th>Fecha Salida</th>
+                <th>Num Adulto</th>
+                <th>Num Niño</th>
+                <th>Pais Procedencia</th>
+                <th>Ciudad Procedencia</th>
+                <th>Detalle</th>
+                <th>Estado</th>
+                <th>Cargos</th>
+                <th>Modificar</th>
+                <th>Eliminar</th>
+            </thead>
+        </table>
+    </div>
+</div>
+@include('partials/confirmaeliminacion',['url_base_eliminar'=>'business/reserva'])
+@include('business/reserva/create_edit')
+@include('business/cliente/create_edit')
+
+
+@push('scripts')
+    <script>
+        var datatable_reserva="";
+        $(document).ready( function () {
+            // ══════════════════════ Cargando columnas para datatables  ══════════════════════
+            var columnas=[
+                            {data:'id'},
+                            {data:'fecha'},
+                            {data:'cliente'},
+                            {data:'num_habitacion'},
+                            {data:'tipo_habitacion'},
+                            {data:'paquete'},
+                            {data:'servicio'},
+                            {data:'fecha_ini'},
+                            {data:'fecha_fin'},
+                            {data:'num_adulto'},
+                            {data:'num_nino'},
+                            {data:'pais'},
+                            {data:'ciudad'},
+                            {data:'detalle'},
+                            {data:'estado_reserva'},
+                            {data:'id',
+                                orderable:false,
+                                render: function(data){
+                                    return '<button id="'+data+ '" class="btn btn-primary" onclick="slideCargo(id);">Cargos</button></a>';
+                                }
+                            },
+                            {data:'id',
+                                orderable:false,
+                                render: function(data){
+                                    return '<button id="'+data+ '" class="btn btn-info" onclick="editReserva(id);">Editar</button></a>';
+                                }
+                            },
+
+                            {data:'id',
+                                orderable:false,
+                                render: function(data){
+                                    return "<a href='' class='preguntaeliminar btn btn-danger' data-target='#modaleliminar' data-toggle='modal' data-idmodelo='"+data+"'>Eliminar</a>";
+                                }
+                            },
+
+                        ];
+            // ══════════════════════ CARGANDO DataTable por AJAX  ══════════════════════
+            datatable_reserva=$('#tbl_reserva').DataTable({
+                "processing":true,
+                "language": {"url":"{{asset('js/jquery/datatables.spanish.json')}}"},
+                "iDisplayLength": 10,
+                "dom": '<"table-responsive"tr><"bottom float-left"p><"clearfix">',
+                "serverSide":true,
+                "order": [[ 0, "desc" ]],
+                "ajax":"{{url('business/reserva')}}",
+                "columns":columnas,
+            });
+
+        });//fin ready
+
+    </script>
+@endpush

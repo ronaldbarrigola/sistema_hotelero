@@ -18,7 +18,7 @@
         <div class="input-group-prepend">
             <div class="input-group-text">{{$titulo}}</div>
         </div>
-        <input id="txtBuscar" type="text" class="form-control" placeholder="Buscar"  >
+        <input id="txtBuscar" type="text" class="form-control" size="60" placeholder="Buscar"  >
         <div class="input-group-append">
             <button id="btnBuscar" class="input-group-btn btn btn-primary"><span class="icon-Lupa"></span></button>
         </div>
@@ -31,7 +31,7 @@
 
             $('#btnBuscar').on( 'click', function () {
                 var valor_buscado = $.trim($("#txtBuscar").val());
-                datatable_datos.search(valor_buscado).draw();
+                datatable_reserva.search(valor_buscado).draw();
                 ContendorBotonBuscar=$(this).closest('div');
                 ContendorBotonBuscar.find('.btn_texto_filtro_tabla').remove();
                 if(valor_buscado!==""){
@@ -41,7 +41,7 @@
 
             $(this).on('click', '.btn_texto_filtro_tabla', function() {
                $(this).remove();
-               datatable_datos.search('').draw();
+               datatable_reserva.search('').draw();
             });
 
             $('#txtBuscar').keypress(function(e){
@@ -52,7 +52,7 @@
 
             $(this).on('click', '.btn_texto_filtro_tabla', function() {
                $(this).remove();
-               datatable_datos.search('').draw();
+               datatable_reserva.search('').draw();
             });
 
         });//fin ready

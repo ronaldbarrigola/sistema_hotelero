@@ -15,6 +15,7 @@ use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\ReservaController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\CargoController;
+use App\Http\Controllers\TransaccionController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -77,6 +78,8 @@ Route::get('/busines/reserva/createreserva', [ReservaController::class,'create']
 Route::get('/busines/reserva/editreserva', [ReservaController::class,'edit'])->name('editreserva');
 Route::get('/busines/cargo/createcargo', [CargoController::class,'create'])->name('createcargo');
 Route::get('/busines/cargo/editcargo', [CargoController::class,'edit'])->name('editcargo');
+Route::get('/busines/transaccion/createtransaccion', [TransaccionController::class,'create'])->name('createtransaccion');
+Route::get('/busines/transaccion/edittransaccion', [TransaccionController::class,'edit'])->name('edittransaccion');
 Route::get('/busines/reserva/obtenerReservas', [ReservaController::class,'obtenerReservasTimeLines'])->name('obtenerReservas');
 Route::get('/business/ciudad/listaciudades', [CiudadController::class,'obtenerCiudadesPorPaisId'])->name('listaciudades');
 Route::get('/base/persona/buscarPersonaDocId', [PersonaController::class,'buscarPersonaClientePorDocId'])->name('buscarPersonaDocId');
@@ -90,5 +93,6 @@ Route::resource('business/categoria', CategoriaController::class);
 Route::resource('business/producto', ProductoController::class);
 Route::resource('business/reserva', ReservaController::class);
 Route::resource('business/cargo', CargoController::class);
+Route::resource('business/transaccion', TransaccionController::class);
 
 

@@ -15,6 +15,7 @@ class Transaccion extends Model
         'hotel_producto_id',
         'venta_id',
         'cargo_id',
+        'reserva_id',
         'detalle',
         'cantidad',
         'precio_unidad',

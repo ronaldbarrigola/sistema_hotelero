@@ -24,21 +24,26 @@ class CargoController extends Controller
 
     public function index(Request $request){
         if($request->ajax()){
-            return $this->cargoRep->obtenerCargoPorReservaIdDataTables(64);
+           // return $this->cargoRep->obtenerCargoPorReservaIdDataTables($reserva_id);
         }else{
-            $hotelProductos=$this->hotelProductoRep->obtenerHotelProductos();
-            return view('business.cargo.index',['hotel_productos'=>$hotelProductos]);
+           // return view('business.cargo.index');
         }
+    }
+
+    public function create(){
+        $hotelProductos=$this->hotelProductoRep->obtenerHotelProductos();
+        return response()->json(array ('hotel_productos'=>$hotelProductos));
     }
 
     public function edit(Request $request){
         $id=$request['cargo_id'];
+        $hotelProductos=$this->hotelProductoRep->obtenerHotelProductos();
         $cargo=$this->cargoRep->obtenerCargoPorId($id);
         $detalle=null;
         if(!is_null($cargo)){
             $detalle=$this->transaccionRep->obtenerTransaccionPorCargoId($cargo->id);
         }
-        return response()->json(array ('cargo'=>$cargo,'detalle'=>$detalle));
+        return response()->json(array ('cargo'=>$cargo,'hotel_productos'=>$hotelProductos,'detalle'=>$detalle));
     }
 
     public function store(Request $request){

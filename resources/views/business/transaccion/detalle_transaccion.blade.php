@@ -4,10 +4,7 @@
         <div class="form-group">
             <label for="hotel_producto_id" class="my-0" ><strong>Producto:</strong></label>
             <select id="hotel_producto_id" name="hotel_producto_id" class="form-control selectpicker" data-live-search="true">
-                <option value="">--Seleccione--</option>
-                @foreach($hotel_productos as $listHotelProductos)
-                    <option value="{{$listHotelProductos->id}}" data-precio="{{$listHotelProductos->precio}}">{{$listHotelProductos->producto}}</option>
-                @endforeach
+                 <!--Llenado de campos por ajax-->
             </select>
         </div>
     </div>
@@ -53,7 +50,7 @@
                .append($('<td style="text-align:center">').append('<input type="text" name="vec_precio_unidad[]" class="form-control" required value="'+precio_unidad+'" onkeyup="calcularSubTotal(this)" style="text-align:center" placeholder="0">'))
                .append($('<td style="text-align:center">').append('<input type="text" name="vec_descuento_porcentaje[]" class="form-control" value="'+descuento_porcentaje+'" onkeyup="descuentoPorcentaje(this)" style="text-align:center" placeholder="0">'))
                .append($('<td style="text-align:center">').append('<input type="text" name="vec_descuento[]" class="form-control" value="'+descuento+'" onkeyup="descuento(this)" style="text-align:center" placeholder="0">'))
-               .append($('<td style="text-align:center">').append('<input type="text" name="vec_sub_total[]" readonly class="form-control" value="'+ sub_total.toFixed(2) +'" style="text-align:center">'))
+               .append($('<td style="text-align:center">').append('<input type="text" name="vec_monto[]" readonly class="form-control" value="'+ sub_total.toFixed(2) +'" style="text-align:center">'))
                .append($('<td style="text-align:center">').append('<input type="hidden" name="vec_estado[]" value="'+estado+'"><button type="button" class="btn btn-danger" onclick="eliminarFilaTransaccion(this);">Eliminar</button>'))
             );
             calcularSubTotal();
@@ -172,9 +169,9 @@
 
             //Valores sub total
             var sub_total=cantidad*precio_unidad-descuento;
-            var vec_sub_total=$(fila).find("input[name='vec_sub_total[]']");
-            var input_sub_total=vec_sub_total[0];
-            $(input_sub_total).val(sub_total);
+            var vec_monto=$(fila).find("input[name='vec_monto[]']");
+            var input_monto=vec_monto[0];
+            $(input_monto).val(sub_total);
 
             calcularTotales();
 
@@ -216,7 +213,7 @@
             });
 
 
-            $("input[name='vec_sub_total[]']").each(function(indice, elemento) {
+            $("input[name='vec_monto[]']").each(function(indice, elemento) {
                 var sub_total=$(elemento).val();
                 if(sub_total!=""&&sub_total>0&&sub_total!=null){
                     total+=parseFloat(sub_total);

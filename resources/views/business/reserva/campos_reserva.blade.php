@@ -142,54 +142,7 @@
             <strong>CARGO</strong>
         </div>
         <div class="card-body py-0">
-            <div class="row">
-                <div class="col-lg-6 col-md-6 col-sm-6 col-12">
-                    <div class="form-group">
-                        <label for="cantidad" class="my-0"><strong>Cantidad:</strong></label>
-                        <input type="number" name="cantidad" id="cantidad" min="1" required class="form-control"  onkeydown="event.preventDefault()" style="background-color: #f6f6f6;" placeholder="0">
-                    </div>
-                </div>
-
-                <div class="col-lg-6 col-md-6 col-sm-6 col-12">
-                    <div class="form-group">
-                        <label for="precio_unidad" class="my-0"><strong>Precio Unidad:</strong></label>
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><strong>Bs.</strong></span>
-                            <input type="number" name="precio_unidad" id="precio_unidad" min="1" required readonly class="form-control" placeholder="0">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-3 col-sm-3 col-12">
-                    <div class="form-group">
-                        <label for="descuento_porcentaje" class="my-0"><strong>Descuento:</strong></label>
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><strong>%</strong></span>
-                            <input type="number" name="descuento_porcentaje" min="0"  max="100" step="0.01" id="descuento_porcentaje" class="form-control" placeholder="0">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-3 col-sm-3 col-12">
-                    <div class="form-group">
-                        <label for="descuento" class="my-0"><strong>Descuento:</strong></label>
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><strong>Bs.</strong></span>
-                            <input type="number" name="descuento"  id="descuento" min="0" step="0.01" class="form-control" placeholder="0">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-6 col-md-6 col-sm-6 col-12">
-                    <div class="form-group">
-                        <label for="monto" class="my-0"><strong>Total Cargo:</strong></label>
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><strong>Bs.</strong></span>
-                            <input type="number" name="monto" id="monto" min="1" required class="form-control" onkeydown="event.preventDefault()" style="background-color: #f6f6f6;" placeholder="0">
-                        </div>
-                    </div>
-                </div>
-            </div>
+            @include('business/transaccion/campos_transaccion')
         </div>
     </div>
 

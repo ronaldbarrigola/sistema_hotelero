@@ -4,19 +4,19 @@ namespace App\Repositories\Business;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Entidades\Business\Reserva;
-use App\Repositories\Business\CargoRepository;
+use App\Repositories\Business\TransaccionRepository;
 use App\Repositories\Business\HotelProductoRepository;
 use Carbon\Carbon;
 use DB;
 
 class ReservaRepository{
 
-    protected $cargoRep;
+    protected $transaccionRep;
     protected $hotelProductoRep;
 
     //===constructor=============================================================================================
-    public function __construct(CargoRepository $cargoRep,HotelProductoRepository $hotelProductoRep){
-        $this->cargoRep=$cargoRep;
+    public function __construct(TransaccionRepository $transaccionRep,HotelProductoRepository $hotelProductoRep){
+        $this->transaccionRep=$transaccionRep;
         $this->hotelProductoRep=$hotelProductoRep;
     }
 
@@ -135,11 +135,12 @@ class ReservaRepository{
             $hotel_producto=$this->hotelProductoRep->obtenerProductoPorDescripcion($descripcion);
 
             $request->request->add(['reserva_base'=>1]);//Para obtener datos de cantidad, precio unidad, descuento y monto de la tabla transaccion
-            $request->request->add(['reserva_id'=>$reserva->id]);
+            $request->request->add(['foreign_reserva_id'=>$reserva->id]);
             $request->request->add(['venta_id'=>0]);
             $request->request->add(['hotel_producto_id'=>$hotel_producto->id]);
             $request->request->add(['detalle'=>$descripcion]);
-            $this->cargoRep->insertarDesdeRequest($request);
+
+            $this->transaccionRep->insertarDesdeReserva($request);
 
             DB::commit();
         }catch(\Exception $e){
@@ -200,7 +201,8 @@ class ReservaRepository{
                 $request->request->add(['hotel_producto_id'=>$hotel_producto->id]);
                 $request->request->add(['detalle'=>$descripcion]);
                 $request->request->add(['cargo_id'=>$cargo->id]);
-                $this->cargoRep->modificarDesdeRequest($request);
+
+                //$this->transaccionRep->modificarDesdeRequest($request); //Por analizar
 
             }
 

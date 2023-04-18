@@ -17,6 +17,7 @@
 
         @include('business/reserva/create_edit')
         @include('business/cliente/create_edit')
+        @include('business/contextmenu/menu')
     @endsection
 @endsection
 
@@ -230,9 +231,7 @@
                     //     callback(null); // cancel updating the item
                     // }
                     // });
-
                     editReserva(item.id);
-
                 },
 
                 //---------- EVENTO ELIMINAR ITEM -----------------------

@@ -17,6 +17,7 @@
                     @csrf
 
                     <input type="hidden" name="editReserva" id="editReserva" value="">
+                    <input type="hidden" name="modulo" id="modulo" value="RESERVA">
                     @include('business/reserva/campos_reserva')
 
                     <br>
@@ -70,18 +71,6 @@
 
           $(document).on("change", "#fecha_fin", function(){
               calcularCargo();
-          });
-
-          $(document).on("keyup", "#descuento_porcentaje", function(){
-              descuentoPorcentaje();
-          });
-
-          $(document).on("keyup", "#descuento", function(){
-              descuento();
-          });
-
-          $(document).on("keyup", "#precio_unidad", function(){
-             calcularCargo();
           });
 
           $(document).on("change", "#servicio_id", function(){
@@ -260,7 +249,7 @@
                     limpiarDatoReserva();
 
                     try {
-                        datatable_datos.ajax.reload();//recargar registro datatables.
+                        datatable_reserva.ajax.reload();//recargar registro datatables.
                     }
                     catch(err) {
                       //En caso de que se cree la reserva desde el TimeLines
@@ -438,70 +427,6 @@
                 $("#precio_unidad").val(precio_unidad);
                 $("#precio_unidad").attr('readonly','readonly');
             }
-        }
-
-        function descuentoPorcentaje(){
-            var cantidad=$("#cantidad").val();
-            var precio_unidad=$("#precio_unidad").val();
-            var total_cargo=0;
-            var porcentaje=$("#descuento_porcentaje").val();
-            var descuento=0;
-
-            cantidad=(cantidad!=null&&cantidad!=""&&cantidad>0)?cantidad:0;
-            precio_unidad=(precio_unidad!=null&&precio_unidad!=""&&precio_unidad>0)?precio_unidad:0;
-            total_cargo=cantidad*precio_unidad;
-            porcentaje=(porcentaje!=null&&porcentaje!=""&&porcentaje>0)?porcentaje:0;
-            if(porcentaje>0&&porcentaje<=100){
-                //descuento=Math.round(parseFloat((total_cargo*porcentaje)/100));
-                descuento=Math.round(parseFloat((total_cargo*porcentaje)/100)*100.0)/100.0;
-            } else if(porcentaje>100) {
-                $("#descuento_porcentaje").val(100);
-                descuento=total_cargo;
-            } else {
-                $("#descuento_porcentaje").val("");
-            }
-            $("#descuento").val(descuento);
-            calcularCargo();
-
-        }
-
-        function descuento(){
-            var cantidad=$("#cantidad").val();
-            var precio_unidad=$("#precio_unidad").val();
-            var total_cargo=0;
-            var descuento=$("#descuento").val();
-            var porcentaje=0;
-
-            cantidad=(cantidad!=null&&cantidad!=""&&cantidad>0)?cantidad:0;
-            precio_unidad=(precio_unidad!=null&&precio_unidad!=""&&precio_unidad>0)?precio_unidad:0;
-            total_cargo=cantidad*precio_unidad;
-            descuento=(descuento!=null&&descuento!=""&&descuento>0)?descuento:0;
-            if(descuento>0&&descuento<=total_cargo){
-                //porcentaje=Math.round(parseFloat((descuento/total_cargo)*100));
-                porcentaje=Math.round(parseFloat((descuento/total_cargo)*100)*100.0)/100.0;
-            } else if(descuento>total_cargo) {
-                $("#descuento").val(total_cargo);
-                porcentaje=100;
-            } else {
-                $("#descuento").val("");
-            }
-            $("#descuento_porcentaje").val(porcentaje);
-            calcularCargo();
-        }
-
-        function calcularCargo(){
-             cantidadReserva()
-             precioUnidadReserva();
-             var cargo=0;
-             var cantidad=$("#cantidad").val();
-             var precio_unidad=$("#precio_unidad").val();
-             var descuento=$("#descuento").val();
-             //validacion de datos
-             cantidad=(cantidad!=null&&cantidad!=""&&cantidad>0)?cantidad:0;
-             precio_unidad=(precio_unidad!=null&&precio_unidad!=""&&precio_unidad>0)?precio_unidad:0;
-             descuento=(descuento!=null&&descuento!=""&&descuento>0)?descuento:0;
-             cargo= cantidad*precio_unidad-descuento;
-             $("#monto").val(cargo.toFixed(2));
         }
 
         function limpiarDatoReserva(){

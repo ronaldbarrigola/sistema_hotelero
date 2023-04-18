@@ -2,7 +2,7 @@
     {{-- NUEVO REGISTRO --}}
 
     <div class="btn-group" role="group" aria-label="First group">
-        <button id= "btnCreateCargo" class="btn btn-success">NUEVO</button>
+        <button id= "btnCreateTransaccion" class="btn btn-success">NUEVO</button>
     </div>
 
     {{-- CHECKBOX BUSQUEDA EXACTA --}}
@@ -31,7 +31,7 @@
 
             $('#btnBuscar').on( 'click', function () {
                 var valor_buscado = $.trim($("#txtBuscar").val());
-                datatable_datos.search(valor_buscado).draw();
+                datatable_transaccion.search(valor_buscado).draw();
                 ContendorBotonBuscar=$(this).closest('div');
                 ContendorBotonBuscar.find('.btn_texto_filtro_tabla').remove();
                 if(valor_buscado!==""){
@@ -41,7 +41,7 @@
 
             $(this).on('click', '.btn_texto_filtro_tabla', function() {
                $(this).remove();
-               datatable_datos.search('').draw();
+               datatable_transaccion.search('').draw();
             });
 
             $('#txtBuscar').keypress(function(e){
@@ -52,7 +52,7 @@
 
             $(this).on('click', '.btn_texto_filtro_tabla', function() {
                $(this).remove();
-               datatable_datos.search('').draw();
+               datatable_transaccion.search('').draw();
             });
 
         });//fin ready
