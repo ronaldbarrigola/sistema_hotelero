@@ -107,19 +107,7 @@ class ReservaRepository{
                 $fecha_fin=$fecha_fin."T12:00:00";
             }
 
-            //Validaciones
-            $cantidad=($request['reserva_cantidad']!=null)?$request['reserva_cantidad']:0;
-            $precio_unidad=($request['reserva_precio_unidad']!=null)?$request['reserva_precio_unidad']:0;
-            $descuento_porcentaje=($request['reserva_descuento_porcentaje']!=null)?$request['reserva_descuento_porcentaje']:0;
-            $descuento=($request['reserva_descuento']!=null)?$request['reserva_descuento']:0;
-            $monto=($request['reserva_monto']!=null)?$request['reserva_monto']:0;
-
-            $reserva=new Reserva($request->all());
-            $reserva->cantidad=$cantidad;
-            $reserva->precio_unidad=$precio_unidad;
-            $reserva->descuento_porcentaje=$descuento_porcentaje;
-            $reserva->descuento=$descuento;
-            $reserva->monto=$monto;
+            $reserva=new Reserva($request->all());           ;
             $reserva->fecha_ini=$fecha_ini;
             $reserva->fecha_fin=$fecha_fin;
             $reserva->usuario_alta_id=Auth::user()->id;
@@ -133,13 +121,8 @@ class ReservaRepository{
 
             $descripcion=$reserva->servicio->descripcion; //obtiene datos mediante la relacion 1:N
             $hotel_producto=$this->hotelProductoRep->obtenerProductoPorDescripcion($descripcion);
-
-            $request->request->add(['reserva_base'=>1]);//Para obtener datos de cantidad, precio unidad, descuento y monto de la tabla transaccion
             $request->request->add(['foreign_reserva_id'=>$reserva->id]);
-            $request->request->add(['venta_id'=>0]);
             $request->request->add(['hotel_producto_id'=>$hotel_producto->id]);
-            $request->request->add(['detalle'=>$descripcion]);
-
             $this->transaccionRep->insertarDesdeReserva($request);
 
             DB::commit();
@@ -181,11 +164,6 @@ class ReservaRepository{
             $reserva=$this->obtenerReservaPorId($request->get('id'));
             if ($reserva!=null){
                 $reserva->fill($request->all());
-                $reserva->cantidad=$cantidad;
-                $reserva->precio_unidad=$precio_unidad;
-                $reserva->descuento_porcentaje=$descuento_porcentaje;
-                $reserva->descuento=$descuento;
-                $reserva->monto=$monto;
                 $reserva->fecha_ini=$fecha_ini;
                 $reserva->fecha_fin=$fecha_fin;
                 $reserva->usuario_modif_id=Auth::user()->id;
@@ -195,14 +173,18 @@ class ReservaRepository{
                 //Modificar cargo
                 $descripcion=$reserva->servicio->descripcion; //obtiene datos mediante la relacion 1:N
                 $hotel_producto=$this->hotelProductoRep->obtenerProductoPorDescripcion($descripcion);
-                $cargo=$reserva->cargos->where("reserva_base",1)->first();//Obtiene reserva base de la tabla cargo
 
-                $request->request->add(['reserva_id'=>$reserva->id]);
+                $transaccion=$reserva->transacciones->where("transaccion_base",1)->first();//Obtiene reserva base de la tabla cargo
+
+                $request->request->add(['id'=>$transaccion->id]);
                 $request->request->add(['hotel_producto_id'=>$hotel_producto->id]);
-                $request->request->add(['detalle'=>$descripcion]);
-                $request->request->add(['cargo_id'=>$cargo->id]);
+                $request->request->add(['cantidad'=>$cantidad]);
+                $request->request->add(['precio_unidad'=>$precio_unidad]);
+                $request->request->add(['descuento_porcentaje'=>$descuento_porcentaje]);
+                $request->request->add(['descuento'=>$descuento]);
+                $request->request->add(['monto'=>$monto]);
 
-                //$this->transaccionRep->modificarDesdeRequest($request); //Por analizar
+                $this->transaccionRep->modificarDesdeRequest($request);
 
             }
 

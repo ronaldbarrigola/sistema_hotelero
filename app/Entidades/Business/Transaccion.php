@@ -22,10 +22,17 @@ class Transaccion extends Model
         'descuento_porcentaje',
         'descuento',
         'monto',
+        'transaccion_base',
         'usuario_alta_id',
         'usuario_modif_id',
         'estado',
         'fecha_creacion',
         'fecha_modificacion'
     ];
+
+     //Relacion uno a muchos (Inversa)
+     public function reserva()
+     {
+         return $this->belongsTo(Reserva::class,'reserva_id','id');
+     }
 }

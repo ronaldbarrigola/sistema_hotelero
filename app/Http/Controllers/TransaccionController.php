@@ -60,6 +60,5 @@ class TransaccionController extends Controller
                 'id'      => $transaccion->id
             ));
         }
-        return Redirect::route('business.transaccion.index');
     }
 }

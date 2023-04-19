@@ -41,6 +41,32 @@
     </div>
 </div> <!--End Modal-->
 
+
+<!--Begin Modal Eliminar-->
+<div class="modal fade modal-slide-in-right" aria-hidden="true" data-backdrop="static" data-keyboard="false"  tabindex="-1" role="dialog" id="modalDeleteReserva">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title">ELIMINAR</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">X</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <p>¿desea eliminar el registro con id <span id="delete_reserva_id" style="color:red;"></span> ?</p>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" id="btnDeleteReserva" class="btn btn-primary" data-dismiss="modal" onclick="deleteReservaOK();">Confirmar</button>
+            </div>
+
+        </div>
+    </div>
+ </div>
+ <!--End Modal Eliminar-->
+
 @push('scripts')
   <script>
         $(document).ready(function() {
@@ -170,16 +196,16 @@
                     $("#fecha_fin").val(formatFecha(result.reserva.fecha_fin));
                     $("#hora_ini").val(result.reserva.hora_ini);
                     $("#hora_fin").val(result.reserva.hora_fin);
-                    $("#reserva_cantidad").val(result.reserva.cantidad);
-                    $("#reserva_precio_unidad").val(result.reserva.precio_unidad);
+                    $("#reserva_cantidad").val(result.transaccion.cantidad);
+                    $("#reserva_precio_unidad").val(result.transaccion.precio_unidad);
                     //BEGIN:Precio unidad habitacion referencial
                     var precio=$('#habitacion_id option:selected').data("precio");
                     var precio_unidad_ref=(precio!=null&&precio!=""&&precio>0)?precio:0;
                     $("#reserva_precio_unidad_ref").val(precio_unidad_ref);
                     //END:Precio unidad habitacion referencial
-                    $("#reserva_descuento_porcentaje").val(result.reserva.descuento_porcentaje);
-                    $("#reserva_descuento").val(result.reserva.descuento);
-                    $("#reserva_monto").val(result.reserva.monto);
+                    $("#reserva_descuento_porcentaje").val(result.transaccion.descuento_porcentaje);
+                    $("#reserva_descuento").val(result.transaccion.descuento);
+                    $("#reserva_monto").val(result.transaccion.monto);
                     $("#detalle").val(result.reserva.detalle);
 
                     $("#procedencia_ciudad_id").find('option').remove();
@@ -267,27 +293,29 @@
             }); //End Ajax
        }
 
-       function deleteReserva($id){
-                url=URL_BASE + "/business/reserva";
-                url_delete= url + "/" + $id;
+        function deleteReserva($id){
+            $("#delete_reserva_id").text($id);
+            $("#modalDeleteReserva").modal("show");
+        }
 
-                $.ajax({
-                    type: "POST",
-                    url: url_delete,
-                    data:{'_method':'DELETE','_token': '{{ csrf_token() }}'},
-                    dataType: 'json',
-                    success: function(result){
-                        try {
-                            datatable_datos.ajax.reload();//recargar registro datatables.
-                        }
-                        catch(err) {
-                        //En caso de que se cree la reserva desde el TimeLines
-                        }
-                    },
-                    error:function(resultado){
+        function deleteReservaOK(){
+            var $id = $('#delete_reserva_id').text();
+            url=URL_BASE + "/business/reserva";
+            url_delete= url + "/" + $id;
 
-                    }
-                });
+            $.ajax({
+                type: "POST",
+                url: url_delete,
+                data:{'_method':'DELETE','_token': '{{ csrf_token() }}'},
+                dataType: 'json',
+                success: function(result){
+                    datatable_reserva.ajax.reload();
+                    $("#modalDeleteReserva").modal("hide");
+                },
+                error:function(result){
+
+                }
+            });
         }
 
         function loadDataReservaAjax(result){

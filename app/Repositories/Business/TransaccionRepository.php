@@ -5,15 +5,18 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Entidades\Business\Transaccion;
 use App\Repositories\Business\CargoRepository;
+use App\Repositories\Business\TransaccionDetalleRepository;
 use Carbon\Carbon;
 use DB;
 
 class TransaccionRepository{
 
     protected $cargoRep;
+    protected $transaccionDetalleRep;
 
-    public function __construct(CargoRepository $cargoRep){
+    public function __construct(CargoRepository $cargoRep,TransaccionDetalleRepository $transaccionDetalleRep){
         $this->cargoRep=$cargoRep;
+        $this->transaccionDetalleRep=$transaccionDetalleRep;
     }
 
     public function obtenerTransacciones($reserva_id){
@@ -50,53 +53,62 @@ class TransaccionRepository{
         return Transaccion::find($id);
     }
 
-    public function insertarDesdeReserva(Request $request){
+    public function insertarDesdeReserva(Request $request){ //Registro de transaccion correspondiente a un Reserva
+        $transaccion=null;
+        try{
+            DB::beginTransaction();
+            $reserva_id=($request['foreign_reserva_id']!=null)?$request['foreign_reserva_id']:0;
+            //Crear Cargo
+            $cargo_id=0;
+            $cargo=$this->cargoRep->insertarDesdeRequest($request);
+            if(!is_null($cargo)){
+                $cargo_id= $cargo->id;
+            }
 
-        $reserva_id=($request['foreign_reserva_id']!=null)?$request['foreign_reserva_id']:0;
+            $hotel_producto_id = $request->get('hotel_producto_id');
+            $cantidad=$request['reserva_cantidad'];
+            $precio_unidad=$request['reserva_precio_unidad'];
+            $descuento_porcentaje=$request['reserva_descuento_porcentaje'];
+            $descuento=$request['reserva_descuento'];
+            $detalle=$request['detalle'];
 
-        //Crear Cargo
-        $cargo_id=0;
-        $cargo=$this->cargoRep->insertarDesdeRequest($request);
-        if(!is_null($cargo)){
-            $cargo_id= $cargo->id;
-        }
+            //Validaciones
+            $cantidad=($cantidad!=null)?$cantidad:0;
+            $precio_unidad=($precio_unidad!=null)?$precio_unidad:0;
+            $descuento_porcentaje=($descuento_porcentaje!=null)?$descuento_porcentaje:0;
+            $descuento=($descuento!=null)?$descuento:0;
+            $detalle=($detalle!=null)?$detalle:"";
 
-        $hotel_producto_id = $request->get('hotel_producto_id');
-        $fecha_ini = $request->get('fecha_ini');
-        $cantidad=$request['reserva_cantidad'];
-        $precio_unidad=$request['reserva_precio_unidad'];
-        $descuento_porcentaje=$request['reserva_descuento_porcentaje'];
-        $descuento=$request['reserva_descuento'];
-
-        //Validaciones
-        $cantidad=($cantidad!=null)?$cantidad:0;
-        $precio_unidad=($precio_unidad!=null)?$precio_unidad:0;
-        $descuento_porcentaje=($descuento_porcentaje!=null)?$descuento_porcentaje:0;
-        $descuento=($descuento!=null)?$descuento:0;
-
-        $descuento_porcentaje=round($descuento_porcentaje/$cantidad,2);
-        $descuento=round($descuento/$cantidad,2);
-        $fecha = Carbon::parse($fecha_ini);
-        for ($i = 1; $i <= $cantidad; $i++) {
             $transaccion=new Transaccion();
             $transaccion->venta_id=0;
             $transaccion->cargo_id=$cargo_id;
             $transaccion->reserva_id=$reserva_id;
-            $transaccion->cantidad=1;
+            $transaccion->cantidad=$cantidad;
             $transaccion->precio_unidad=$precio_unidad;
             $transaccion->descuento_porcentaje=$descuento_porcentaje;
             $transaccion->descuento=$descuento;
-            $transaccion->monto=round($precio_unidad-$descuento,2); //Solo ingresa 1 unidad
+            $transaccion->monto=round($cantidad*$precio_unidad-$descuento,2);
             $transaccion->hotel_producto_id=$hotel_producto_id;
+            $transaccion->detalle=$detalle;
+            $transaccion->transaccion_base=1; //Transaccion para modificar cantidad, precio_unidad, descuento, monto desde reserva
             $transaccion->usuario_alta_id=Auth::user()->id;
             $transaccion->usuario_modif_id=Auth::user()->id;
-            $transaccion->fecha= $fecha->toDateTimeString();
+            $transaccion->fecha=Carbon::now('America/La_Paz')->toDateTimeString();
             $transaccion->fecha_creacion=Carbon::now('America/La_Paz')->toDateTimeString();
             $transaccion->fecha_modificacion=Carbon::now('America/La_Paz')->toDateTimeString();
             $transaccion->estado=1;
             $transaccion->save();
-            $fecha = $fecha->addDay();
+
+            $request->request->add(['transaccion_id'=> $transaccion->id]);
+            $this->transaccionDetalleRep->insertarDesdeRequest($request);
+
+            DB::commit();
+        }catch(\Exception $e){
+            DB::rollback();
         }
+
+        return $transaccion;
+
     }
 
     public function insertarDesdeRequest(Request $request){

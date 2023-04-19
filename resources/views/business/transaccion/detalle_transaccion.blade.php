@@ -13,7 +13,7 @@
 <div class="row">
     <div class="col-12 col-md-12">
         <div class="table-responsive">
-            <table id="tbl_detalle" class="table table-striped table-bordered table-condensed table-hover">
+            <table id="tbl_detalle_transaccion" class="table table-striped table-bordered table-condensed table-hover">
                 <thead>
                     <th>Producto</th>
                     <th style="text-align:center">Cantidad</th>
@@ -44,7 +44,7 @@
     <script>
         function cargarFilaTransaccion(transaccion_id,hotel_producto_id,producto,cantidad,precio_unidad,descuento_porcentaje,descuento,sub_total,estado){
             sub_total=cantidad*precio_unidad;
-            $('#tbl_detalle').append($('<tr>')
+            $('#tbl_detalle_transaccion').append($('<tr>')
                .append($('<td>').append('<input type="hidden" name="vec_transaccion_id[]" value="'+transaccion_id+'"><input type="hidden" name="vec_hotel_producto_id[]" value="'+hotel_producto_id+'">'+producto))
                .append($('<td style="text-align:center">').append('<input type="text" name="vec_cantidad[]" class="form-control" required value="'+cantidad+'" onkeyup="transaccionSubTotal(this)" style="text-align:center" placeholder="0">'))
                .append($('<td style="text-align:center">').append('<input type="text" name="vec_precio_unidad[]" class="form-control" required value="'+precio_unidad+'" onkeyup="transaccionSubTotal(this)" style="text-align:center" placeholder="0">'))
@@ -53,6 +53,7 @@
                .append($('<td style="text-align:center">').append('<input type="text" name="vec_monto[]" readonly class="form-control" value="'+ sub_total.toFixed(2) +'" style="text-align:center">'))
                .append($('<td style="text-align:center">').append('<input type="hidden" name="vec_estado[]" value="'+estado+'"><button type="button" class="btn btn-danger" onclick="eliminarFilaTransaccion(this);">Eliminar</button>'))
             );
+
             transaccionSubTotal();
         }
 

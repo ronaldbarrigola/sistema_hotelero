@@ -185,7 +185,7 @@
                         <label for="reserva_monto" class="my-0"><strong>Total Cargo:</strong></label>
                         <div class="input-group-prepend">
                             <span class="input-group-text"><strong>Bs.</strong></span>
-                            <input type="number" name="reserva_monto" id="reserva_monto" min="1" required class="form-control" onkeydown="event.preventDefault()" style="background-color: #f6f6f6;" placeholder="0">
+                            <input type="number" name="reserva_monto" id="reserva_monto" min="1" step="0.01" required class="form-control" onkeydown="event.preventDefault()" style="background-color: #f6f6f6;" placeholder="0">
                         </div>
                     </div>
                 </div>

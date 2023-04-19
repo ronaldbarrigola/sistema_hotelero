@@ -2,7 +2,7 @@
     <div class="col">
         <table id="tbl_reserva" class="table table-striped table-bordered table-sm table-hover" style="width:100%">
             <thead>
-                <th>Id</th>
+                <th>Nro. Reserva</th>
                 <th>Fecha Registro</th>
                 <th>Cliente</th>
                 <th>Num Hab.</th>
@@ -53,20 +53,20 @@
                             {data:'id',
                                 orderable:false,
                                 render: function(data){
-                                    return '<button id="'+data+ '" class="btn btn-primary" onclick="slideCargo(id);">Cargos</button></a>';
+                                    return '<button id="'+data+ '" class="btn btn-primary" onclick="slideCargo(this);">Cargos</button>';
                                 }
                             },
                             {data:'id',
                                 orderable:false,
                                 render: function(data){
-                                    return '<button id="'+data+ '" class="btn btn-info" onclick="editReserva(id);">Editar</button></a>';
+                                    return '<button id="'+data+ '" class="btn btn-info" onclick="editReserva(id);">Editar</button>';
                                 }
                             },
 
                             {data:'id',
                                 orderable:false,
                                 render: function(data){
-                                    return "<a href='' class='preguntaeliminar btn btn-danger' data-target='#modaleliminar' data-toggle='modal' data-idmodelo='"+data+"'>Eliminar</a>";
+                                    return '<button id="'+data+ '" class="btn btn-danger" onclick="deleteReserva(id);">Eliminar</button></a>';
                                 }
                             },
 

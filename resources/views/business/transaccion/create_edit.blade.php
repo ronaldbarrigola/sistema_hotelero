@@ -45,6 +45,29 @@
     </div>
 </div> <!--End Modal-->
 
+<div class="modal fade modal-slide-in-right" aria-hidden="true" data-backdrop="static" data-keyboard="false"  tabindex="-1" role="dialog" id="modalDeleteTransaccion">
+   <div class="modal-dialog">
+       <div class="modal-content">
+           <div class="modal-header">
+           <h5 class="modal-title">ELIMINAR</h5>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                   <span aria-hidden="true">X</span>
+               </button>
+           </div>
+
+           <div class="modal-body">
+               <p>¿desea eliminar el registro con id <span id="delete_transaccion_id" style="color:red;"></span> ?</p>
+           </div>
+
+           <div class="modal-footer">
+               <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+               <button type="button" id="btnDeleteTransaccion" class="btn btn-primary" data-dismiss="modal" onclick="deleteTransaccionOK();">Confirmar</button>
+           </div>
+
+       </div>
+   </div>
+</div>
+
 @push('scripts')
   <script>
         $(document).ready(function() {
@@ -69,7 +92,7 @@
                         var input_cantidad=vec_cantidad[0];
                         cantidad=Number.parseInt(($(input_cantidad).val()!=null)?$(input_cantidad).val():0);
                         $(input_cantidad).val(cantidad +1);
-                        calcularSubTotal(fila);
+                        transaccionSubTotal(fila);
                         registrado=true;
                     }
                 });
@@ -131,7 +154,7 @@
             $("#editTransaccion").val("");
             $("#panel_detalle_transaccion").show();
             $("#panel_campos_transaccion").hide();
-            $("#title_modal_view_transaccion").text("NUEVA TRANSACCION");
+            $("#title_modal_view_transaccion").text("CARGO");
             limpiarDatoTransaccion();
 
             $.ajax({
@@ -157,7 +180,7 @@
             $("#editTransaccion").val("modificar");
             $("#panel_detalle_transaccion").hide();
             $("#panel_campos_transaccion").show();
-            $("#title_modal_view_transaccion").text("MODIFICAR TRANSACCION");
+            $("#title_modal_view_transaccion").text("MODIFICAR CARGO");
             $.ajax({
                 type: "GET",
                 url: "{{route('edittransaccion')}}",
@@ -180,6 +203,31 @@
 
                 }
             });//End Ajax
+        }
+
+        function deleteTransaccion($id){
+            $("#delete_transaccion_id").text($id);
+            $("#modalDeleteTransaccion").modal("show");
+        }
+
+        function deleteTransaccionOK(){
+            var $id = $('#delete_transaccion_id').text();
+            url=URL_BASE + "/business/transaccion";
+            url_delete= url + "/" + $id;
+
+            $.ajax({
+                type: "POST",
+                url: url_delete,
+                data:{'_method':'DELETE','_token': '{{ csrf_token() }}'},
+                dataType: 'json',
+                success: function(result){
+                    datatable_transaccion.ajax.reload();
+                    $("#modalDeleteTransaccion").modal("hide");
+                },
+                error:function(result){
+
+                }
+            });
         }
 
         function loadDataTransaccionAjax(result){
@@ -209,7 +257,7 @@
             $("#monto").val("");
 
             //Limpiar detalle
-            $("#tbl_detalle tbody tr").find('td').remove();
+            $("#tbl_detalle_transaccion tbody tr").find('td').remove();
             $("#cantidad_total").text(0);
             $("#precio_unidad_total").text(0);
             $("#descuento_porcentaje_total").text(0);

@@ -6,7 +6,7 @@
             @include('business/reserva/actionbar',['','titulo'=>'RESERVAS'])
        </div>
        <div id="cabecera_cargo" style="display:none">
-            @include('business/transaccion/actionbar',['','titulo'=>'TRANSACCION'])
+            @include('business/transaccion/actionbar',['','titulo'=>'CARGOS'])
        </div>
     @endsection
     @section('panelCuerpo')
@@ -32,15 +32,18 @@
                 createReserva();
             });
 
-            $(document).on("click", "#btnPrevious", function(){ //El boton btnCreateCliente se encuentra en actionbar
-                slideReserva();
-            });
         });//fin ready
 
-        function slideCargo(id){
+        function slideCargo($this){
+            fila=$($this).closest("tr");
+            id=$this.id;
+            var cliente = fila.find("td:eq(2)").text();//Tabla reserva
+            var nro_habitacion = fila.find("td:eq(3)").text();//Tabla reserva
             $('#cabecera_reserva').hide()
             $('#cabecera_cargo').show()
-            $('#foreign_reserva_id').val(id); //La variable reserva_id_dto se encuenta en elmodulo cargo.index
+            $('#nombre_cliente').text(cliente.toUpperCase()); //El campo nombre_cliente se encuenta en el modulo transaccion.actionbar
+            $('#nro_habitacion').text(nro_habitacion); //El campo nro_reserva se encuenta en el modulo transaccion.actionbar
+            $('#foreign_reserva_id').val(id); //El campo foreign_reserva_id se encuenta en el modulo cargo.index
             datatable_transaccion.ajax.reload();
             $('#carouselReserva').carousel('next');
         }

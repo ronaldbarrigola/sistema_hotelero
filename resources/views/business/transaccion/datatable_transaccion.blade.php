@@ -1,7 +1,7 @@
 
 <div class="row">
     <div class="col">
-        <table id="tbl_cargo" class="table table-striped table-bordered table-sm table-hover" style="width:100%">
+        <table id="tbl_transaccion" class="table table-striped table-bordered table-sm table-hover" style="width:100%">
             <thead>
                 <tr>
                     <th>Nro. Cargo</th>
@@ -17,6 +17,7 @@
                     <th>Cargo</th>
                     <th>Pago</th>
                     <th>Saldo</th>
+                    <th>Opcion</th>
                     <th>Modificar</th>
                     <th>Eliminar</th>
                </tr>
@@ -38,14 +39,26 @@
                     <th></th>
                     <th></th>
                     <th></th>
+                    <th></th>
                </tr>
             </tfoot>
         </table>
     </div>
 </div>
-@include('partials/confirmaeliminacion',['url_base_eliminar'=>'business/transaccion'])
-@include('business/transaccion/create_edit')
+<div class="btn-toolbar d-flex justify-content-end" role="toolbar" aria-label="Toolbar with button groups">
+    <div class="input-group input-group-inline">
+        <div class="input-group-prepend">
+            <div class="input-group-text">Bs.</div>
+        </div>
+        <input type="number" name="monto_pago" id="monto_pago" min="1" step="0.01" size="60" readonly class="form-control" placeholder="0">
+        <div class="input-group-append">
+            <button type="button" class="btn btn-primary" id="btnPagarTransaccion" onclick="sendTransaccionPago()">Pagar Cargo</button>
+        </div>
+    </div>
+</div>
 
+@include('business/transaccion/create_edit')
+@include('business/transaccion_pago/create_edit')
 @push('scripts')
     <script>
         var datatable_transaccion="";
@@ -56,12 +69,12 @@
             });
 
             // ══════════════════════ Cargando columnas para datatables  ══════════════════════
-            var columnas=[  {data:'cargo_id'},
-                            {data:'id'},
+            var columnas=[  {data:'cargo_id',className: "text-center"},
+                            {data:'id',className: "text-center"},
                             {data:'fecha'},
                             {data:'producto'},
                             {data:'detalle'},
-                            {data:'cantidad'},
+                            {data:'cantidad',className: "text-center"},
                             {data:'precio_unidad'},
                             {data:'total'},
                             {data:'descuento_porcentaje'},
@@ -70,25 +83,39 @@
                             {data:'pago'},
                             {data:'saldo'},
                             {data:'id',
+                                className: "text-center",
                                 orderable:false,
-                                render: function(data){
-                                    return '<button id="'+data+ '" class="btn btn-info" onclick="editTransaccion(id);">Editar</button></a>';
+                                render: function ( data, type, row ){
+                                    if(row.saldo > 0){
+                                        return '<input type="hidden" name="vec_transaccion_id[]" value="'+row.id+'"><input type="hidden" name="vec_cantidad[]" value="'+row.cantidad+'"><input type="hidden" name="vec_precio_unidad[]" value="'+row.precio_unidad+'"><input type="hidden" name="vec_producto[]" value="'+row.producto+'"><input type="hidden" name="vec_descuento[]" value="'+row.descuento+'"><input type="hidden" name="vec_monto[]" value="'+row.saldo+'"><input type="checkbox" id="'+ data +'" onchange="selectCheckboxPago();" class="form-control">';
+                                    } else {
+                                        return '<input type="hidden" name="vec_transaccion_id[]" value="0"><input type="hidden" name="vec_cantidad[]" value="0"><input type="hidden" name="vec_precio_unidad[]" value="0"><input type="hidden" name="vec_producto[]" value=""><input type="hidden" name="vec_descuento[]" value="0"><input type="hidden" name="vec_monto[]" value="0"><strong>PAGADO</strong>';
+                                    }
                                 }
                             },
                             {data:'id',
+                                className: "text-center",
                                 orderable:false,
                                 render: function(data){
-                                    return "<a href='' class='preguntaeliminar btn btn-danger' data-target='#modaleliminar' data-toggle='modal' data-idmodelo='"+data+"'>Eliminar</a>";
+                                    return '<button id="'+data+ '" class="btn btn-info" onclick="editTransaccion(id);">Editar</button>';
+                                }
+                            },
+                            {data:'id',
+                                className: "text-center",
+                                orderable:false,
+                                render: function(data){
+                                    return '<button id="'+data+ '" class="btn btn-danger" onclick="deleteTransaccion(id);">Eliminar</button>';
                                 }
                             },
                         ];
             // ══════════════════════ CARGANDO DataTable por AJAX  ══════════════════════
-            datatable_transaccion=$('#tbl_cargo').DataTable({
+            datatable_transaccion=$('#tbl_transaccion').DataTable({
                 "processing":true,
                 "language": {"url":"{{asset('js/jquery/datatables.spanish.json')}}"},
-                "iDisplayLength": 10,
+                //"iDisplayLength": 10,
                 "dom": '<"table-responsive"tr><"bottom float-left"p><"clearfix">',
                 "serverSide":true,
+                "bPaginate": false,
                 "order": [[ 0, "desc" ]],
                 "ajax": {   "url" : "{{url('/business/transaccion/')}}",
                             "data" :function(d){
@@ -203,11 +230,76 @@
                     $( api.column( 12 ).footer() ).html(
                         '<br> <span style="color:#00008B">'+ parseFloat(saldoTotal).toFixed(2)  +'</span>'
                     );
-
+                },
+                "drawCallback": function( settings ) {
+                    $("#monto_pago").val(0);
                 },
             });
 
         });//fin ready
+
+        function selectCheckboxPago(){
+            var total=0;
+            $("#monto_pago").val("");
+            $("#tbl_transaccion input[type=checkbox]:checked").each(function () {
+                var fila=$(this).closest("tr");
+                var vec_monto=$(fila).find("input[name='vec_monto[]']");
+                var input_monto=vec_monto[0];
+                var monto=$(input_monto).val();
+                total=total+parseFloat(monto);
+            });
+            $("#monto_pago").val(parseFloat(total).toFixed(2));
+        }
+
+        function sendTransaccionPago(){
+            var monto_pago=$("#monto_pago").val();
+            monto_pago=(monto_pago!=null&&monto_pago!=""&&monto_pago>0)?monto_pago:0;
+            if(monto_pago<=0){
+                messageAlert("Debe seleccionar de la lista opciones que desea pagar");
+                return 0;
+            }
+
+            limpiarDatoTransaccionPago();//Modulo transaccion_pago
+            $("#tbl_transaccion input[type=checkbox]:checked").each(function () {
+                var fila=$(this).closest("tr");
+
+                //Transaccion Id
+                var vec_transaccion_id=$(fila).find("input[name='vec_transaccion_id[]']");
+                var input_transaccion_id=vec_transaccion_id[0];
+                var transaccion_id=$(input_transaccion_id).val();
+
+                //Cantidad
+                var vec_cantidad=$(fila).find("input[name='vec_cantidad[]']");
+                var input_cantidad=vec_cantidad[0];
+                var cantidad=$(input_cantidad).val();
+                cantidad=(cantidad!=null&&cantidad!=""&&cantidad>0)?cantidad:0;
+
+                //Precio Unidad
+                var vec_precio_unidad=$(fila).find("input[name='vec_precio_unidad[]']");
+                var input_precio_unidad=vec_precio_unidad[0];
+                var precio_unidad=$(input_precio_unidad).val();
+                precio_unidad=(precio_unidad!=null&&precio_unidad!=""&&precio_unidad>0)?precio_unidad:0;
+
+                //Producto
+                var vec_producto=$(fila).find("input[name='vec_producto[]']");
+                var input_producto=vec_producto[0];
+                var producto=$(input_producto).val();
+
+                //Descuento
+                var vec_descuento=$(fila).find("input[name='vec_descuento[]']");
+                var input_descuento=vec_descuento[0];
+                var descuento=$(input_descuento).val();
+                descuento=(descuento!=null&&descuento!=""&&descuento>0)?descuento:0;
+
+               //Monto
+                var vec_monto=$(fila).find("input[name='vec_monto[]']");
+                var input_monto=vec_monto[0];
+                var monto=$(input_monto).val();
+                monto=(monto!=null&&monto!=""&&monto>0)?monto:0;
+                cargarFilaTransaccionPago(0,transaccion_id,cantidad,producto,precio_unidad,descuento,monto);
+            });
+            createTransaccionPago();
+        }
 
     </script>
 @endpush

@@ -78,6 +78,10 @@ class ReservaController extends Controller
     public function edit(Request $request){
         $id=$request['reserva_id'];
         $reserva=$this->reservaRep->obtenerReservaPorId($id);
+        $transaccion=null;
+        if(!is_null($reserva)){
+           $transaccion=$reserva->transacciones->where("transaccion_base",1)->first();
+        }
         $clientes=$this->clienteRep->obtenerClientes();
         $estadoReservas=$this->estadoReservaRep->obtenerEstadoReservas();
         $habitaciones=$this->habitacionRep->obtenerHabitaciones();
@@ -91,7 +95,7 @@ class ReservaController extends Controller
             $ciudades=$this->ciudadRep->obtenerCiudadesPorPaisId($reserva->procedencia_pais_id);
         }
 
-        return response()->json(array ('reserva'=>$reserva,'ciudades'=>$ciudades,'clientes'=>$clientes,'estadoReservas'=>$estadoReservas,'habitaciones'=>$habitaciones,'motivos'=>$motivos,'paquetes'=>$paquetes,'servicios'=>$servicios,'paises'=>$paises));
+        return response()->json(array ('reserva'=>$reserva,'transaccion'=>$transaccion,'ciudades'=>$ciudades,'clientes'=>$clientes,'estadoReservas'=>$estadoReservas,'habitaciones'=>$habitaciones,'motivos'=>$motivos,'paquetes'=>$paquetes,'servicios'=>$servicios,'paises'=>$paises));
 
     }
 

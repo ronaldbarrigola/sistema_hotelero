@@ -3,15 +3,12 @@
 
     <div class="btn-group" role="group" aria-label="First group">
         <button id= "btnCreateTransaccion" class="btn btn-success">NUEVO</button>
-        <button id= "btnPrevious" class="btn btn-secondary">Volver</button>
+        <button id= "btnRetornarReserva" class="btn btn-primary" onclick="slideReserva()">Volver</button>  {{-- Volver al modulo Reserva --}}
     </div>
 
-    {{-- CHECKBOX BUSQUEDA EXACTA --}}
-    <div class="btn-group float-right mt-2" role="group">
-        <div class="form-check d-none">
-            <input type="checkbox" class="form-check-input" id="chkBusquedaExacta" checked>
-            <label class="form-check-label" for="chkBusquedaExacta">Búsq. palabra completa en columna </label>
-        </div>
+    <div class="form-group mt-1" role="group">
+        <span>CLIENTE : </span><strong id="nombre_cliente"></strong>
+        <span>NRO. HABITACION : </span><strong id="nro_habitacion"></strong>
     </div>
 
     {{-- BUSQUEDA --}}
@@ -19,19 +16,20 @@
         <div class="input-group-prepend">
             <div class="input-group-text">{{$titulo}}</div>
         </div>
-        <input id="txtBuscar" type="text" class="form-control" size="60" placeholder="Buscar"  >
+        <input id="txtBuscarTransaccion" type="text" class="form-control" size="60" placeholder="Buscar"  >
         <div class="input-group-append">
-            <button id="btnBuscar" class="input-group-btn btn btn-primary"><span class="icon-Lupa"></span></button>
+            <button id="btnBuscarTransaccion" class="input-group-btn btn btn-primary"><span class="icon-Lupa"></span></button>
         </div>
     </div>
+
 </div>
 
 @push('scripts')
     <script>
         $(document).ready( function () {
 
-            $('#btnBuscar').on( 'click', function () {
-                var valor_buscado = $.trim($("#txtBuscar").val());
+            $('#btnBuscarTransaccion').on( 'click', function () {
+                var valor_buscado = $.trim($("#txtBuscarTransaccion").val());
                 datatable_transaccion.search(valor_buscado).draw();
                 ContendorBotonBuscar=$(this).closest('div');
                 ContendorBotonBuscar.find('.btn_texto_filtro_tabla').remove();
@@ -45,9 +43,9 @@
                datatable_transaccion.search('').draw();
             });
 
-            $('#txtBuscar').keypress(function(e){
+            $('#txtBuscarTransaccion').keypress(function(e){
             if(e.which == 13){//tecla ENTER
-               $('#btnBuscar').click();//dispara el evento click del boton btnBuscar
+               $('#btnBuscarTransaccion').click();//dispara el evento click del boton btnBuscar
             }
             });
 

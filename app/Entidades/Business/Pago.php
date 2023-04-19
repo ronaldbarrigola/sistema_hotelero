@@ -4,26 +4,23 @@ namespace App\Entidades\Business;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Cargo extends Model
+class Pago extends Model
 {
-    protected $table="con_cargo";
+    protected $table="con_pago";
     protected $primaryKey="id";
     public $timestamps=false;
 
     protected $fillable=[
         'fecha',
-        'reserva_id',
+        'nombre',
+        'nit',
+        'email',
         'detalle',
+        'agencia_id',
         'usuario_alta_id',
         'usuario_modif_id',
         'estado',
         'fecha_creacion',
         'fecha_modificacion'
     ];
-
-    //Relacion uno a muchos (Inversa)
-    public function reserva()
-    {
-        return $this->belongsTo(Reserva::class,'reserva_id','id');
-    }
 }
