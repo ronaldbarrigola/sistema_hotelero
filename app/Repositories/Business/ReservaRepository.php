@@ -26,12 +26,11 @@ class ReservaRepository{
         ->join('gob_habitacion as h','h.id','=','r.habitacion_id')
         ->join('res_estado_reserva as er','er.id','=','r.estado_reserva_id')
         ->leftjoin('res_servicio as serv','serv.id','=','r.servicio_id')
-        ->leftjoin('pro_producto as prod','prod.id','=','serv.id')
         ->leftjoin('gob_tipo_habitacion as th','th.id','=','h.tipo_habitacion_id')
         ->leftjoin('res_paquete as q','q.id','=','r.paquete_id')
         ->leftjoin('cli_pais as cp','cp.id','=','r.procedencia_pais_id')
         ->leftjoin('cli_ciudad as cc','cc.id','=','r.procedencia_ciudad_id')
-        ->select('r.id',DB::raw('DATE_FORMAT(r.fecha,"%d/%m/%Y %H:%i:%s") as fecha'),DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) AS cliente'),'h.num_habitacion','th.descripcion as tipo_habitacion','q.descripcion as paquete','prod.descripcion as servicio',DB::raw('DATE_FORMAT(r.fecha_ini,"%d/%m/%Y") as fecha_ini'),DB::raw('DATE_FORMAT(r.fecha_fin,"%d/%m/%Y") as fecha_fin'),'r.num_adulto','r.num_nino','cp.descripcion as pais','cc.descripcion as ciudad','r.detalle','er.descripcion as estado_reserva','r.servicio_id')
+        ->select('r.id',DB::raw('DATE_FORMAT(r.fecha,"%d/%m/%Y %H:%i:%s") as fecha'),DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) AS cliente'),'h.num_habitacion','th.descripcion as tipo_habitacion','q.descripcion as paquete','serv.descripcion as servicio',DB::raw('DATE_FORMAT(r.fecha_ini,"%d/%m/%Y") as fecha_ini'),DB::raw('DATE_FORMAT(r.fecha_fin,"%d/%m/%Y") as fecha_fin'),'r.num_adulto','r.num_nino','cp.descripcion as pais','cc.descripcion as ciudad','r.detalle','er.descripcion as estado_reserva','r.servicio_id')
         ->where('h.agencia_id','=',Auth::user()->agencia_id)
         ->where('r.estado','=','1')
         ->where('p.estado','=','1')
@@ -121,8 +120,10 @@ class ReservaRepository{
 
             $descripcion=$reserva->servicio->descripcion; //obtiene datos mediante la relacion 1:N
             $hotel_producto=$this->hotelProductoRep->obtenerProductoPorDescripcion($descripcion);
+
             $request->request->add(['foreign_reserva_id'=>$reserva->id]);
             $request->request->add(['hotel_producto_id'=>$hotel_producto->id]);
+
             $this->transaccionRep->insertarDesdeReserva($request);
 
             DB::commit();

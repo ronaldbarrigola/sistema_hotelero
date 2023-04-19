@@ -53,7 +53,8 @@ class ReservaController extends Controller
      //===========================================================================================================
      public function index(Request $request){
         if($request->ajax()){
-            return $this->reservaRep->obtenerReservasDataTables();
+            $reservas=$this->reservaRep->obtenerReservasDataTables();
+            return $reservas;
         }else{
             return view('business.reserva.index');
         }
