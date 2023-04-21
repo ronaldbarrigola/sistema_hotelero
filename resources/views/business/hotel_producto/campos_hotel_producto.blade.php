@@ -1,4 +1,5 @@
 <div class="row">
+    <input type="hidden" name="hotel_producto_id" id="hotel_producto_id">
     <input type="hidden" name="producto_id" id="producto_id">
     <div class="col-12">
         <div class="form-group">
@@ -15,6 +16,15 @@
               <option value="{{$lista_categoria->id}}"> {{$lista_categoria->descripcion}}</option>
             @endforeach
            </select>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+        <div class="form-group">
+            <label for="precio" class="my-0"><strong>Precio:</strong></label>
+            <div class="input-group-prepend">
+                <span class="input-group-text"><strong>Bs.</strong></span>
+                <input type="number" name="precio"  id="precio" min="0" step="0.01" required class="form-control" placeholder="0">
+            </div>
         </div>
     </div>
 </div>

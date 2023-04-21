@@ -22,4 +22,24 @@ class TransaccionPago extends Model
         'fecha_creacion',
         'fecha_modificacion'
     ];
+
+    public function delete() //Eliminacion logica
+    {
+        $this->estado = false;
+        $this->save();
+    }
+
+    //Relacion uno a muchos (Inversa)
+    public function transaccion()
+    {
+      return $this->belongsTo(Transaccion::class,'transaccion_id','id');
+    }
+
+   //Relacion uno a muchos (Inversa)
+    public function transaccionPago()
+    {
+       return $this->belongsTo(Pago::class,'pago_id','id');
+    }
+
+
 }

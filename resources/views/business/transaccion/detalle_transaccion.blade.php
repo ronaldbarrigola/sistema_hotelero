@@ -46,11 +46,11 @@
             sub_total=cantidad*precio_unidad;
             $('#tbl_detalle_transaccion').append($('<tr>')
                .append($('<td>').append('<input type="hidden" name="vec_transaccion_id[]" value="'+transaccion_id+'"><input type="hidden" name="vec_hotel_producto_id[]" value="'+hotel_producto_id+'">'+producto))
-               .append($('<td style="text-align:center">').append('<input type="text" name="vec_cantidad[]" class="form-control" required value="'+cantidad+'" onkeyup="transaccionSubTotal(this)" style="text-align:center" placeholder="0">'))
-               .append($('<td style="text-align:center">').append('<input type="text" name="vec_precio_unidad[]" class="form-control" required value="'+precio_unidad+'" onkeyup="transaccionSubTotal(this)" style="text-align:center" placeholder="0">'))
-               .append($('<td style="text-align:center">').append('<input type="text" name="vec_descuento_porcentaje[]" class="form-control" value="'+descuento_porcentaje+'" onkeyup="transaccionDescuentoPorcentaje(this)" style="text-align:center" placeholder="0">'))
-               .append($('<td style="text-align:center">').append('<input type="text" name="vec_descuento[]" class="form-control" value="'+descuento+'" onkeyup="transaccionDescuento(this)" style="text-align:center" placeholder="0">'))
-               .append($('<td style="text-align:center">').append('<input type="text" name="vec_monto[]" readonly class="form-control" value="'+ sub_total.toFixed(2) +'" style="text-align:center">'))
+               .append($('<td style="text-align:center">').append('<input type="number" name="vec_cantidad[]" class="form-control" required min="1" value="'+cantidad+'" onkeyup="transaccionSubTotal(this)" style="text-align:center" placeholder="0">'))
+               .append($('<td style="text-align:center">').append('<input type="number" name="vec_precio_unidad[]" class="form-control" onkeydown="event.preventDefault()" required min="1" step="0.01" value="'+precio_unidad+'" onkeyup="transaccionSubTotal(this)" style="text-align:center;background-color:#f6f6f6;" placeholder="0">'))
+               .append($('<td style="text-align:center">').append('<input type="number" name="vec_descuento_porcentaje[]" class="form-control" value="'+descuento_porcentaje+'" onkeyup="transaccionDescuentoPorcentaje(this)" style="text-align:center" placeholder="0">'))
+               .append($('<td style="text-align:center">').append('<input type="number" name="vec_descuento[]" class="form-control" value="'+descuento+'" onkeyup="transaccionDescuento(this)" style="text-align:center" placeholder="0">'))
+               .append($('<td style="text-align:center">').append('<input type="number" name="vec_monto[]" onkeydown="event.preventDefault()" required min="1" step="0.01" class="form-control" value="'+ sub_total.toFixed(2) +'" style="text-align:center;background-color:#f6f6f6;">'))
                .append($('<td style="text-align:center">').append('<input type="hidden" name="vec_estado[]" value="'+estado+'"><button type="button" class="btn btn-danger" onclick="eliminarFilaTransaccion(this);">Eliminar</button>'))
             );
 

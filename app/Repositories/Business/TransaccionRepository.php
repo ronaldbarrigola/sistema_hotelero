@@ -196,6 +196,10 @@ class TransaccionRepository{
          $transaccion->fecha_modificacion=Carbon::now('America/La_Paz')->toDateTimeString();
          $transaccion->update();
 
+         $transaccion->transaccionDetalle()->delete();
+         $request->request->add(['transaccion_id'=> $transaccion->id]);
+         $this->transaccionDetalleRep->insertarDesdeRequest($request);
+
     }
 
     public function eliminar($id){
@@ -203,8 +207,7 @@ class TransaccionRepository{
         if ( is_null($transaccion) ){
             App::abort(404);
         }
-        $transaccion->estado='0';
-        $transaccion->update();
+        $transaccion->delete();//Eliminacion logica
         return $transaccion;
     }
 

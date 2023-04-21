@@ -198,13 +198,20 @@ class ReservaRepository{
     }
 
     public function eliminar($id){
+        $reserva=null;
+        try{
+            DB::beginTransaction();
+            $reserva=$this->obtenerReservaPorId($id);
+            if ( is_null($reserva) ){
+                App::abort(404);
+            }
 
-        $reserva=$this->obtenerReservaPorId($id);
-        if ( is_null($reserva) ){
-            App::abort(404);
-        }
-        $reserva->estado='0';
-        $reserva->update();
+            $reserva->delete();//Eliminacion logica y en cascada con sus relaciones
+            DB::commit();
+        }catch(\Exception $e){
+            DB::rollback();
+            }
+
         return $reserva;
     }
 

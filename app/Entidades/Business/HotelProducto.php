@@ -13,7 +13,6 @@ class HotelProducto extends Model
                          'usuario_alta_id',
                          'usuario_modif_id',
                          'precio',
-                         'activado',
                          'estado',
                          'fecha_creacion',
                          'fecha_modificacion'

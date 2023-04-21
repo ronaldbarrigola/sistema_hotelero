@@ -14,6 +14,7 @@ use App\Http\Controllers\HabitacionController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\ReservaController;
 use App\Http\Controllers\ProductoController;
+use App\Http\Controllers\HotelProductoController;
 use App\Http\Controllers\CargoController;
 use App\Http\Controllers\TransaccionController;
 use App\Http\Controllers\TransaccionPagoController;
@@ -75,6 +76,7 @@ Route::get('/busines/habitacion/edithabitacion', [HabitacionController::class,'e
 Route::get('/business/habitacion/obtenerHabitaciones', [HabitacionController::class,'obtenerHabitaciones'])->name('obtenerHabitaciones');
 Route::get('/busines/categoria/editcategoria', [CategoriaController::class,'edit'])->name('editcategoria');
 Route::get('/busines/producto/editproducto', [ProductoController::class,'edit'])->name('editproducto');
+Route::get('/busines/hotel_producto/edithotelproducto', [HotelProductoController::class,'edit'])->name('edithotelproducto');
 Route::get('/busines/reserva/createreserva', [ReservaController::class,'create'])->name('createreserva');
 Route::get('/busines/reserva/editreserva', [ReservaController::class,'edit'])->name('editreserva');
 Route::get('/busines/cargo/createcargo', [CargoController::class,'create'])->name('createcargo');
@@ -86,13 +88,15 @@ Route::get('/busines/reserva/obtenerReservas', [ReservaController::class,'obtene
 Route::get('/business/ciudad/listaciudades', [CiudadController::class,'obtenerCiudadesPorPaisId'])->name('listaciudades');
 Route::get('/base/persona/buscarPersonaDocId', [PersonaController::class,'buscarPersonaClientePorDocId'])->name('buscarPersonaDocId');
 
-
+//Post
+Route::post('/busines/hotel_producto/activatehotelproducto', [HotelProductoController::class,'activate'])->name('activatehotelproducto');
 
 //Rutas generales
 Route::resource('business/cliente', ClienteController::class);
 Route::resource('business/habitacion', HabitacionController::class);
 Route::resource('business/categoria', CategoriaController::class);
 Route::resource('business/producto', ProductoController::class);
+Route::resource('business/hotel_producto', HotelProductoController::class);
 Route::resource('business/reserva', ReservaController::class);
 Route::resource('business/cargo', CargoController::class);
 Route::resource('business/transaccion', TransaccionController::class);

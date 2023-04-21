@@ -29,7 +29,8 @@ class ProductoController extends Controller
     }
 
     public function store(Request $request){
-        $response=$this->productoRep->insertarDesdeRequest($request);
+        $datos_json=$this->productoRep->insertarDesdeRequest($request);
+        $response = $datos_json->getData()->response;
         return response()->json(array ('response'=>$response));
     }
 
@@ -40,7 +41,7 @@ class ProductoController extends Controller
     }
 
     public function update(Request $request, $id){
-        $request->request->add(['id'=>$id]);
+        $request->request->add(['producto_id'=>$id]);
         $prodcuto=$this->productoRep->modificarDesdeRequest($request);
         return  $prodcuto;
     }

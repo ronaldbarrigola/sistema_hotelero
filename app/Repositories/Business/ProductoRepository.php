@@ -68,11 +68,12 @@ class ProductoRepository{
             $response="202"; //Registro existente
         }
 
-        return  $response;
+        return response()->json(array ('response'=>$response,'producto'=>$producto));
+
     }
 
     public function modificarDesdeRequest(Request $request){
-        $producto=$this->obtenerProductoPorId($request->get('id'));
+        $producto=$this->obtenerProductoPorId($request->get('producto_id'));
         $producto->fill($request->all()); //llena datos desde el array entrante en el request.
         $producto->usuario_modif_id=Auth::user()->id;
         $producto->fecha_modificacion=Carbon::now('America/La_Paz')->toDateTimeString();

@@ -2,13 +2,19 @@
 
 namespace App\Entidades\Business;
 
+
 use Illuminate\Database\Eloquent\Model;
+
+
 
 class Reserva extends Model
 {
+
     protected $table="res_reserva";
     protected $primaryKey="id";
     public $timestamps=false;
+
+
 
     protected $fillable=[
         'fecha',
@@ -35,6 +41,22 @@ class Reserva extends Model
         'fecha_creacion',
         'fecha_modificacion'
     ];
+
+
+    public function delete() //Eliminacion logica
+    {
+
+        $this->cargos()->each(function ($transaccion) {//Eliminacion logica en cascada
+            $transaccion->delete();
+        });
+
+        $this->transacciones()->each(function ($transaccion) {//Eliminacion logica en cascada
+            $transaccion->delete();
+        });
+
+        $this->estado = false;
+        $this->save();
+    }
 
     //Relacion 1 a muchos (Inversa)
     public function servicio()

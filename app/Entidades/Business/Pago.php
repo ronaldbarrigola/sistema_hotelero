@@ -23,4 +23,20 @@ class Pago extends Model
         'fecha_creacion',
         'fecha_modificacion'
     ];
+
+    public function delete() //Eliminacion logica
+    {
+        $this->transaccionPago()->each(function ($transaccionPago) {//Eliminacion logica en cascada
+            $transaccionPago->delete();
+        });
+
+        $this->estado = false;
+        $this->save();
+    }
+
+    //Relacion 1 a muchos
+    public function transaccionPago()
+    {
+       return $this->hasMany(TransaccionPago::class,'pago_id','id');
+    }
 }
