@@ -3,6 +3,7 @@
 namespace App\Entidades\Base;
 
 use Illuminate\Database\Eloquent\Model;
+use DB;
 
 class Persona extends Model
 {
@@ -23,10 +24,24 @@ class Persona extends Model
         return $this->hasOne('App\Models\User','id');//'id' es la columna de relacion en bas_usuario
     }
 
+    //Relacion 1 a 1 Con cliente
+    public function cliente()
+    {
+        return $this->hasOne('App\Entidades\Business\Cliente','id');
+    }
+
     //Relacion 1 a 1 Con vendedor
     public function vendedor()
     {
         return $this->hasOne('App\Entidades\Smart\Vendedor','id');//'id' es la columna de relacion en vnt_vendedor
+    }
+
+    public function nombre_completo()
+    {
+        $nombre=($this->nombre!=null)?$this->nombre:"";
+        $paterno=($this->paterno!=null)?$this->paterno:"";
+        $materno=($this->materno!=null)?$this->materno:"";
+        return $nombre." ".$paterno." ". $materno;
     }
 
 }

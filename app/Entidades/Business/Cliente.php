@@ -22,4 +22,16 @@ class Cliente extends Model
         'fecha_creacion',
         'fecha_modificacion'
     ];
+
+    //Relacion 1 a 1 Con Persona
+    public function persona()
+    {
+       return $this->hasOne('App\Entidades\Base\Persona','id');
+    }
+
+     //Relacion 1 a muchos
+     public function reserva()
+     {
+       return $this->hasMany(Transaccion::class,'cliente_id','id');
+     }
 }

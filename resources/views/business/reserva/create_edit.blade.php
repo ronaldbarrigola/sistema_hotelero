@@ -126,7 +126,7 @@
             //Cargar precio de habitacion
             var precio=$('#habitacion_id option:selected').data("precio");
             var precio_unidad_ref=(precio!=null&&precio!=""&&precio>0)?precio:0;
-            $("#precio_unidad_ref").val(precio_unidad_ref);
+            $("#reserva_precio_unidad_ref").val(precio_unidad_ref);
             servicioReserva();
             reservaCalcularCargo();
         }
@@ -175,8 +175,14 @@
                     $("#reserva_id").val(result.reserva.id);
                     $("#cliente_id").selectpicker('val', result.reserva.cliente_id);
                     $("#cliente_id").selectpicker('refresh');
+
                     $("#habitacion_id").selectpicker('val', result.reserva.habitacion_id);
                     $("#habitacion_id").selectpicker('refresh');
+                    //Cargar precio de habitacion
+                    var precio=$('#habitacion_id option:selected').data("precio");
+                    var precio_unidad_ref=(precio!=null&&precio!=""&&precio>0)?precio:0;
+                    $("#reserva_precio_unidad_ref").val(precio_unidad_ref);
+
                     $("#paquete_id").selectpicker('val', result.reserva.paquete_id);
                     $("#paquete_id").selectpicker('refresh');
                     $("#servicio_id").selectpicker('val', result.reserva.servicio_id);
@@ -196,18 +202,14 @@
                     $("#fecha_fin").val(formatFecha(result.reserva.fecha_fin));
                     $("#hora_ini").val(result.reserva.hora_ini);
                     $("#hora_fin").val(result.reserva.hora_fin);
+
                     $("#reserva_cantidad").val(result.transaccion.cantidad);
                     $("#reserva_precio_unidad").val(result.transaccion.precio_unidad);
-                    //BEGIN:Precio unidad habitacion referencial
-                    var precio=$('#habitacion_id option:selected').data("precio");
-                    var precio_unidad_ref=(precio!=null&&precio!=""&&precio>0)?precio:0;
-                    $("#reserva_precio_unidad_ref").val(precio_unidad_ref);
-                    //END:Precio unidad habitacion referencial
                     $("#reserva_descuento_porcentaje").val(result.transaccion.descuento_porcentaje);
                     $("#reserva_descuento").val(result.transaccion.descuento);
                     $("#reserva_monto").val(result.transaccion.monto);
-                    $("#detalle").val(result.reserva.detalle);
 
+                    $("#detalle").val(result.reserva.detalle);
                     $("#procedencia_ciudad_id").find('option').remove();
                     $.each(result.ciudades , function(i, v) {
                         $("#procedencia_ciudad_id").append('<option  value="' + v.id + '" >' + v.descripcion + '</option>');
@@ -273,12 +275,20 @@
                 },
                 success: function(result){
                     limpiarDatoReserva();
-
                     try {
                         datatable_reserva.ajax.reload();//recargar registro datatables.
                     }
-                    catch(err) {
-                      //En caso de que se cree la reserva desde el TimeLines
+                    catch(err) { //En caso de que se cree la reserva desde el TimeLines
+                        if($("#editReserva").val()==""){//Creacion de un nuevo Item
+                            var id=result.reserva.id;
+                            var content="Paterno";
+                            var fecha_ingreso=result.reserva.fecha_ini;
+                            var fecha_salida=result.reserva.fecha_fin;
+                            var habitacion_id=result.reserva.habitacion_id;
+                            var color=result.estadoReserva.color;
+                            //items.add({id:id,content:content,start:fecha_ingreso,end:fecha_salida,group:habitacion_id,className:"bg-secondary text-white"});
+                            items.add({id:id,content:content,start:fecha_ingreso,end:fecha_salida,group:habitacion_id,className:color});
+                        }
                     }
                 },//End success
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -309,7 +319,13 @@
                 data:{'_method':'DELETE','_token': '{{ csrf_token() }}'},
                 dataType: 'json',
                 success: function(result){
-                    datatable_reserva.ajax.reload();
+                    try {
+                        datatable_reserva.ajax.reload();//recargar registro datatables.
+                    }
+                    catch(err) {
+                       //En caso de que se cree la reserva desde el TimeLines
+                    }
+
                     $("#modalDeleteReserva").modal("hide");
                 },
                 error:function(result){

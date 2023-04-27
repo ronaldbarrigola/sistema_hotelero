@@ -154,7 +154,10 @@
             $("#editTransaccion").val("");
             $("#panel_detalle_transaccion").show();
             $("#panel_campos_transaccion").hide();
-            $("#title_modal_view_transaccion").text("CARGO");
+            // $('#modalViewTransaccion').removeClass('modal-lg');
+            // $('#modalViewTransaccion').addClass('modal-xl');
+            $("#title_modal_view_transaccion").text("NUEVO CARGO");
+
             limpiarDatoTransaccion();
 
             $.ajax({
@@ -180,7 +183,11 @@
             $("#editTransaccion").val("modificar");
             $("#panel_detalle_transaccion").hide();
             $("#panel_campos_transaccion").show();
+
+            // $('#modalViewTransaccion').removeClass('modal-xl');
+            // $('#modalViewTransaccion').addClass('modal-lg');
             $("#title_modal_view_transaccion").text("MODIFICAR CARGO");
+
             $.ajax({
                 type: "GET",
                 url: "{{route('edittransaccion')}}",
@@ -228,6 +235,43 @@
 
                 }
             });
+        }
+
+
+        function slideReserva(){
+            $('.cabecera_transaccion').hide()
+            $('.cabecera_principal').show()
+            $('.carouselReserva').carousel('prev');
+        }
+
+        function slideReservaTransaccion($id){
+            var reserva_id=$id;
+            $.ajax({
+                type: "GET",
+                url: "{{route('obtenerReservaPorId')}}",
+                data:{reserva_id:reserva_id,'_token': '{{ csrf_token() }}'},
+                dataType: 'json',
+                beforeSend: function () {
+
+                },
+                success: function(result){
+                    var nro_reserva=result.reserva.id;
+                    var cliente=result.cliente;
+                    console.log(result.habitacion);
+                    var nro_habitacion=result.habitacion.num_habitacion;
+
+                    $('#nombre_cliente').text(cliente.toUpperCase()); //El campo nombre_cliente se encuenta en el modulo transaccion.actionbar
+                    $('#nro_habitacion').text(nro_habitacion); //El campo nro_reserva se encuenta en el modulo transaccion.actionbar
+                    $('#foreign_reserva_id').val(reserva_id); //El campo foreign_reserva_id se encuenta en el modulo transaccion.create_edit
+                    datatable_transaccion.ajax.reload();
+                    $('.cabecera_principal').hide();
+                    $('.cabecera_transaccion').show();
+                    $('.carouselReserva').carousel('next');
+                },//End success
+                complete:function(result, textStatus ){
+
+                }
+            }); //End Ajax
         }
 
         function loadDataTransaccionAjax(result){

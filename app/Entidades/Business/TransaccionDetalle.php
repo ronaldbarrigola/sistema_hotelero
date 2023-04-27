@@ -25,15 +25,9 @@ class TransaccionDetalle extends Model
         'fecha_modificacion'
     ];
 
-    public function delete() //Eliminacion logica
-    {
-        $this->estado = false;
-        $this->save();
-    }
-
     //Relacion uno a muchos (Inversa)
     public function transaccion()
      {
-        return $this->belongsTo(TransaccionDetalle::class,'transaccion_id','id');
+        return $this->belongsTo(Transaccion::class,'transaccion_id','id');
     }
 }

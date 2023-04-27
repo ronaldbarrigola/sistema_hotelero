@@ -60,6 +60,21 @@ class ReservaController extends Controller
         }
     }
 
+    public function estadoReserva(Request $request){
+        $id=$request['reserva_id'];
+        $estado=$request['estado_reserva_id'];
+        $estadoReserva=$this->reservaRep->estadoReserva($id,$estado);
+        return $estadoReserva;
+    }
+
+    public function obtenerReservaPorId(Request $request){
+        $id=$request['reserva_id'];
+        $reserva=$this->reservaRep->obtenerReservaPorId($id);
+        $habitacion=$reserva->habitacion;
+        $cliente=$reserva->cliente->persona->nombre_completo();
+        return response()->json(array ('reserva'=>$reserva,'habitacion'=>$habitacion,'cliente'=>$cliente));
+     }
+
     public function create(){
         $clientes=$this->clienteRep->obtenerClientes();
         $estadoReservas=$this->estadoReservaRep->obtenerEstadoReservas();
@@ -73,16 +88,14 @@ class ReservaController extends Controller
 
     public function store(Request $request){
         $reserva=$this->reservaRep->insertarDesdeRequest($request);
-        return response()->json(array ('reserva'=>$reserva));
+        $estadoReserva=$reserva->estadoReserva;
+        return response()->json(array ('reserva'=>$reserva,'estadoReserva'=>$estadoReserva));
     }
 
     public function edit(Request $request){
         $id=$request['reserva_id'];
         $reserva=$this->reservaRep->obtenerReservaPorId($id);
-        $transaccion=null;
-        if(!is_null($reserva)){
-           $transaccion=$reserva->transacciones->where("transaccion_base",1)->first();
-        }
+        $transaccion=$this->reservaRep->transaccionPorReservaId($id);
         $clientes=$this->clienteRep->obtenerClientes();
         $estadoReservas=$this->estadoReservaRep->obtenerEstadoReservas();
         $habitaciones=$this->habitacionRep->obtenerHabitaciones();

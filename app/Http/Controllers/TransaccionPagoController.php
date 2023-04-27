@@ -5,16 +5,19 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use App\Repositories\Business\TransaccionPagoRepository;
+use App\Repositories\Business\FormaPagoRepository;
 
 
 class TransaccionPagoController extends Controller
 {
     protected $transaccionPagoRep;
+    protected $formaPagoRep;
 
-    public function __construct(TransaccionPagoRepository $transaccionPagoRep){
+    public function __construct(TransaccionPagoRepository $transaccionPagoRep,FormaPagoRepository $formaPagoRep){
         $this->middleware('auth');
         $this->middleware('guest');
         $this->transaccionPagoRep=$transaccionPagoRep;
+        $this->formaPagoRep=$formaPagoRep;
     }
 
      public function index(Request $request){
@@ -25,6 +28,11 @@ class TransaccionPagoController extends Controller
         }
     }
 
+    public function create(){
+        $formaPagos=$this->formaPagoRep->obtenerFormaPagos();
+        return response()->json(array ('formaPagos'=>$formaPagos));
+    }
+
     public function store(Request $request){
         $transaccionPago=$this->transaccionPagoRep->insertarDesdeRequest($request);
         return response()->json(array ('transaccionPago'=>$transaccionPago));
@@ -32,8 +40,9 @@ class TransaccionPagoController extends Controller
 
     public function edit(Request $request){
         $id=$request['transaccion_pago_id'];
+        $formaPagos=$this->formaPagoRep->obtenerFormaPagos();
         $transaccionPago=$this->transaccionPagoRep->obtenerTransaccionPorId($id);
-        return response()->json(array ('transaccionPago'=>$transaccionPago));
+        return response()->json(array ('transaccionPago'=>$transaccionPago,'formaPagos'=>$formaPagos));
     }
 
     public function update(Request $request, $id){

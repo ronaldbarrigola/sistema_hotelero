@@ -32,13 +32,10 @@ class Transaccion extends Model
 
     public function delete() //Eliminacion logica
     {
-
         $this->transaccionPago()->each(function ($transaccionPago) {//Eliminacion logica en cascada
             $transaccionPago->delete();
         });
-        $this->transaccionDetalle()->each(function ($transaccionDetalle) {//Eliminacion logica en cascada
-            $transaccionDetalle->delete();
-        });
+        $this->transaccionDetalle()->delete(); //Eliminacion fisica en cascada
 
         $this->estado = false;
         $this->save();

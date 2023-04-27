@@ -30,10 +30,10 @@
 
                 <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
-                        <label for="precio_unidad_ref" class="my-0"><strong>Precio Unidad Habitacion:</strong></label>
+                        <label for="reserva_precio_unidad_ref" class="my-0"><strong>Precio Unidad Habitacion:</strong></label>
                         <div class="input-group-prepend">
                             <span class="input-group-text"><strong>Bs.</strong></span>
-                            <input type="number" name="precio_unidad_ref" id="precio_unidad_ref" readonly class="form-control" placeholder="0">
+                            <input type="number" name="reserva_precio_unidad_ref" id="reserva_precio_unidad_ref" readonly class="form-control" placeholder="0">
                         </div>
                     </div>
                 </div>

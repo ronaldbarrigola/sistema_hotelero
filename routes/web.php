@@ -79,17 +79,20 @@ Route::get('/busines/producto/editproducto', [ProductoController::class,'edit'])
 Route::get('/busines/hotel_producto/edithotelproducto', [HotelProductoController::class,'edit'])->name('edithotelproducto');
 Route::get('/busines/reserva/createreserva', [ReservaController::class,'create'])->name('createreserva');
 Route::get('/busines/reserva/editreserva', [ReservaController::class,'edit'])->name('editreserva');
+Route::get('/busines/reserva/obtenerReservaPorId', [ReservaController::class,'obtenerReservaPorId'])->name('obtenerReservaPorId');
 Route::get('/busines/cargo/createcargo', [CargoController::class,'create'])->name('createcargo');
 Route::get('/busines/cargo/editcargo', [CargoController::class,'edit'])->name('editcargo');
 Route::get('/busines/transaccion/createtransaccion', [TransaccionController::class,'create'])->name('createtransaccion');
 Route::get('/busines/transaccion/edittransaccion', [TransaccionController::class,'edit'])->name('edittransaccion');
-Route::get('/busines/transaccion_pago/edittransaccionPago', [TransaccionPagoController::class,'edit'])->name('edittransaccionpago');
+Route::get('/busines/transaccion_pago/edittransaccionpago', [TransaccionPagoController::class,'edit'])->name('edittransaccionpago');
+Route::get('/busines/transaccion/createtransaccionpago', [TransaccionPagoController::class,'create'])->name('createtransaccionpago');
 Route::get('/busines/reserva/obtenerReservas', [ReservaController::class,'obtenerReservasTimeLines'])->name('obtenerReservas');
 Route::get('/business/ciudad/listaciudades', [CiudadController::class,'obtenerCiudadesPorPaisId'])->name('listaciudades');
 Route::get('/base/persona/buscarPersonaDocId', [PersonaController::class,'buscarPersonaClientePorDocId'])->name('buscarPersonaDocId');
 
 //Post
-Route::post('/busines/hotel_producto/activatehotelproducto', [HotelProductoController::class,'activate'])->name('activatehotelproducto');
+Route::post('/business/hotel_producto/activatehotelproducto', [HotelProductoController::class,'activate'])->name('activatehotelproducto');
+Route::post('/business/reserva/estado', [ReservaController::class,'estadoReserva'])->name('estadoreserva');
 
 //Rutas generales
 Route::resource('business/cliente', ClienteController::class);

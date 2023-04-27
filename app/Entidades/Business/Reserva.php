@@ -45,7 +45,6 @@ class Reserva extends Model
 
     public function delete() //Eliminacion logica
     {
-
         $this->cargos()->each(function ($transaccion) {//Eliminacion logica en cascada
             $transaccion->delete();
         });
@@ -59,9 +58,27 @@ class Reserva extends Model
     }
 
     //Relacion 1 a muchos (Inversa)
+    public function cliente()
+    {
+       return $this->belongsTo(Cliente::class,'cliente_id','id');
+    }
+
+    //Relacion 1 a muchos (Inversa)
     public function servicio()
     {
         return $this->belongsTo(Servicio::class,'servicio_id','id');
+    }
+
+    //Relacion 1 a muchos (Inversa)
+    public function habitacion()
+    {
+       return $this->belongsTo(Habitacion::class,'habitacion_id','id');
+    }
+
+    //Relacion 1 a muchos (Inversa)
+    public function estadoReserva()
+    {
+       return $this->belongsTo(EstadoReserva::class,'estado_reserva_id','id');
     }
 
     //Relacion 1 a muchos

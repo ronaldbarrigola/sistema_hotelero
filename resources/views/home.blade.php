@@ -1,7 +1,12 @@
 @extends('layouts.plantillaFormExtendido')
 @section('contenido')
     @section('panelCabecera')
-        {{App\Entidades\Base\Sistema::nombreVersion()}}
+       <div class="cabecera_principal">
+            {{App\Entidades\Base\Sistema::nombreVersion()}}
+       </div>
+       <div class="cabecera_transaccion" style="display:none">
+            @include('business/transaccion/actionbar',['','titulo'=>'CARGOS'])
+       </div>
     @endsection
 
     @section('panelCuerpo')
@@ -11,9 +16,17 @@
             </div>
         @endif
 
-        <button id="enfo">ir a id</button>
-        <div id="visualization"></div>
-        <div id="log"></div>
+        <div class="carouselReserva carousel slide" data-ride="carousel" data-interval="false">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    {{-- Contenedor principal timeline --}}
+                    <div id="visualization"></div>
+                </div>
+                <div class="carousel-item">
+                    @include('business/transaccion/datatable_transaccion')
+                </div>
+            </div>
+        </div>
 
         @include('business/reserva/create_edit')
         @include('business/cliente/create_edit')
@@ -50,10 +63,27 @@
             // add event listener
             timeline.on('select', onSelect);
 
-            //evita mostrar menu contextual del navegador al presionar click derecho.
             timeline.on('contextmenu', function (props) {
-                alert('mostrar menu contextual');
-                props.event.preventDefault();
+                props.event.preventDefault(); // Para evitar que se abra el menú del navegador
+                //BEGIN: Insertar elementos al menu contextual se ecuentra en el modulo contextmenu
+                var $menu = $('.context-menu');
+                $menu.empty();
+                var btnCheckIn="<div class='m=0 col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='checkIn(this)'>Check In</button></div>";
+                var btnCheckOut="<div class='col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='checkOut(this)'>Check Out</button></div>";
+                var btnCargos="<div class='col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='slideReservaTransaccion(id)'>Cargos</button></div>"; //slideReservaTransaccion(id) se encuentra en el modulo transaccion.crete_edit
+                var btnPagos="<div class='col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light'>Pagos</button></div>";
+                $menu.append(btnCheckIn);
+                $menu.append(btnCheckOut);
+                $menu.append(btnCargos);
+                $menu.append(btnPagos);
+
+                $menu.css({
+                    display: 'block',
+                    left: props.event.pageX,
+                    top: props.event.pageY
+                });
+                //END: Insertar elementos al menu contextual se ecuentra en el modulo contextmenu
+
             });
         }); //End ready
 
@@ -94,15 +124,17 @@
                 },
                 success: function(result){
                     if(result.response){
-                        console.log(result);
                         $.each(result.reservas,function(i, v) {
                             let tipoGrafico='range';
                             if(v.servicio_id==2) //DAY USE
                             {
                                 tipoGrafico='point';
                             }
-                            dataItems.push({id:v.id,title:v.cliente,content:v.paterno,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className: 'bg-info text-white',type:tipoGrafico})
+                            //dataItems.push({id:v.id,title:v.cliente,content:v.paterno,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className: 'bg-info text-white',type:tipoGrafico})
+                            dataItems.push({id:v.id,content:v.paterno,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,type:tipoGrafico})
+
                         });
+
                         items = new vis.DataSet(dataItems);
                     }
 
@@ -184,11 +216,11 @@
                     var fecha_fin=item.end;
                     var habitacion_id=item.group;
 
-
                     createReserva(); //Visualizar formulario modal reserva, se encuentra en reserva/crete_edit
                     setDateReserva(fecha_ini,fecha_fin); //la funcion setDateReserva, se encuentra en reserva/crete_edit
                     selectHabitacion(habitacion_id) //la funcion selectHabitacion se, encuentra en reserva/crete_edit
-                    callback(item); // send back adjusted new item
+                    //callback(item); // send back adjusted new item
+                    callback(null); //Para que desaparesca el item por defecto
 
                 },
 
@@ -222,29 +254,22 @@
 
                 //---------- EVENTO ACTUALIZANDO ITEM -----------------------
                 onUpdate: function (item, callback) {
-                    // prettyPrompt('Desea modificar la reserva del cliente : ' + item.content, function (value) {
-                    // if (value) {
-                    //     // item.content = value;
-                    //     // callback(item); // send back adjusted item
-                    // }
-                    // else {
-                    //     callback(null); // cancel updating the item
-                    // }
-                    // });
                     editReserva(item.id);
                 },
 
                 //---------- EVENTO ELIMINAR ITEM -----------------------
                 onRemove: function (item, callback) {
-                    prettyConfirm('Eliminar Reserva', 'Esta seguro de eliminar la reserva ' + item.content + '?', function (ok) {
-                    if (ok) {
-                        callback(item); // confirm deletion
-                        deleteReserva(item.id)
-                    }
-                    else {
-                        callback(null); // cancel deletion
-                    }
-                    });
+                    // prettyConfirm('Eliminar Reserva', 'Esta seguro de eliminar la reserva ' + item.content + '?', function (ok) {
+                    // if (ok) {
+                    //     callback(item); // confirm deletion
+                    //     deleteReserva(item.id)
+                    // }
+                    // else {
+                    //     callback(null); // cancel deletion
+                    // }
+                    // });
+                    callback(item); // confirm deletion
+                    deleteReserva(item.id)
                 },
             };
         }
@@ -285,6 +310,43 @@
                 showCancelButton: true,
                 inputValue: inputValue
             }, callback);
+        }
+
+        function checkIn($this){
+            var reserva_id=$this.id;
+            var estado_reserva_id=1;
+            estadoReserva(reserva_id,estado_reserva_id);
+        }
+
+        function checkOut($this){
+            var reserva_id=$this.id;
+            var estado_reserva_id=3;
+            estadoReserva(reserva_id,estado_reserva_id);
+        }
+
+        function estadoReserva(reserva_id,estado_reserva_id){
+            $.ajax({
+                type: "POST",
+                url: "{{route('estadoreserva')}}",
+                data:{reserva_id:reserva_id,estado_reserva_id:estado_reserva_id,'_token':'{{ csrf_token() }}'},
+                dataType: 'json',
+                beforeSend: function () {
+
+                },
+                success: function(result){
+                   if(result.response){
+                        var item = items.get(reserva_id);
+                        //items.update({id: reserva_id,className: 'bg-primary text-white'});
+                        items.update({id: reserva_id,className:result.reserva.color});
+
+                   } else {
+                    messageAlert(result.message);
+                   }
+                },//End success
+                complete:function(result, textStatus ){
+
+                }
+            }); //End Ajax
         }
 
     </script>

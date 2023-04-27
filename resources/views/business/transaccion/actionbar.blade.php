@@ -3,7 +3,7 @@
 
     <div class="btn-group" role="group" aria-label="First group">
         <button id= "btnCreateTransaccion" class="btn btn-success">NUEVO</button>
-        <button id= "btnRetornarReserva" class="btn btn-primary" onclick="slideReserva()">Volver</button>  {{-- Volver al modulo Reserva --}}
+        <button id= "btnRetornarReserva" class="btn btn-primary" onclick="slideReserva()">Volver</button>   {{-- slideReserva()  se encuentra en el modulo transaccion.crete_edit --}}
     </div>
 
     <div class="form-group mt-1" role="group">

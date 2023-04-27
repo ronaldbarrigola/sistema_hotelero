@@ -18,6 +18,7 @@
                     <input type="hidden" name="transaccion_pago_id" id="transaccion_pago_id" value="">
                     @include('business/transaccion_pago/campos_transaccion_pago')
                     @include('business/transaccion_pago/detalle_transaccion_pago')
+                    @include('business/formapago/detalle_forma_pago')
                     <br>
                     <div class="row">
                         <div class="col-md-4 offset-md-4 d-flex justify-content-between">
@@ -91,7 +92,24 @@
        function createTransaccionPago(){
             $("#editTransaccionPago").val("");
             $("#title_modal_view_transaccion_pago").text("PAGO");
-            $('#modalViewTransaccionPago').modal('show');
+            $.ajax({
+                async: false, //Evitar la ejecucion  Asincrona
+                type: "GET",
+                url: "{{route('createtransaccionpago')}}",
+                data:{'_token': '{{ csrf_token() }}'},
+                dataType: 'json',
+                beforeSend: function () {
+
+                },
+                success: function(result){
+                    loadDataTransaccionPagoAjax(result)
+                    $('#modalViewTransaccionPago').modal('show');
+                },//End success
+                complete:function(result, textStatus ){
+
+                }
+            }); //End Ajax
+
         }
 
        function editTransaccionPago($id){
@@ -104,6 +122,7 @@
                 data:{transaccion_pago_id:transaccion_pago_id,'_token': '{{ csrf_token() }}'},
                 dataType: 'json',
                 beforeSend: function () {
+                    loadDataTransaccionPagoAjax(result)
                     limpiarDatoTransaccionPago();
                 },
                 success: function(result){
@@ -115,6 +134,19 @@
                 }
             });//End Ajax
         }
+
+        function loadDataTransaccionPagoAjax(result){
+            limpiarFormaPago();
+            $("#forma_pago_id").find('option').remove();
+            $("#forma_pago_id").append('<option  value="">--Seleccione--</option>');
+            $.each(result.formaPagos, function(i, v) {
+                $("#forma_pago_id").append('<option  value="'+ v.id +'" >'+v.descripcion+'</option>');
+                if(v.id!="PM"){ //No debe carga pago multiple en la tabla para pago multiple
+                  cargarFilaFormaPago(v.id,v.descripcion,"")
+                }
+            });
+            $("#forma_pago_id").selectpicker('refresh');
+       }
 
         function limpiarDatoTransaccionPago(){
             $("#pago_nombre").val("");

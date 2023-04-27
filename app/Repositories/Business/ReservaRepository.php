@@ -4,6 +4,7 @@ namespace App\Repositories\Business;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Entidades\Business\Reserva;
+use App\Entidades\Business\Transaccion;
 use App\Repositories\Business\TransaccionRepository;
 use App\Repositories\Business\HotelProductoRepository;
 use Carbon\Carbon;
@@ -84,6 +85,60 @@ class ReservaRepository{
     public function obtenerReservaPorId($id){
        return Reserva::find($id);
     }
+
+    public function transaccionPorReservaId($id){ //Para obtener transaccion principal, y si fue eliminado crea una nueva transaccion
+        $transaccion=Reserva::find($id)->transacciones->where("transaccion_base",1)->where("estado",1)->first();
+        if(is_null($transaccion)){
+            $transaccion=new Transaccion();
+         }
+        return $transaccion;
+    }
+
+    public function estadoReserva($id,$estado){
+        $response=false;
+        $message="";
+        $reserva=$this->obtenerReservaPorId($id);
+        if(!is_null($reserva)){
+            switch ($estado) {
+                case 0:
+                    $reserva->estado_reserva_id=0;//0: Reserva
+                    $reserva->update();
+                    $response=true;
+                    break;
+                case 1:
+                    if($reserva->estado_reserva_id==0){
+                        $fecha=$reserva->fecha_ini;
+                        $fecha_inicial = Carbon::parse($fecha)->format('Y-m-d');
+                        $fecha_actual = Carbon::now()->format('Y-m-d');
+                        if($fecha_inicial==$fecha_actual){
+                            $reserva->estado_reserva_id=1;//1:Check In
+                            $reserva->update();
+                            $response=true;
+                        } else {
+                            $message="El check in esta programado para otra fecha. Cambie la fecha de ingreso a la fecha actual para el Check In";
+                        }
+
+                    } else {
+                       $message="Para el Check In, el estado deberia estar en Reserva";
+                    }
+                    break;
+                case 2:
+                    $reserva->estado_reserva_id=2;//2: Stand By
+                    $reserva->update();
+                    $response=true;
+                    break;
+                case 3:
+                    $reserva->estado_reserva_id=3;//3: Check Out
+                    $reserva->update();
+                    $response=true;
+                    break;
+            }
+
+        }
+
+        return response()->json(array ('response'=>$response,'reserva'=>$reserva->estadoReserva,'message'=>$message));
+    }
+
 
     public function insertarDesdeRequest(Request $request){
         $reserva=null;
@@ -185,7 +240,16 @@ class ReservaRepository{
                 $request->request->add(['descuento'=>$descuento]);
                 $request->request->add(['monto'=>$monto]);
 
-                $this->transaccionRep->modificarDesdeRequest($request);
+                $transaccion=$reserva->transacciones()->where("transaccion_base",1)->where("estado",1)->first(); //En caso de que la transaccion principal haya sido eliminado, crea un nueva transaccion
+                if(!is_null($transaccion)){
+                    $this->transaccionRep->modificarDesdeRequest($request);
+                } else {
+                    $descripcion=$reserva->servicio->descripcion;//obtiene datos mediante la relacion 1:N
+                    $hotel_producto=$this->hotelProductoRep->obtenerProductoPorDescripcion($descripcion);
+                    $request->request->add(['foreign_reserva_id'=>$reserva->id]);
+                    $request->request->add(['hotel_producto_id'=>$hotel_producto->id]);
+                    $this->transaccionRep->insertarDesdeReserva($request);
+                }
 
             }
 
@@ -198,20 +262,11 @@ class ReservaRepository{
     }
 
     public function eliminar($id){
-        $reserva=null;
-        try{
-            DB::beginTransaction();
-            $reserva=$this->obtenerReservaPorId($id);
-            if ( is_null($reserva) ){
-                App::abort(404);
-            }
-
-            $reserva->delete();//Eliminacion logica y en cascada con sus relaciones
-            DB::commit();
-        }catch(\Exception $e){
-            DB::rollback();
-            }
-
+        $reserva=$this->obtenerReservaPorId($id);
+        if ( is_null($reserva) ){
+            App::abort(404);
+        }
+        $reserva->delete();//Eliminacion logica y en cascada con sus relaciones
         return $reserva;
     }
 

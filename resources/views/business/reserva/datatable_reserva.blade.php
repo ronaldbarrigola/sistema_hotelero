@@ -53,7 +53,7 @@
                             {data:'id',
                                 orderable:false,
                                 render: function(data){
-                                    return '<button id="'+data+ '" class="btn btn-primary" onclick="slideCargo(this);">Cargos</button>';
+                                    return '<button id="'+data+ '" class="btn btn-primary" onclick="slideReservaTransaccion(id);">Cargos</button>'; //slideReservaTransaccion(id) se encuentra en el modulo transaccion.crete_edit
                                 }
                             },
                             {data:'id',

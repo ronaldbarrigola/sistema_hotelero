@@ -4,23 +4,19 @@ namespace App\Entidades\Business;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Pago extends Model
+class Importe extends Model
 {
-    protected $table="con_pago";
+    protected $table="con_importe";
     protected $primaryKey="id";
     public $timestamps=false;
 
     protected $fillable=[
         'fecha',
+        'pago_id',
         'forma_pago_id',
         'referencia',
-        'nombre',
-        'nit',
-        'email',
+        'monto',
         'detalle',
-        'agencia_id',
-        'usuario_alta_id',
-        'usuario_modif_id',
         'estado',
         'fecha_creacion',
         'fecha_modificacion'
@@ -28,12 +24,8 @@ class Pago extends Model
 
     public function delete() //Eliminacion logica
     {
-        $this->transaccionPago()->each(function ($transaccionPago) {//Eliminacion logica en cascada
-            $transaccionPago->delete();
-        });
-
-        $this->estado = false;
-        $this->save();
+       $this->estado = false;
+       $this->save();
     }
 
     //Relacion 1 a muchos

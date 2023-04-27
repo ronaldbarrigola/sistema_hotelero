@@ -255,7 +255,7 @@
             var monto_pago=$("#monto_pago").val();
             monto_pago=(monto_pago!=null&&monto_pago!=""&&monto_pago>0)?monto_pago:0;
             if(monto_pago<=0){
-                messageAlert("Debe seleccionar de la lista opciones que desea pagar");
+                messageAlert("Debe seleccionar opciones para pagar");
                 return 0;
             }
 
@@ -300,6 +300,8 @@
             });
             createTransaccionPago();
         }
+
+
 
     </script>
 @endpush
