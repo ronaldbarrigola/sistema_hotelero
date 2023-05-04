@@ -257,7 +257,6 @@
                 success: function(result){
                     var nro_reserva=result.reserva.id;
                     var cliente=result.cliente;
-                    console.log(result.habitacion);
                     var nro_habitacion=result.habitacion.num_habitacion;
 
                     $('#nombre_cliente').text(cliente.toUpperCase()); //El campo nombre_cliente se encuenta en el modulo transaccion.actionbar

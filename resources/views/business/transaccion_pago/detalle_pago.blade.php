@@ -42,7 +42,7 @@
             });
 
             $("#total_pago").html(Number.parseFloat(total).toFixed(2));
-
+            $("#fp_monto_base").val(Number.parseFloat(total).toFixed(2)); //Modulo formapago
         }
 
    </script>

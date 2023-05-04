@@ -82,7 +82,7 @@
           $(document).on("change", "#habitacion_id", function(){
               var precio=$('#habitacion_id option:selected').data("precio");
               var precio_unidad_ref=(precio!=null&&precio!=""&&precio>0)?precio:0;
-              $("#precio_unidad_ref").val(precio_unidad_ref);
+              $("#reserva_precio_unidad_ref").val(precio_unidad_ref);
               servicioReserva();
               reservaCalcularCargo();
           });
@@ -286,8 +286,9 @@
                             var fecha_salida=result.reserva.fecha_fin;
                             var habitacion_id=result.reserva.habitacion_id;
                             var color=result.estadoReserva.color;
-                            //items.add({id:id,content:content,start:fecha_ingreso,end:fecha_salida,group:habitacion_id,className:"bg-secondary text-white"});
                             items.add({id:id,content:content,start:fecha_ingreso,end:fecha_salida,group:habitacion_id,className:color});
+                        } else if($("#editReserva").val()=="modificar") {
+                            items.update({id:result.reserva.id,start:result.reserva.fecha_ini,end:result.reserva.fecha_fin});
                         }
                     }
                 },//End success

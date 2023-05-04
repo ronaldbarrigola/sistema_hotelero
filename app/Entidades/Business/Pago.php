@@ -13,7 +13,6 @@ class Pago extends Model
     protected $fillable=[
         'fecha',
         'forma_pago_id',
-        'referencia',
         'nombre',
         'nit',
         'email',

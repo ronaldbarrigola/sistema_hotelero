@@ -14,6 +14,7 @@ class TransaccionPago extends Model
         'fecha',
         'pago_id',
         'transaccion_id',
+        'tipo_transaccion_id',
         'detalle',
         'monto',
         'usuario_alta_id',

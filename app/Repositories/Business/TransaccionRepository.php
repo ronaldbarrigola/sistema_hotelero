@@ -24,7 +24,7 @@ class TransaccionRepository{
         ->leftjoin('con_transaccion as tr','tr.cargo_id','=','c.id')
         ->leftjoin('pro_hotel_producto as h','h.id','=','tr.hotel_producto_id')
         ->leftjoin('pro_producto as p','p.id','=','h.producto_id')
-        ->select('c.id as cargo_id','tr.id',DB::raw('DATE_FORMAT(tr.fecha,"%d/%m/%Y") as fecha'),'p.descripcion as producto','tr.detalle','tr.cantidad','tr.precio_unidad',DB::raw('tr.cantidad*tr.precio_unidad as total'),'tr.descuento_porcentaje','tr.descuento','tr.monto as cargo',DB::raw('(SELECT IFNULL(sum(tp.monto),0) FROM con_transaccion_pago tp WHERE tp.transaccion_id = tr.id AND tp.estado=1) as pago'))
+        ->select('c.id as cargo_id','tr.id',DB::raw('DATE_FORMAT(tr.fecha,"%d/%m/%Y") as fecha'),'p.descripcion as producto','tr.detalle','tr.cantidad','tr.precio_unidad',DB::raw('tr.cantidad*tr.precio_unidad as total'),DB::raw('(SELECT IFNULL(sum(tp.monto),0) FROM con_transaccion_pago tp WHERE tp.tipo_transaccion_id="A" AND tp.transaccion_id = tr.id AND tp.estado=1) as anticipo'),'tr.descuento_porcentaje','tr.descuento','tr.monto as cargo',DB::raw('(SELECT IFNULL(sum(tp.monto),0) FROM con_transaccion_pago tp WHERE tp.transaccion_id = tr.id AND tp.estado=1) as pago'))
         ->where('h.agencia_id','=',Auth::user()->agencia_id)
         ->where('c.reserva_id','=',$reserva_id)
         ->where('tr.estado','=','1')
@@ -42,6 +42,19 @@ class TransaccionRepository{
         }
 
         return  $transaccion;
+    }
+
+    public function saldo($reserva_id){
+        $saldo=DB::table('con_transaccion as tr')
+            ->leftJoin('con_transaccion_pago as trp', function ($join) {
+                $join->on('trp.transaccion_id', '=', 'tr.id')->where('trp.estado', '=', 1);
+            })
+            ->where('tr.reserva_id','=',$reserva_id)
+            ->where('tr.estado','=','1')
+            ->groupBy('tr.reserva_id')
+            ->select(DB::raw('IFNULL(SUM(tr.monto),0) - IFNULL(SUM(trp.monto),0) as saldo'))
+            ->first()->saldo;
+        return $saldo;
     }
 
     public function obtenerTransaccionesDataTables($reserva_id){

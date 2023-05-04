@@ -128,9 +128,21 @@ class ReservaRepository{
                     $response=true;
                     break;
                 case 3:
-                    $reserva->estado_reserva_id=3;//3: Check Out
-                    $reserva->update();
-                    $response=true;
+
+                    if($reserva->estado_reserva_id==1){ //Verifica si el estado esta en Check In
+                        $saldo=$this->transaccionRep->saldo($id);
+                        if($saldo>0){
+                            $message="No puede ejecutar Check Out, porque tiene saldo pendiente de pago";
+                        } else {
+                            $reserva->estado_reserva_id=3;//3: Check Out
+                            $reserva->update();
+                            $response=true;
+                        }
+
+                    } else {
+                       $message="Para ejecutar Check Out, el estado deberia estar en Check In";
+                    }
+
                     break;
             }
 

@@ -65,24 +65,26 @@
 
             timeline.on('contextmenu', function (props) {
                 props.event.preventDefault(); // Para evitar que se abra el menú del navegador
-                //BEGIN: Insertar elementos al menu contextual se ecuentra en el modulo contextmenu
-                var $menu = $('.context-menu');
-                $menu.empty();
-                var btnCheckIn="<div class='m=0 col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='checkIn(this)'>Check In</button></div>";
-                var btnCheckOut="<div class='col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='checkOut(this)'>Check Out</button></div>";
-                var btnCargos="<div class='col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='slideReservaTransaccion(id)'>Cargos</button></div>"; //slideReservaTransaccion(id) se encuentra en el modulo transaccion.crete_edit
-                var btnPagos="<div class='col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light'>Pagos</button></div>";
-                $menu.append(btnCheckIn);
-                $menu.append(btnCheckOut);
-                $menu.append(btnCargos);
-                $menu.append(btnPagos);
 
-                $menu.css({
-                    display: 'block',
-                    left: props.event.pageX,
-                    top: props.event.pageY
-                });
-                //END: Insertar elementos al menu contextual se ecuentra en el modulo contextmenu
+                if(props.item!=null){
+                    //BEGIN: Insertar elementos al menu contextual se ecuentra en el modulo contextmenu
+                    var $menu = $('.context-menu');
+                    $menu.empty();
+                    var btnCargos="<div class='col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='slideReservaTransaccion(id)'>Cargos</button></div>"; //slideReservaTransaccion(id) se encuentra en el modulo transaccion.crete_edit
+                    var btnCheckIn="<div class='m=0 col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='checkIn(this)'>Check In</button></div>";
+                    var btnCheckOut="<div class='col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='checkOut(this)'>Check Out</button></div>";
+
+                    $menu.append(btnCargos);
+                    $menu.append(btnCheckIn);
+                    $menu.append(btnCheckOut);
+
+                    $menu.css({
+                        display: 'block',
+                        left: props.event.pageX,
+                        top: props.event.pageY
+                    });
+                    //END: Insertar elementos al menu contextual se ecuentra en el modulo contextmenu
+                }
 
             });
         }); //End ready
@@ -130,9 +132,7 @@
                             {
                                 tipoGrafico='point';
                             }
-                            //dataItems.push({id:v.id,title:v.cliente,content:v.paterno,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className: 'bg-info text-white',type:tipoGrafico})
-                            dataItems.push({id:v.id,content:v.paterno,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,type:tipoGrafico})
-
+                            dataItems.push({id:v.id,content:v.paterno,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,visibleFrameTemplate: function(itemData, timelineData) {var percentComplete = (timelineData.currentTime - itemData.start) / (itemData.end - itemData.start);var width = percentComplete * 100 + '%';return '<div class="progress-bar" style="width: ' + width + ';"></div>';},type:tipoGrafico})
                         });
 
                         items = new vis.DataSet(dataItems);

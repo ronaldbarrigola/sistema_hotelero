@@ -34,7 +34,12 @@ class TransaccionPagoController extends Controller
     }
 
     public function store(Request $request){
-        $transaccionPago=$this->transaccionPagoRep->insertarDesdeRequest($request);
+        $tipo_pago = $request->get('tipo_pago');
+        if($tipo_pago=="ANTICIPO") {
+            $transaccionPago=$this->transaccionPagoRep->insertarAnticipoDesdeRequest($request);
+        } else {
+            $transaccionPago=$this->transaccionPagoRep->insertarDesdeRequest($request);
+        }
         return response()->json(array ('transaccionPago'=>$transaccionPago));
     }
 

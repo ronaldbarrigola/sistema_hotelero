@@ -116,7 +116,8 @@ class ReservaController extends Controller
     public function update(Request $request,$id){
         $request->request->add(['id'=>$id]);
         $reserva=$this->reservaRep->modificarDesdeRequest($request);
-        return  $reserva;
+        return response()->json(array ('reserva'=>$reserva));
+        //return  $reserva;
     }
 
     public function destroy(Request $request,$id){

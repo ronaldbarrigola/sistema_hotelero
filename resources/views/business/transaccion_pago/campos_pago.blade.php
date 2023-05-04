@@ -1,5 +1,5 @@
 
-<div class="panel_ordenante card">
+<div class="card">
     <div class="card-header py-0">
         <strong>DATOS GENERALES</strong>
     </div>
@@ -35,5 +35,15 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+  <script>
+      function requiredPago(required){
+         $("#pago_nombre").prop("required",required);
+         $("#pago_nit").prop("required",required);
+         $("#pago_detalle").prop("required",required);
+      }
+  </script>
+@endpush
 
 

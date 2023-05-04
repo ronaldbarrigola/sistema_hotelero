@@ -14,7 +14,7 @@ class Importe extends Model
         'fecha',
         'pago_id',
         'forma_pago_id',
-        'referencia',
+        'concepto',
         'monto',
         'detalle',
         'estado',
