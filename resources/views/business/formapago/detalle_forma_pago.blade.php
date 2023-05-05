@@ -50,10 +50,8 @@
         </div>
     </div>
 
-    <div class="col d-flex justify-content-end">
-        <label><strong>Saldo :</strong></label>
-        <input type="text" id="fp_saldo" name="fp_saldo" style="text-align:center;border:0;color:red" size="10" readonly value="0">
-    </div>
+    <input type="hidden" id="fp_saldo" value="0">
+
 </div>
 
 @push('scripts')

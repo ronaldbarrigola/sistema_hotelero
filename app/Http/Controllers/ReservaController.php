@@ -88,8 +88,9 @@ class ReservaController extends Controller
 
     public function store(Request $request){
         $reserva=$this->reservaRep->insertarDesdeRequest($request);
+        $persona=$reserva->cliente->persona;
         $estadoReserva=$reserva->estadoReserva;
-        return response()->json(array ('reserva'=>$reserva,'estadoReserva'=>$estadoReserva));
+        return response()->json(array ('reserva'=>$reserva,'persona'=>$persona,'estadoReserva'=>$estadoReserva));
     }
 
     public function edit(Request $request){
@@ -116,8 +117,9 @@ class ReservaController extends Controller
     public function update(Request $request,$id){
         $request->request->add(['id'=>$id]);
         $reserva=$this->reservaRep->modificarDesdeRequest($request);
-        return response()->json(array ('reserva'=>$reserva));
-        //return  $reserva;
+        $persona=$reserva->cliente->persona;
+        $estadoReserva=$reserva->estadoReserva;
+        return response()->json(array ('reserva'=>$reserva,'persona'=>$persona,'estadoReserva'=>$estadoReserva));
     }
 
     public function destroy(Request $request,$id){

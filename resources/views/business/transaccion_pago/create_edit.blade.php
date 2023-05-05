@@ -67,7 +67,7 @@
                saldo_abs=Math.abs(saldo);//valor absoluto
                total=$("#fp_monto_base").val();
                if(saldo_abs > 0){
-                  messageAlert(`Los montos de la forma de pago, debe ser igual al total a pagar : ${total} Bs.`);
+                  messageAlert(`Debe pagar el monto de : ${total} Bs.`);
                   event.preventDefault(); //cancela el evento
                   return false; //Cancela el envio submit para procesar por ajax
                }
@@ -152,21 +152,23 @@
             $("#editTransaccionPago").val("");
             $("#foreign_transaccion_id").val(transaccion_id);
 
+            requiredPago(false);
+            requiredAnticipo(true);
+            limpiarDatoTransaccionPago();//Se ecuentra en el modulo transaccion_pago
+            limpiarFormaPago();//Se ecuentra en el modulo formapago
+
             var fila=$($this).closest("tr");
             var vec_monto=$(fila).find("input[name='tr_monto[]']");
             var input_monto=vec_monto[0];
             var monto=$(input_monto).val();
             $("#anticipo_cargo").val(monto);
+            $("#anticipo_saldo").val(monto);
 
             $("#tipo_pago").val("ANTICIPO");
             $("#title_modal_view_transaccion_pago").text("ANTICIPO");
             $('.panel_anticipo').show();
             $('.panel_pago').hide();
 
-            requiredPago(false);
-            requiredAnticipo(true);
-            limpiarDatoTransaccionPago();//Se ecuentra en el modulo transaccion_pago
-            limpiarFormaPago();//Se ecuentra en el modulo formapago
             $.ajax({
                 async: false, //Evitar la ejecucion  Asincrona
                 type: "GET",

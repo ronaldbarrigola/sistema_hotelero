@@ -68,16 +68,28 @@ class ReservaRepository{
         //$fecha_filtro=Carbon::now('America/La_Paz')->subMonth(6)->format('d/m/Y'); //filtro 6 meses atras
         $fecha_filtro=Carbon::now('America/La_Paz')->subMonth(6); //filtro 6 meses atras
         $reservas= DB::table('res_reserva as r')
+        // ->leftJoin('con_transaccion as tr', function ($join) {
+        //     $join->on('r.transaccion_id', '=', 'tr.id')->where('tr.estado', '=', 1);
+        // })
         ->join('bas_persona as p','p.id','=','r.cliente_id')
         ->join('gob_habitacion as h','h.id','=','r.habitacion_id')
         ->join('res_estado_reserva as er','er.id','=','r.estado_reserva_id')
-        ->select('r.id',DB::raw('DATE_FORMAT(r.fecha,"%d/%m/%Y") as fecha'),'p.paterno',DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) AS cliente'),'r.habitacion_id','h.num_habitacion',DB::raw('DATE_FORMAT(r.fecha_ini,"%Y-%m-%d %H:%i:%s") as fecha_ini'),DB::raw('DATE_FORMAT(r.fecha_fin,"%Y-%m-%d %H:%i:%s") as fecha_fin'),'er.descripcion as estado_reserva','er.color','r.servicio_id')
+        ->select('r.id','r.estado_reserva_id',DB::raw('DATE_FORMAT(r.fecha,"%d/%m/%Y") as fecha'),'p.paterno',DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) AS cliente'),'r.habitacion_id','h.num_habitacion',DB::raw('DATE_FORMAT(r.fecha_ini,"%Y-%m-%d %H:%i:%s") as fecha_ini'),DB::raw('DATE_FORMAT(r.fecha_fin,"%Y-%m-%d %H:%i:%s") as fecha_fin'),'er.descripcion as estado_reserva','er.color','r.servicio_id',DB::raw('(SELECT IFNULL(sum(tr.monto),0) FROM con_transaccion tr WHERE tr.reserva_id = r.id AND tr.estado=1) as cargo'),DB::raw('(SELECT IFNULL(sum(trp.monto),0) FROM con_transaccion_pago as trp INNER JOIN con_transaccion as tr ON trp.transaccion_id=tr.id WHERE tr.reserva_id = r.id AND tr.estado=1 AND trp.estado=1) as pago'))
         ->whereDate('r.fecha_ini','>=',$fecha_filtro)
         ->where('r.estado','=','1')
         ->where('p.estado','=','1')
         ->where('er.estado','=','1')
         ->orderBy('r.id','desc')
         ->get();
+
+        //Calcular Saldo
+        if($reservas!=null){
+            $porcentaje=0;
+            foreach($reservas as $row){
+                $porcentaje=($row->pago*100)/$row->cargo;
+                $row->porcentaje=round($porcentaje,2);
+            }
+        }
 
         return $reservas;
     }

@@ -108,9 +108,8 @@
 
         function submitFormReserva(event) {
             storeReserva();
-            //datatable_datos.ajax.reload();//recargar registro datatables.
-            event.preventDefault(); //cancela el evento
-            return false; //Cancela el envio submit para procesar por ajax
+            event.preventDefault();//cancela el evento
+            return false;//Cancela el envio submit para procesar por ajax
         }
 
         function setDateReserva(fecha_ini,fecha_fin){
@@ -119,7 +118,7 @@
             reservaCalcularCargo()
         }
 
-        function selectHabitacion(habitacion_id){
+        function setHabitacion(habitacion_id){
             $("#habitacion_id").selectpicker('val',habitacion_id);
             $("#habitacion_id").selectpicker('refresh');
 
@@ -161,6 +160,7 @@
             $("#editReserva").val("modificar");
             $("#title_modal_view_reserva").text("MODIFICAR RESERVA");
             $.ajax({
+                async: false, //Evitar la ejecucion  Asincrona
                 type: "GET",
                 url: "{{route('editreserva')}}",
                 data:{reserva_id:reserva_id,'_token': '{{ csrf_token() }}'},
@@ -279,16 +279,17 @@
                         datatable_reserva.ajax.reload();//recargar registro datatables.
                     }
                     catch(err) { //En caso de que se cree la reserva desde el TimeLines
+                        var reserva_id=result.reserva.id;
+                        var content=result.persona.paterno;
+                        var fecha_ingreso=result.reserva.fecha_ini;
+                        var fecha_salida=result.reserva.fecha_fin;
+                        var habitacion_id=result.reserva.habitacion_id;
+                        var color=result.estadoReserva.color;
+                        var visibleFrameTemplate='<div class="progress-wrapper"><div class="progress" style="width:0%"></div><label class="progress-label">0%<label></div>';
                         if($("#editReserva").val()==""){//Creacion de un nuevo Item
-                            var id=result.reserva.id;
-                            var content="Paterno";
-                            var fecha_ingreso=result.reserva.fecha_ini;
-                            var fecha_salida=result.reserva.fecha_fin;
-                            var habitacion_id=result.reserva.habitacion_id;
-                            var color=result.estadoReserva.color;
-                            items.add({id:id,content:content,start:fecha_ingreso,end:fecha_salida,group:habitacion_id,className:color});
+                            items.add({id:reserva_id,content:content,start:fecha_ingreso,end:fecha_salida,group:habitacion_id,visibleFrameTemplate:visibleFrameTemplate,className:color});
                         } else if($("#editReserva").val()=="modificar") {
-                            items.update({id:result.reserva.id,start:result.reserva.fecha_ini,end:result.reserva.fecha_fin});
+                            items.update({id:reserva_id,content:content,start:fecha_ingreso,end:fecha_salida,group:habitacion_id});
                         }
                     }
                 },//End success

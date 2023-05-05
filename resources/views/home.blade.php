@@ -128,11 +128,21 @@
                     if(result.response){
                         $.each(result.reservas,function(i, v) {
                             let tipoGrafico='range';
-                            if(v.servicio_id==2) //DAY USE
-                            {
-                                tipoGrafico='point';
+                            // if(v.servicio_id==2) //DAY USE
+                            // {
+                            //     tipoGrafico='point';
+                            // }
+
+                            if(v.estado_reserva_id==0||v.estado_reserva_id==1){
+                                var porcentaje=(v.porcentaje!=null)?v.porcentaje:0;
+                                var visibleFrameTemplate='<div class="progress-wrapper"><div class="progress" style="width:'+porcentaje+'%"></div><label class="progress-label">'+porcentaje+'%<label></div>';
+                                dataItems.push({id:v.id,content:v.paterno,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,visibleFrameTemplate:visibleFrameTemplate})
+                            } else {
+                                dataItems.push({id:v.id,content:v.paterno,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color})
                             }
-                            dataItems.push({id:v.id,content:v.paterno,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,visibleFrameTemplate: function(itemData, timelineData) {var percentComplete = (timelineData.currentTime - itemData.start) / (itemData.end - itemData.start);var width = percentComplete * 100 + '%';return '<div class="progress-bar" style="width: ' + width + ';"></div>';},type:tipoGrafico})
+
+                            //dataItems.push({id:v.id,content:v.paterno,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,visibleFrameTemplate:visibleFrameTemplate,type:tipoGrafico})
+
                         });
 
                         items = new vis.DataSet(dataItems);
@@ -216,9 +226,9 @@
                     var fecha_fin=item.end;
                     var habitacion_id=item.group;
 
-                    createReserva(); //Visualizar formulario modal reserva, se encuentra en reserva/crete_edit
-                    setDateReserva(fecha_ini,fecha_fin); //la funcion setDateReserva, se encuentra en reserva/crete_edit
-                    selectHabitacion(habitacion_id) //la funcion selectHabitacion se, encuentra en reserva/crete_edit
+                    createReserva(); //Visualizar formulario modal reserva, se encuentra en reserva.crete_edit
+                    setDateReserva(fecha_ini,fecha_fin); //la funcion setDateReserva, se encuentra en reserva.crete_edit
+                    setHabitacion(habitacion_id) //la funcion setHabitacion se, encuentra en reserva.crete_edit
                     //callback(item); // send back adjusted new item
                     callback(null); //Para que desaparesca el item por defecto
 
@@ -235,7 +245,9 @@
                         editReserva(item.id);
                         var fecha_ini=item.start;
                         var fecha_fin=item.end;
-                        setDateReserva(fecha_ini,fecha_fin); //la funcion setDateReserva, se encuentra en reserva/crete_edit
+                        var habitacion_id=item.group;
+                        setHabitacion(habitacion_id)         //la funcion setHabitacion, se encuentra en reserva.crete_edit
+                        setDateReserva(fecha_ini,fecha_fin); //la funcion setDateReserva, se encuentra en reserva.crete_edit
                     }
                     else {
                         callback(null); // cancel editing item
@@ -259,15 +271,6 @@
 
                 //---------- EVENTO ELIMINAR ITEM -----------------------
                 onRemove: function (item, callback) {
-                    // prettyConfirm('Eliminar Reserva', 'Esta seguro de eliminar la reserva ' + item.content + '?', function (ok) {
-                    // if (ok) {
-                    //     callback(item); // confirm deletion
-                    //     deleteReserva(item.id)
-                    // }
-                    // else {
-                    //     callback(null); // cancel deletion
-                    // }
-                    // });
                     callback(item); // confirm deletion
                     deleteReserva(item.id)
                 },

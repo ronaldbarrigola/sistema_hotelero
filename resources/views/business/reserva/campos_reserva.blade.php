@@ -13,7 +13,7 @@
                             <select name="cliente_id" id="cliente_id" required class="form-control selectpicker border" data-live-search="true" >
                                <!--Se carga los datos por ajax-->
                             </select>
-                            <button type="button" id="btnModalInfoCliente" class="input-group-btn btn btn-light"><span class="icon-table2"></span></button>
+                            {{-- <button type="button" id="btnModalInfoCliente" class="input-group-btn btn btn-light"><span class="icon-table2"></span></button> --}}
                             <button type="button" id="btnModalCreateCliente" class="input-group-btn btn btn-light"><span class="icon-plus"></span></button>
                         </div>
                     </div>

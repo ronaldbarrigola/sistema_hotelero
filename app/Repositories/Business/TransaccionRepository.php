@@ -45,15 +45,20 @@ class TransaccionRepository{
     }
 
     public function saldo($reserva_id){
-        $saldo=DB::table('con_transaccion as tr')
-            ->leftJoin('con_transaccion_pago as trp', function ($join) {
-                $join->on('trp.transaccion_id', '=', 'tr.id')->where('trp.estado', '=', 1);
-            })
-            ->where('tr.reserva_id','=',$reserva_id)
-            ->where('tr.estado','=','1')
-            ->groupBy('tr.reserva_id')
-            ->select(DB::raw('IFNULL(SUM(tr.monto),0) - IFNULL(SUM(trp.monto),0) as saldo'))
-            ->first()->saldo;
+        $transaccion = Transaccion::withSum(['transaccionPago' => function ($query) { //transaccionPago esta definido en la entidad transaccion
+           $query->where('estado',1);
+        }], 'monto')->where("reserva_id",$reserva_id)->where("estado",1)->get();
+
+        //Calcular Pago
+        $pago=0;
+        if($transaccion!=null){
+            foreach($transaccion as $row){
+                $pago=$pago + $row->transaccion_pago_sum_monto; //Se genera en forma autoamtica la variable transaccion_pago_sum_monto  en atributes de la variable $transaccion
+            }
+        }
+
+        $cargo =Transaccion::where("reserva_id",$reserva_id)->where("estado",1)->sum('monto');
+        $saldo= $cargo-$pago;
         return $saldo;
     }
 

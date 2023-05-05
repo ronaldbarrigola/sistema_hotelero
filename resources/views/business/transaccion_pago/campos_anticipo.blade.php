@@ -4,14 +4,10 @@
     </div>
     <div class="card-body py-0">
         <div class="row">
-            <div class="col-lg-4 col-md-4 col-sm-4 col-12">
-                <div class="form-group">
-                    <label for="anticipo_cargo" class="my-0"><strong>Cargo:</strong></label>
-                    <input type="number" id="anticipo_cargo" readonly class="form-control">
-                </div>
-            </div>
 
-            <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+            <input type="hidden" id="anticipo_cargo">
+
+            <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                 <div class="form-group">
                     <label for="anticipo_monto" class="my-0"><strong>Monto:</strong></label>
                     <div class="input-group-prepend">
@@ -21,7 +17,7 @@
                 </div>
             </div>
 
-            <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+            <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                 <div class="form-group">
                     <label for="anticipo_saldo" class="my-0"><strong>Saldo:</strong></label>
                     <input type="text" id="anticipo_saldo" readonly class="form-control">
@@ -52,7 +48,7 @@
            if(saldo<0){
                 $("#anticipo_monto").val(cargo)
                 $("#anticipo_saldo").val(0);
-                messageAlert(`El monto de anticpo no debe ser superior al cargo : ${cargo} Bs.`);
+                messageAlert(`El anticipo no debe ser superior al cargo : ${cargo} Bs.`);
            } else {
                 $("#anticipo_saldo").val(parseFloat(saldo).toFixed(2));
            }
