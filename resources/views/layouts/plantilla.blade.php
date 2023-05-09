@@ -140,6 +140,7 @@
     <script src="{{asset('js/timeline/sweetalert.min.js')}}"></script>
     <script src="{{asset('js/timeline/vis-timeline-graph2d.min.js')}}"></script>
 
+
     <script>
         //toastr.options.toastClass = 'toastr'; //esta  opcion es para corregir el error de mensaje borroso..
         toastr.options = {

@@ -27,6 +27,14 @@ class PersonaRepository{
         )->toJson();
     }
 
+     public function obtenerPersonas(){
+        $personas=DB::table('bas_persona as p')
+           ->select('p.id','p.doc_id','p.nombre','p.paterno','p.materno',DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) AS nombre_completo'))
+           ->where('p.estado','=','1')
+           ->get();
+       return $personas;
+    }
+
     public function obtenerPersonasSimpleDifId($id){
         return DB::table('bas_persona')
                ->where('id','<>',$id)

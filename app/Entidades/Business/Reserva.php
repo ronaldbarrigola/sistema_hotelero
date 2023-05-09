@@ -42,7 +42,6 @@ class Reserva extends Model
         'fecha_modificacion'
     ];
 
-
     public function delete() //Eliminacion logica
     {
         $this->cargos()->each(function ($transaccion) {//Eliminacion logica en cascada
@@ -92,5 +91,11 @@ class Reserva extends Model
     {
        return $this->hasMany(Transaccion::class,'reserva_id','id');
     }
+
+     //Relacion 1 a muchos
+     public function huespedes()
+     {
+        return $this->hasMany(Huesped::class,'reserva_id','id');
+     }
 
 }

@@ -18,6 +18,7 @@ use App\Http\Controllers\HotelProductoController;
 use App\Http\Controllers\CargoController;
 use App\Http\Controllers\TransaccionController;
 use App\Http\Controllers\TransaccionPagoController;
+use App\Http\Controllers\HuespedController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -86,9 +87,12 @@ Route::get('/busines/transaccion/createtransaccion', [TransaccionController::cla
 Route::get('/busines/transaccion/edittransaccion', [TransaccionController::class,'edit'])->name('edittransaccion');
 Route::get('/busines/transaccion_pago/edittransaccionpago', [TransaccionPagoController::class,'edit'])->name('edittransaccionpago');
 Route::get('/busines/transaccion/createtransaccionpago', [TransaccionPagoController::class,'create'])->name('createtransaccionpago');
+Route::get('/busines/huesped/createhuesped', [HuespedController::class,'create'])->name('createhuesped');
+Route::get('/busines/huesped/edithuesped', [HuespedController::class,'edit'])->name('edithuesped');
 Route::get('/busines/reserva/obtenerReservas', [ReservaController::class,'obtenerReservasTimeLines'])->name('obtenerReservas');
 Route::get('/business/ciudad/listaciudades', [CiudadController::class,'obtenerCiudadesPorPaisId'])->name('listaciudades');
 Route::get('/base/persona/buscarPersonaDocId', [PersonaController::class,'buscarPersonaClientePorDocId'])->name('buscarPersonaDocId');
+Route::get('/base/persona/obtenerpersonas', [PersonaController::class,'obtenerPersonas'])->name('obtenerpersonas');
 
 //Post
 Route::post('/business/hotel_producto/activatehotelproducto', [HotelProductoController::class,'activate'])->name('activatehotelproducto');
@@ -104,5 +108,6 @@ Route::resource('business/reserva', ReservaController::class);
 Route::resource('business/cargo', CargoController::class);
 Route::resource('business/transaccion', TransaccionController::class);
 Route::resource('business/transaccion_pago', TransaccionPagoController::class);
+Route::resource('business/huesped', HuespedController::class);
 
 

@@ -237,14 +237,7 @@
             });
         }
 
-
-        function slideReserva(){
-            $('.cabecera_transaccion').hide()
-            $('.cabecera_principal').show()
-            $('.carouselReserva').carousel('prev');
-        }
-
-        function slideReservaTransaccion($id){
+        function slideTransaccion($id){
             var reserva_id=$id;
             $.ajax({
                 type: "GET",
@@ -264,8 +257,10 @@
                     $('#foreign_reserva_id').val(reserva_id); //El campo foreign_reserva_id se encuenta en el modulo transaccion.create_edit
                     datatable_transaccion.ajax.reload();
                     $('.cabecera_principal').hide();
+                    $('.cabecera_huesped').hide();
                     $('.cabecera_transaccion').show();
-                    $('.carouselReserva').carousel('next');
+                    //$('.carouselReserva').carousel('next');
+                    $('.carouselReserva').carousel(1);
                 },//End success
                 complete:function(result, textStatus ){
 

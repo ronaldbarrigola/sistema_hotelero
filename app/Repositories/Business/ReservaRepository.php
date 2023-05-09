@@ -65,16 +65,12 @@ class ReservaRepository{
             // $endDate = $date->subDay();
             // $endDate = $date->subDay(5);
 
-        //$fecha_filtro=Carbon::now('America/La_Paz')->subMonth(6)->format('d/m/Y'); //filtro 6 meses atras
         $fecha_filtro=Carbon::now('America/La_Paz')->subMonth(6); //filtro 6 meses atras
         $reservas= DB::table('res_reserva as r')
-        // ->leftJoin('con_transaccion as tr', function ($join) {
-        //     $join->on('r.transaccion_id', '=', 'tr.id')->where('tr.estado', '=', 1);
-        // })
         ->join('bas_persona as p','p.id','=','r.cliente_id')
         ->join('gob_habitacion as h','h.id','=','r.habitacion_id')
         ->join('res_estado_reserva as er','er.id','=','r.estado_reserva_id')
-        ->select('r.id','r.estado_reserva_id',DB::raw('DATE_FORMAT(r.fecha,"%d/%m/%Y") as fecha'),'p.paterno',DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) AS cliente'),'r.habitacion_id','h.num_habitacion',DB::raw('DATE_FORMAT(r.fecha_ini,"%Y-%m-%d %H:%i:%s") as fecha_ini'),DB::raw('DATE_FORMAT(r.fecha_fin,"%Y-%m-%d %H:%i:%s") as fecha_fin'),'er.descripcion as estado_reserva','er.color','r.servicio_id',DB::raw('(SELECT IFNULL(sum(tr.monto),0) FROM con_transaccion tr WHERE tr.reserva_id = r.id AND tr.estado=1) as cargo'),DB::raw('(SELECT IFNULL(sum(trp.monto),0) FROM con_transaccion_pago as trp INNER JOIN con_transaccion as tr ON trp.transaccion_id=tr.id WHERE tr.reserva_id = r.id AND tr.estado=1 AND trp.estado=1) as pago'))
+        ->select('r.id','r.estado_reserva_id',DB::raw('DATE_FORMAT(r.fecha,"%d/%m/%Y") as fecha'),'p.paterno',DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) AS cliente'),'r.habitacion_id','h.num_habitacion',DB::raw('DATE_FORMAT(r.fecha_ini,"%Y-%m-%d %H:%i:%s") as fecha_ini'),DB::raw('DATE_FORMAT(r.fecha_fin,"%Y-%m-%d %H:%i:%s") as fecha_fin'),'er.descripcion as estado_reserva','er.color','er.editable','r.servicio_id',DB::raw('(SELECT IFNULL(sum(tr.monto),0) FROM con_transaccion tr WHERE tr.reserva_id = r.id AND tr.estado=1) as cargo'),DB::raw('(SELECT IFNULL(sum(trp.monto),0) FROM con_transaccion_pago as trp INNER JOIN con_transaccion as tr ON trp.transaccion_id=tr.id WHERE tr.reserva_id = r.id AND tr.estado=1 AND trp.estado=1) as pago'))
         ->whereDate('r.fecha_ini','>=',$fecha_filtro)
         ->where('r.estado','=','1')
         ->where('p.estado','=','1')
@@ -131,20 +127,24 @@ class ReservaRepository{
                         }
 
                     } else {
-                       $message="Para el Check In, el estado deberia estar en Reserva";
+                       $message="No puede ejecutar la accion Check In";
                     }
                     break;
                 case 2:
-                    $reserva->estado_reserva_id=2;//2: Stand By
-                    $reserva->update();
-                    $response=true;
+                    if($reserva->estado_reserva_id==1){ //Verifica si el estado esta en Check In
+                       $reserva->estado_reserva_id=2;//2: Stand By
+                       $reserva->update();
+                       $response=true;
+                    } else {
+                       $message="No puede ejecutar la accion Stand By";
+                    }
                     break;
                 case 3:
 
                     if($reserva->estado_reserva_id==1){ //Verifica si el estado esta en Check In
                         $saldo=$this->transaccionRep->saldo($id);
                         if($saldo>0){
-                            $message="No puede ejecutar Check Out, porque tiene saldo pendiente de pago";
+                            $message="No puede ejecutar la accion Check Out, porque tiene saldo pendiente de pago";
                         } else {
                             $reserva->estado_reserva_id=3;//3: Check Out
                             $reserva->update();
@@ -152,7 +152,7 @@ class ReservaRepository{
                         }
 
                     } else {
-                       $message="Para ejecutar Check Out, el estado deberia estar en Check In";
+                       $message="No puede ejecutar la accion Check Out";
                     }
 
                     break;

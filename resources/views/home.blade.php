@@ -7,6 +7,9 @@
        <div class="cabecera_transaccion" style="display:none">
             @include('business/transaccion/actionbar',['','titulo'=>'CARGOS'])
        </div>
+       <div class="cabecera_huesped" style="display:none">
+        @include('business/huesped/actionbar',['','titulo'=>'HUESPED'])
+   </div>
     @endsection
 
     @section('panelCuerpo')
@@ -18,12 +21,15 @@
 
         <div class="carouselReserva carousel slide" data-ride="carousel" data-interval="false">
             <div class="carousel-inner">
-                <div class="carousel-item active">
+                <div class="carousel-item active" id="slide-1">
                     {{-- Contenedor principal timeline --}}
                     <div id="visualization"></div>
                 </div>
-                <div class="carousel-item">
+                <div class="carousel-item" id="slide-2">
                     @include('business/transaccion/datatable_transaccion')
+                </div>
+                <div class="carousel-item" id="slide-3">
+                    @include('business/huesped/datatable_huesped')
                 </div>
             </div>
         </div>
@@ -70,13 +76,17 @@
                     //BEGIN: Insertar elementos al menu contextual se ecuentra en el modulo contextmenu
                     var $menu = $('.context-menu');
                     $menu.empty();
-                    var btnCargos="<div class='col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='slideReservaTransaccion(id)'>Cargos</button></div>"; //slideReservaTransaccion(id) se encuentra en el modulo transaccion.crete_edit
-                    var btnCheckIn="<div class='m=0 col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='checkIn(this)'>Check In</button></div>";
-                    var btnCheckOut="<div class='col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='checkOut(this)'>Check Out</button></div>";
+                    var btnCargos="<div class='col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='slideTransaccion(id)' style='text-align:left'>Cargos</button></div>"; //slideReservaTransaccion(id) se encuentra en el modulo transaccion.crete_edit
+                    var btnHuesped="<div class='m=0 col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='slideHuesped(this)' style='text-align:left'>Huesped</button></div>";
+                    var btnCheckIn="<div class='m=0 col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='checkIn(this)' style='text-align:left'>Check In</button></div>";
+                    var btnCheckOut="<div class='col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='checkOut(this)' style='text-align:left'>Check Out</button></div>";
+                    var btnStandBy="<div class='col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='standBy(this)' style='text-align:left'>Stand By</button></div>";
 
                     $menu.append(btnCargos);
+                    $menu.append(btnHuesped);
                     $menu.append(btnCheckIn);
                     $menu.append(btnCheckOut);
+                    $menu.append(btnStandBy);
 
                     $menu.css({
                         display: 'block',
@@ -136,9 +146,9 @@
                             if(v.estado_reserva_id==0||v.estado_reserva_id==1){
                                 var porcentaje=(v.porcentaje!=null)?v.porcentaje:0;
                                 var visibleFrameTemplate='<div class="progress-wrapper"><div class="progress" style="width:'+porcentaje+'%"></div><label class="progress-label">'+porcentaje+'%<label></div>';
-                                dataItems.push({id:v.id,content:v.paterno,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,visibleFrameTemplate:visibleFrameTemplate})
+                                dataItems.push({id:v.id,content:v.paterno,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,editable:Boolean(v.editable),visibleFrameTemplate:visibleFrameTemplate})
                             } else {
-                                dataItems.push({id:v.id,content:v.paterno,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color})
+                                dataItems.push({id:v.id,content:v.paterno,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,editable:Boolean(v.editable)})
                             }
 
                             //dataItems.push({id:v.id,content:v.paterno,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,visibleFrameTemplate:visibleFrameTemplate,type:tipoGrafico})
@@ -317,13 +327,19 @@
 
         function checkIn($this){
             var reserva_id=$this.id;
-            var estado_reserva_id=1;
+            var estado_reserva_id=1;//Check In
+            estadoReserva(reserva_id,estado_reserva_id);
+        }
+
+        function standBy($this){
+            var reserva_id=$this.id;
+            var estado_reserva_id=2;//Stand By
             estadoReserva(reserva_id,estado_reserva_id);
         }
 
         function checkOut($this){
             var reserva_id=$this.id;
-            var estado_reserva_id=3;
+            var estado_reserva_id=3;//Check Out
             estadoReserva(reserva_id,estado_reserva_id);
         }
 
@@ -339,9 +355,7 @@
                 success: function(result){
                    if(result.response){
                         var item = items.get(reserva_id);
-                        //items.update({id: reserva_id,className: 'bg-primary text-white'});
                         items.update({id: reserva_id,className:result.reserva.color});
-
                    } else {
                     messageAlert(result.message);
                    }
@@ -354,7 +368,6 @@
 
     </script>
 @endpush
-
 
 <script src="{{asset('js/datetime/moment.min.js')}}"></script>
 <script src="{{asset('js/datetime/es.js')}}"></script>

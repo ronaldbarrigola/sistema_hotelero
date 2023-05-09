@@ -476,6 +476,14 @@
             $('#detalle').val("");
         }
 
+        function slideReserva(){
+            $('.cabecera_transaccion').hide()
+            $('.cabecera_huesped').hide()
+            $('.cabecera_principal').show()
+            //$('.carouselReserva').carousel('prev');
+            $('.carouselReserva').carousel(0);
+        }
+
   </script>
 @endpush
 

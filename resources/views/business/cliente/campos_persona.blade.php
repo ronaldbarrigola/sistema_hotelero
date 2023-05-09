@@ -90,7 +90,7 @@
 @push('scripts')
     <script>
         $(document).ready(function(){
-            $('#doc_id').on('blur keypress',function(e){
+            $('#doc_id').on('blur',function(e){
                 // se ejecuta al salir del cuadro de texto
                 if (e.type == 'blur' || e.keyCode == 13) {
                     if($("#editCliente").val()==''){
@@ -116,36 +116,43 @@
                 complete:function(result, textStatus ){
                     var data=result.responseJSON;
                     if(data.response){
-                        messageAlert("El cliente con el numro de documento " + num_doc_id + ", ya esta registrado");
-                        // $("#editCliente").val("modificar");
-                        // $("#title_modal_view_cliente").text("MODIFICAR CLIENTE");
-                        // //Datos persona
-                        // $('#persona_id').val(data.persona.id);
-                        // $('#doc_id').val(data.persona.doc_id);
-                        // $('#tipo_doc_id').selectpicker('val',data.persona.tipo_doc_id);
-                        // $("#tipo_doc_id").selectpicker('refresh');
-                        // $('#nombre').val(data.persona.nombre);
-                        // $('#paterno').val(data.persona.paterno);
-                        // $('#materno').val(data.persona.materno);
-                        // $('#sexo_id').selectpicker('val',data.persona.sexo_id);
-                        // $("#sexo_id").selectpicker('refresh');
-                        // $('#fecha_nac').val( formatFecha(data.persona.fecha_nac));
-                        // $('#estado_civil_id').selectpicker('val',data.persona.estado_civil_id);
-                        // $("#estado_civil_id").selectpicker('refresh');
-                        // $('#email').val(data.persona.email);
-                        // $('#telefono').val(data.persona.telefono);
-                        // $('#direccion').val(data.persona.direccion);
+                        var text ="El cliente con el numero de documento " + num_doc_id + ", ya esta registrado \n Desea cargar los datos para modificar?";
+                        var type="warning";  //warning,success,error,info
+                        modalMessageAlert("¡Atención!",text,type, function (ok) {
+                            if (ok) {
+                                $("#editCliente").val("modificar");
+                                $("#title_modal_view_cliente").text("MODIFICAR DATOS DEL CLIENTE");
+                                //Datos persona
+                                $('#persona_id').val(data.persona.id);
+                                $('#doc_id').val(data.persona.doc_id);
+                                $('#tipo_doc_id').selectpicker('val',data.persona.tipo_doc_id);
+                                $("#tipo_doc_id").selectpicker('refresh');
+                                $('#nombre').val(data.persona.nombre);
+                                $('#paterno').val(data.persona.paterno);
+                                $('#materno').val(data.persona.materno);
+                                $('#sexo_id').selectpicker('val',data.persona.sexo_id);
+                                $("#sexo_id").selectpicker('refresh');
+                                $('#fecha_nac').val( formatFecha(data.persona.fecha_nac));
+                                $('#estado_civil_id').selectpicker('val',data.persona.estado_civil_id);
+                                $("#estado_civil_id").selectpicker('refresh');
+                                $('#email').val(data.persona.email);
+                                $('#telefono').val(data.persona.telefono);
+                                $('#direccion').val(data.persona.direccion);
 
-                        // //Datos cliente
-                        // $('#pais_id').selectpicker('val',data.persona.pais_id);
-                        // $("#pais_id").selectpicker('refresh');
-                        // $('#profesion_id').selectpicker('val',data.persona.profesion_id);
-                        // $("#profesion_id").selectpicker('refresh');
-                        // $('#empresa_id').selectpicker('val',data.persona.empresa_id);
-                        // $("#empresa_id").selectpicker('refresh');
-                        // $('#detalle').val(data.persona.detalle);
-                        // $('#ciudad_id').selectpicker('val',data.persona.ciudad_id);
-                        // $("#ciudad_id").selectpicker('refresh');
+                                //Datos cliente
+                                $('#pais_id').selectpicker('val',data.persona.pais_id);
+                                $("#pais_id").selectpicker('refresh');
+                                $('#profesion_id').selectpicker('val',data.persona.profesion_id);
+                                $("#profesion_id").selectpicker('refresh');
+                                $('#empresa_id').selectpicker('val',data.persona.empresa_id);
+                                $("#empresa_id").selectpicker('refresh');
+                                $('#detalle').val(data.persona.detalle);
+                                $('#ciudad_id').selectpicker('val',data.persona.ciudad_id);
+                                $("#ciudad_id").selectpicker('refresh');
+                            }
+                        });
+                        //messageAlert("El cliente con el numro de documento " + num_doc_id + ", ya esta registrado");
+
                     } else {
                         $("#editCliente").val("");
                         limpiarDatoCliente();

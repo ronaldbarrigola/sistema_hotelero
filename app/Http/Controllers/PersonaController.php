@@ -13,8 +13,6 @@ use App\Repositories\Base\TipoDocRepository;
 use App\Repositories\Base\CiudadRepository;
 use App\Repositories\Base\SexoRepository;
 use App\Repositories\Base\EstadoCivilRepository;
-use phpDocumentor\Reflection\PseudoTypes\False_;
-use Response;
 
 class PersonaController extends Controller
 {
@@ -44,6 +42,11 @@ class PersonaController extends Controller
             $col_usuario=$objetos->find(1);// si no encuentra el id 1 correspondiente al objeto columna(AdministrarUsuario) entonces devuelve null
             return view('base.seguridad.persona.index',['col_usuario'=>$col_usuario]);
         }
+    }
+
+    public function obtenerPersonas(){
+        $personas=$this->personaRep->obtenerPersonas();
+        return response()->json(array ('personas'=>$personas));
     }
 
     public function create_edit($id){

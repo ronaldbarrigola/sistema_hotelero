@@ -49,6 +49,16 @@ function messageAlert(mensaje) {
     }, "Aceptar");
 }
 
+function modalMessageAlert(title, text, type, callback) {
+    swal({
+        title: title,
+        text: text,
+        type: type,
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55"
+    }, callback);
+}
+
 
 
 
