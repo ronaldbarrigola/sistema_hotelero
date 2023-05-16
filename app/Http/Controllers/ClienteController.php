@@ -107,4 +107,9 @@ class ClienteController extends Controller
         return Redirect::route('business.cliente.index');
     }
 
+    function obtenerClientes(){
+        $clientes=$this->clienteRep->obtenerClientes();
+        return response()->json(array ('clientes'=>$clientes));
+    }
+
 }

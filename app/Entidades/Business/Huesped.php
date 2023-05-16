@@ -12,7 +12,7 @@ class Huesped extends Model
 
     protected $fillable=[
         'persona_id',
-        'reserva_id',
+        'cliente_id',
         'estado_huesped_id',
         'fecha',
         'usuario_alta_id',

@@ -55,6 +55,7 @@
             );
 
             transaccionSubTotal();
+            validateSave();
         }
 
         function transaccionDescuentoPorcentaje($this){
@@ -241,7 +242,6 @@
                             fila.hide();
                         }if($(input_estado).val() === 'nuevo'){
                             fila.remove();
-                            //adicionar una fila a bancos disponibles
                         }
 
                         transaccionTotales();
@@ -252,6 +252,15 @@
             });
 
         }//fin function
+
+        function validateSave(){
+            if($('#tbl_detalle_transaccion>tbody>tr:visible').length > 0){
+                $("#btnGuardarTransaccion").removeAttr("disabled");
+            }
+            else {
+                $("#btnGuardarTransaccion").attr("disabled","disabled");
+            }
+        }
 
    </script>
 @endpush

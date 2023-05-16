@@ -29,7 +29,8 @@ class PersonaRepository{
 
      public function obtenerPersonas(){
         $personas=DB::table('bas_persona as p')
-           ->select('p.id','p.doc_id','p.nombre','p.paterno','p.materno',DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) AS nombre_completo'))
+           ->leftjoin('bas_tipo_doc as t','t.id','=','p.tipo_doc_id')
+           ->select('p.id','p.nombre','p.paterno','p.materno',DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) AS nombre_completo'),'p.doc_id as nro_doc','t.nombre as tipo_doc')
            ->where('p.estado','=','1')
            ->get();
        return $personas;

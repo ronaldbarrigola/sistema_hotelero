@@ -124,6 +124,7 @@
                                 $("#title_modal_view_cliente").text("MODIFICAR DATOS DEL CLIENTE");
                                 //Datos persona
                                 $('#persona_id').val(data.persona.id);
+                                $("#doc_id").attr('readonly','readonly');
                                 $('#doc_id').val(data.persona.doc_id);
                                 $('#tipo_doc_id').selectpicker('val',data.persona.tipo_doc_id);
                                 $("#tipo_doc_id").selectpicker('refresh');
@@ -151,7 +152,6 @@
                                 $("#ciudad_id").selectpicker('refresh');
                             }
                         });
-                        //messageAlert("El cliente con el numro de documento " + num_doc_id + ", ya esta registrado");
 
                     } else {
                         $("#editCliente").val("");

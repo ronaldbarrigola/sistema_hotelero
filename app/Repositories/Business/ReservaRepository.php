@@ -115,15 +115,20 @@ class ReservaRepository{
                     break;
                 case 1:
                     if($reserva->estado_reserva_id==0){
-                        $fecha=$reserva->fecha_ini;
-                        $fecha_inicial = Carbon::parse($fecha)->format('Y-m-d');
-                        $fecha_actual = Carbon::now()->format('Y-m-d');
-                        if($fecha_inicial==$fecha_actual){
-                            $reserva->estado_reserva_id=1;//1:Check In
-                            $reserva->update();
-                            $response=true;
+                        $disponible=$this->validarHabitacionReserva($reserva->habitacion_id,$reserva->fecha_ini);
+                        if($disponible){
+                            $fecha=$reserva->fecha_ini;
+                            $fecha_inicial = Carbon::parse($fecha)->format('Y-m-d');
+                            $fecha_actual = Carbon::now()->format('Y-m-d');
+                            if($fecha_inicial==$fecha_actual){
+                                $reserva->estado_reserva_id=1;//1:Check In
+                                $reserva->update();
+                                $response=true;
+                            } else {
+                                $message="El check in esta programado para otra fecha. Cambie la fecha de ingreso a la fecha actual para el Check In";
+                            }
                         } else {
-                            $message="El check in esta programado para otra fecha. Cambie la fecha de ingreso a la fecha actual para el Check In";
+                            $message="No puede realizar la reserva, porque ya existe una reserva en estado Check In";
                         }
 
                     } else {
@@ -150,7 +155,6 @@ class ReservaRepository{
                             $reserva->update();
                             $response=true;
                         }
-
                     } else {
                        $message="No puede ejecutar la accion Check Out";
                     }
@@ -163,6 +167,28 @@ class ReservaRepository{
         return response()->json(array ('response'=>$response,'reserva'=>$reserva->estadoReserva,'message'=>$message));
     }
 
+    public function validarHabitacionReserva($habitacion_id,$fecha_ini){
+        $response=true;
+        $fecha_fin=DB::table('res_reserva as r')
+        ->selectRaw('MAX(r.fecha_fin) as fecha')
+        ->where('r.habitacion_id','=',$habitacion_id)
+        ->where('r.estado_reserva_id','=',1) //En check in
+        ->where('r.estado','=','1')
+        ->first()->fecha;
+
+        if($fecha_fin!=null){
+            //$fecha_ini=Carbon::parse($fecha_ini)->format('Y-m-d H:i:s');
+            //$fecha_fin=Carbon::parse($fecha_fin)->format('Y-m-d H:i:s');
+            $fecha_ini=Carbon::parse($fecha_ini);
+            $fecha_fin=Carbon::parse($fecha_fin);
+            if ($fecha_fin->greaterThan($fecha_ini)) {
+                //La fecha_fin es menor que la fecha_ini
+                $response=false;
+            }
+        }
+       return $response;
+    }
+
 
     public function insertarDesdeRequest(Request $request){
         $reserva=null;
@@ -171,19 +197,25 @@ class ReservaRepository{
 
             $fecha_ini=$request->get('fecha_ini');
             $fecha_fin=$request->get('fecha_fin');
+            $habitacion_id=$request->get('habitacion_id');
 
-            $starDate = Carbon::parse($fecha_ini);
-            $endDate = Carbon::parse($fecha_fin);
+            $hora_ini=$request->get('hora_ini');
+            $hora_fin=$request->get('hora_fin');
 
-            $diferencia_en_dias=$starDate->diffInDays($endDate);
+            $fecha_ini=$fecha_ini."T".$hora_ini;
+            $fecha_fin=$fecha_fin."T".$hora_fin;
 
-            if($diferencia_en_dias==0){
-                $fecha_ini=$fecha_ini."T03:00:00"; //03:00 am
-                $fecha_fin=$fecha_fin."T21:00:00"; //21:00 pm
-            } else {
-                $fecha_ini=$fecha_ini."T12:00:00";
-                $fecha_fin=$fecha_fin."T12:00:00";
-            }
+            // $starDate = Carbon::parse($fecha_ini);
+            // $endDate = Carbon::parse($fecha_fin);
+
+            // $diferencia_en_dias=$starDate->diffInDays($endDate);
+            // if($diferencia_en_dias==0){
+            //     $fecha_ini=$fecha_ini."T03:00:00"; //03:00 am
+            //     $fecha_fin=$fecha_fin."T21:00:00"; //21:00 pm
+            // } else {
+            //     $fecha_ini=$fecha_ini."T12:00:00";
+            //     $fecha_fin=$fecha_fin."T12:00:00";
+            // }
 
             $reserva=new Reserva($request->all());           ;
             $reserva->fecha_ini=$fecha_ini;
@@ -224,15 +256,20 @@ class ReservaRepository{
             $starDate = Carbon::parse($fecha_ini);
             $endDate = Carbon::parse($fecha_fin);
 
-            $diferencia_en_dias=$starDate->diffInDays($endDate);
+            $hora_ini=$request->get('hora_ini');
+            $hora_fin=$request->get('hora_fin');
 
-            if($diferencia_en_dias==0){
-                $fecha_ini=$fecha_ini."T03:00:00"; //03:00 am
-                $fecha_fin=$fecha_fin."T21:00:00"; //21:00 pm
-            } else {
-                $fecha_ini=$fecha_ini."T12:00:00";
-                $fecha_fin=$fecha_fin."T12:00:00";
-            }
+            $fecha_ini=$fecha_ini."T".$hora_ini;
+            $fecha_fin=$fecha_fin."T".$hora_fin;
+
+            // $diferencia_en_dias=$starDate->diffInDays($endDate);
+            // if($diferencia_en_dias==0){
+            //     $fecha_ini=$fecha_ini."T03:00:00"; //03:00 am
+            //     $fecha_fin=$fecha_fin."T21:00:00"; //21:00 pm
+            // } else {
+            //     $fecha_ini=$fecha_ini."T12:00:00";
+            //     $fecha_fin=$fecha_fin."T12:00:00";
+            // }
 
             //Validaciones
             $cantidad=($request['reserva_cantidad']!=null)?$request['reserva_cantidad']:0;

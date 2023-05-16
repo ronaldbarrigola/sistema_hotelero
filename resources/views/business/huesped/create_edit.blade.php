@@ -15,6 +15,7 @@
                     @csrf
                     <input type="hidden" name="editHuesped" id="editHuesped" value="">
                     <input type="hidden" name="huesped_id" id="huesped_id" value="">
+                    <input type="hidden" name="huesped_reserva_id" id="huesped_reserva_id" value="">
 
                     @include('business/huesped/detalle_huesped')
 
@@ -22,7 +23,7 @@
 
                     <div class="row">
                         <div class="col-md-4 offset-md-4 d-flex justify-content-between">
-                            <button class="btn btn-success" id="btnGuardarHuesped" type="submit">Guardar</button>
+                            <button class="btn btn-success" id="btnGuardarHuesped" disabled type="submit">Guardar</button>
                             <button type="button" class="btn btn-primary" data-dismiss="modal">Cancelar</button>
                         </div>
                     </div>
@@ -41,6 +42,10 @@
   <script>
         $(document).ready(function() {
 
+           $(document).on("click", "#btnNuevoHuespedCliente", function(){ //El boton btnCreateCliente se encuentra en actionbar
+              createCliente();
+           });
+
         }); //Fin ready
 
         function submitFormHuesped(event) {
@@ -50,6 +55,17 @@
         }
 
         function storeHuesped(){
+
+            $("input[name='vec_huesped_check_in[]']").each(function(indice, elemento) {
+                var checkbox = $(elemento);
+                if (checkbox.is(':checked')) {
+                   $(elemento).prop('checked', true);
+                   $(elemento).val(1); //Check in
+                } else {
+                   $(elemento).prop('checked', true);
+                   $(elemento).val(0); //Pendiente
+                }
+            });
 
             var formdata = new FormData($("#frmHuesped")[0]); //Serializa con imagenes multimedia
             url=URL_BASE + "/business/huesped";
@@ -75,6 +91,7 @@
                     $("#modalViewHuesped").modal("hide");
                     $("#btnGuardarHuesped").removeAttr('disabled');
                     $("#btnGuardarHuesped").val("Guardar");
+                    datatable_huesped.ajax.reload();
                     limpiarDatoHuesped();
                 },//End success
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -84,7 +101,7 @@
 
                 }//END complete
 
-            }); //End Ajax
+            });//End Ajax
        }
 
        function createHuesped(){
@@ -121,16 +138,80 @@
 
         function limpiarDatoHuesped(){
             $('#huesped_id').val("");
+            //Limpiar detalle
+            $("#tbl_detalle_huesped tbody tr").find('td').remove();
         }
 
         function slideHuesped($this){
-           var reserva_id=$this.id;
-           huesped_reserva_id=reserva_id;
-           datatable_huesped.ajax.reload();
            $('.cabecera_principal').hide();
            $('.cabecera_transaccion').hide();
            $('.cabecera_huesped').show();
+           $("#tbl_huesped tbody tr").find('td').remove();
            $(".carouselReserva").carousel(2);
+           var reserva_id=$this.id;
+           $("#huesped_reserva_id").val(reserva_id);
+           datatable_huesped.ajax.reload();
+        }
+
+        function huespedCheckIn($id){
+            var huesped_id=$id;
+            var estado_huesped_id=1;//Check In
+            estadoHuesped(huesped_id,estado_huesped_id);
+        }
+
+        function huespedCheckOut($id){
+            var huesped_id=$id;
+            var estado_huesped_id=2;//Check Out
+            estadoHuesped(huesped_id,estado_huesped_id);
+        }
+
+        function estadoHuesped(huesped_id,estado_huesped_id){
+            $.ajax({
+                type: "POST",
+                url: "{{route('estadohuesped')}}",
+                data:{huesped_id:huesped_id,estado_huesped_id:estado_huesped_id,'_token':'{{ csrf_token() }}'},
+                dataType: 'json',
+                beforeSend: function () {
+
+                },
+                success: function(result){
+                    datatable_huesped.ajax.reload();
+                },//End success
+                complete:function(result, textStatus ){
+
+                }
+            }); //End Ajax
+        }
+
+        function deleteHuesped($id){
+            boot4.confirm({
+                msg:"Desea eliminar el huesped?",
+                title:"Confirmación",
+                callback:function(result){
+                    if(result){
+                        url=URL_BASE + "/business/huesped";
+                        url_delete= url + "/" + $id;
+                        $.ajax({
+                            type: "POST",
+                            url: url_delete,
+                            data:{'_method':'DELETE','_token': '{{ csrf_token() }}'},
+                            dataType: 'json',
+                            success: function(result){
+                                try {
+                                    datatable_huesped.ajax.reload();//recargar registro datatables.
+                                }
+                                catch(err) {
+                                //En caso de que se cree la reserva desde el TimeLines
+                                }
+                            },
+                            error:function(result){
+
+                            }
+                        });
+                    }// fin if
+                }
+            });
+
         }
 
   </script>

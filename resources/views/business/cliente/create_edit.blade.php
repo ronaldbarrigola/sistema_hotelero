@@ -72,22 +72,22 @@
         }); //Fin ready
 
         function submitFormCliente(event) {
-            guardarCliente();
+            storeCliente();
             event.preventDefault(); //cancela el evento
             return false; //Cancela el envio submit para procesar por ajax
         }
 
-        function guardarCliente(){
-
+        function storeCliente(){
             var formdata = new FormData($("#frmCliente")[0]); //Serializa con imagenes multimedia
             url=URL_BASE + "/business/cliente";
 
             if($("#editCliente").val()=="modificar"){
-                url= url + "/" + $("#persona_id").val();
-                formdata.append('_method','patch');
+               url= url + "/" + $("#persona_id").val();
+               formdata.append('_method','patch');
             }
 
             $.ajax({
+                async: false,//Evitar la ejecucion  Asincrona
                 type: "POST",
                 processData: false, //importante para enviar imagen
                 contentType: false, //importante para enviar imagen
@@ -103,12 +103,18 @@
 
                     //BEGIN:Es para cuando se hace el llamado al formulario modal desde otro modulo
                     $("#cliente_id").find('option').remove();
+                    $("#huesped_cliente_id").find('option').remove();
                     $.each(result.clientes , function(i, v) {
-                        $("#cliente_id").append('<option  value="' + v.id + '" >' + v.cliente + "|"+ v.doc_id + '</option>');
+                        $("#cliente_id").append('<option value="' + v.id + '" data-nombre="' + v.nombre + '" data-paterno="' + v.paterno + '" data-materno="' + v.materno + '" data-nro_doc="' + v.doc_id + '" data-tipo_doc="' + v.tipo_documento + '">' + v.cliente + " | " + v.doc_id + '</option>');
+                        $("#huesped_cliente_id").append('<option value="' + v.id + '" data-nombre="' + v.nombre + '" data-paterno="' + v.paterno + '" data-materno="' + v.materno + '" data-nro_doc="' + v.doc_id + '" data-tipo_doc="' + v.tipo_documento + '">' + v.cliente + " | " + v.doc_id + '</option>');
                     });
                     $("#cliente_id").selectpicker('refresh');
                     $("#cliente_id").selectpicker('val', result.cliente.id);
                     $("#cliente_id").selectpicker('refresh');
+
+                    $("#huesped_cliente_id").selectpicker('refresh');
+                    $("#huesped_cliente_id").selectpicker('val', result.cliente.id);
+                    $("#huesped_cliente_id").selectpicker('refresh');
                     //END:Es para cuando se hace el llamado al formulario modal desde otro modulo
 
                     $("#modalViewCliente").modal("hide");
@@ -124,6 +130,7 @@
                       //Sin acciones
                       //En caso de que se cree la reserva desde el TimeLines
                     }
+
                 },//End success
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
 
@@ -132,13 +139,21 @@
 
                 }//END complete
 
-            }); //End Ajax
+            });//End Ajax
+
+            try {
+                addHuesped();
+            }
+            catch(err){
+            }
+
+
        }
 
        function createCliente(){
             $("#editCliente").val("");
             $("#title_modal_view_cliente").text("NUEVO CLIENTE");
-
+            $("#doc_id").removeAttr('readonly');
             $("#doc_id").val("");
             limpiarDatoCliente();
 

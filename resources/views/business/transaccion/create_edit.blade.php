@@ -238,6 +238,13 @@
         }
 
         function slideTransaccion($id){
+            $("#tbl_transaccion tbody tr").find('td').remove();
+            $('#tbl_transaccion tfoot tr th').html("");
+
+            $('.cabecera_principal').hide();
+            $('.cabecera_huesped').hide();
+            $('.cabecera_transaccion').show();
+            $('.carouselReserva').carousel(1);
             var reserva_id=$id;
             $.ajax({
                 type: "GET",
@@ -251,16 +258,10 @@
                     var nro_reserva=result.reserva.id;
                     var cliente=result.cliente;
                     var nro_habitacion=result.habitacion.num_habitacion;
-
                     $('#nombre_cliente').text(cliente.toUpperCase()); //El campo nombre_cliente se encuenta en el modulo transaccion.actionbar
                     $('#nro_habitacion').text(nro_habitacion); //El campo nro_reserva se encuenta en el modulo transaccion.actionbar
                     $('#foreign_reserva_id').val(reserva_id); //El campo foreign_reserva_id se encuenta en el modulo transaccion.create_edit
                     datatable_transaccion.ajax.reload();
-                    $('.cabecera_principal').hide();
-                    $('.cabecera_huesped').hide();
-                    $('.cabecera_transaccion').show();
-                    //$('.carouselReserva').carousel('next');
-                    $('.carouselReserva').carousel(1);
                 },//End success
                 complete:function(result, textStatus ){
 
@@ -277,16 +278,7 @@
             $("#hotel_producto_id").selectpicker('refresh');
        }
 
-        function validateSave(){
-            if($('#tbl_detalle>tbody>tr:visible').length > 0){
-                $("#btnGuardarTransaccion").removeAttr("disabled");
-            }
-            else {
-                $("#btnGuardarTransaccion").attr("disabled","disabled");
-            }
-        }
-
-        function limpiarDatoTransaccion(){
+       function limpiarDatoTransaccion(){
             $("#transaccion_id").val("");
             $("#cantidad").val("");
             $("#precio_unidad").val("");

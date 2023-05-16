@@ -73,6 +73,7 @@ Route::get('/seguridad/obtenerRolesFaltantesPorIdUsuario', [UsuarioRolController
 //==============================================================================================================
 Route::get('/busines/cliente/createcliente', [ClienteController::class,'create'])->name('createcliente');
 Route::get('/busines/cliente/editcliente', [ClienteController::class,'edit'])->name('editcliente');
+Route::get('/base/persona/obtenerclientes', [ClienteController::class,'obtenerClientes'])->name('obtenerclientes');
 Route::get('/busines/habitacion/edithabitacion', [HabitacionController::class,'edit'])->name('edithabitacion');
 Route::get('/business/habitacion/obtenerHabitaciones', [HabitacionController::class,'obtenerHabitaciones'])->name('obtenerHabitaciones');
 Route::get('/busines/categoria/editcategoria', [CategoriaController::class,'edit'])->name('editcategoria');
@@ -97,6 +98,7 @@ Route::get('/base/persona/obtenerpersonas', [PersonaController::class,'obtenerPe
 //Post
 Route::post('/business/hotel_producto/activatehotelproducto', [HotelProductoController::class,'activate'])->name('activatehotelproducto');
 Route::post('/business/reserva/estado', [ReservaController::class,'estadoReserva'])->name('estadoreserva');
+Route::post('/business/huesped/estado', [HuespedController::class,'estadoHuesped'])->name('estadohuesped');
 
 //Rutas generales
 Route::resource('business/cliente', ClienteController::class);

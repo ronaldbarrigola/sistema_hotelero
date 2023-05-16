@@ -411,9 +411,9 @@
                 if(edit_reserva!="modificar"){
                     $("#fecha_ini").val(fecha_actual);
                     $("#fecha_fin").val(fecha_actual);
-                    $("#hora_ini").val(hora_ini);
-                    $("#hora_fin").val(hora_fin);
                 }
+
+                setHoraDayUse();
 
                 var precio=$('#habitacion_id option:selected').data("precio")
                 var precio_unidad=(precio!=null&&precio!=""&&precio>0)?precio:0;
@@ -426,10 +426,10 @@
                         $("#fecha_ini").val(fecha_actual);
                         $("#fecha_fin").val(addDaysToDate(fecha_actual,2));
                     }
-
-                    $("#hora_ini").val(hora_ini);
-                    $("#hora_fin").val(hora_fin);
                 }
+
+                $("#hora_ini").val(hora_ini);
+                $("#hora_fin").val(hora_fin);
             }
         }
 
@@ -443,6 +443,23 @@
             if (mes < 10)
                 mes = '0' + mes //agrega cero si el menor de 10
             return ano + "-" + mes + "-" + dia;
+        }
+
+        function setHoraDayUse() {
+            var fecha = new Date();// Obtiene la fecha y hora actual
+            var hora = fecha.getHours();
+            var minutos = fecha.getMinutes();
+            var segundos = fecha.getSeconds();
+            var hora_ini=hora;
+            var hora_fin=hora+1;
+
+            // Agrega ceros a la izquierda si es necesario
+            if (hora_ini < 10) hora_ini = "0" + hora_ini;
+            if (hora_fin < 10) hora_fin = "0" + hora_fin;
+            if (minutos < 10) minutos = "0" + minutos;
+
+            $('#hora_ini').val(hora_ini + ":" + minutos);
+            $('#hora_fin').val(hora_fin + ":" + minutos);
         }
 
         function limpiarDatoReserva(){
@@ -480,7 +497,6 @@
             $('.cabecera_transaccion').hide()
             $('.cabecera_huesped').hide()
             $('.cabecera_principal').show()
-            //$('.carouselReserva').carousel('prev');
             $('.carouselReserva').carousel(0);
         }
 

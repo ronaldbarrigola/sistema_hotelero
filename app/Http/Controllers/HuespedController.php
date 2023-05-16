@@ -25,6 +25,13 @@ class HuespedController extends Controller
         return $this->huespedRep->obtenerHuespedesDataTables($reserva_id);
     }
 
+    public function estadoHuesped(Request $request){
+        $id=$request['huesped_id'];
+        $estado=$request['estado_huesped_id'];
+        $huesped=$this->huespedRep->estadoHuesped($id,$estado);
+        return response()->json(array ('huesped'=>$huesped));
+    }
+
     public function create(){
        //Sin acciones
     }
@@ -46,11 +53,6 @@ class HuespedController extends Controller
 
     public function destroy(Request $request,$id){
         $huesped=$this->huespedRep->eliminar($id);
-        if($huesped->ajax()){
-             return response()->json(array (
-                'msg'=>'huesped '.$huesped->id.', eliminada',
-                'id'=>$huesped->id
-            ));
-        }
+        return response()->json(array ('huesped'=>$huesped));
     }
 }

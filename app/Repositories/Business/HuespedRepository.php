@@ -12,9 +12,9 @@ class HuespedRepository{
     public function obtenerHuespedes($reserva_id){
        $huespedes=DB::table('res_huesped as h')
        ->join('res_estado_huesped as e','e.id','=','h.estado_huesped_id')
-       ->join('bas_persona as p','p.id','=','h.persona_id')
+       ->join('bas_persona as p','p.id','=','h.cliente_id')
        ->join('bas_tipo_doc as d','d.id','=','p.tipo_doc_id')
-       ->select('h.id',DB::raw('IFNULL(p.doc_id,"") as doc_id'),'d.nombre as tipo_documento','p.nombre','p.paterno','p.materno',DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) AS huesped'),'h.fecha_ingreso','h.fecha_salida','e.descripcion as estado_huesped')
+       ->select('h.id',DB::raw('IFNULL(p.doc_id,"") as doc_id'),'d.nombre as tipo_documento','p.nombre','p.paterno','p.materno',DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) AS huesped'),'h.fecha_ingreso','h.fecha_salida','h.estado_huesped_id','e.descripcion as estado_huesped')
        ->where('h.reserva_id','=',$reserva_id)
        ->where('h.estado','=','1')
        ->orderBy('h.id','desc')
@@ -32,14 +32,35 @@ class HuespedRepository{
     }
 
     public function insertarDesdeRequest(Request $request){
-        $huesped=new Huesped($request->all());
-        $huesped->usuario_alta_id=Auth::user()->id;
-        $huesped->usuario_modif_id=Auth::user()->id;
-        $huesped->fecha_creacion=Carbon::now('America/La_Paz')->toDateTimeString();
-        $huesped->fecha_modificacion=Carbon::now('America/La_Paz')->toDateTimeString();
-        $huesped->estado=1;
-        $huesped->save();
-
+        //Obtener array
+        $vec_cliente_id=$request->get('vec_huesped_cliente_id');
+        $vec_check_in=$request->get('vec_huesped_check_in');
+        //Variable
+        $reserva_id=$request->get('huesped_reserva_id');
+        $huesped=null;
+        $index=0;
+        foreach ($vec_cliente_id as $cliente_id) {
+            $check_in=($vec_check_in[$index]!=null)?$vec_check_in[$index]:0;
+            $estado_huesped_id=0;
+            $fecha_ingreso=null;
+            if($check_in){
+                $estado_huesped_id=1; //0:Pendiente 1: Check In 2: Check Out
+                $fecha_ingreso=Carbon::now('America/La_Paz')->toDateTimeString();
+            }
+            $huesped=new Huesped();
+            $huesped->estado_huesped_id=$estado_huesped_id; //0:Pendiente 1: Check In 2: Check Out
+            $huesped->cliente_id=$cliente_id;
+            $huesped->reserva_id=$reserva_id;
+            $huesped->usuario_alta_id=Auth::user()->id;
+            $huesped->usuario_modif_id=Auth::user()->id;
+            $huesped->fecha_ingreso=$fecha_ingreso;
+            $huesped->fecha=Carbon::now('America/La_Paz')->toDateTimeString();
+            $huesped->fecha_creacion=Carbon::now('America/La_Paz')->toDateTimeString();
+            $huesped->fecha_modificacion=Carbon::now('America/La_Paz')->toDateTimeString();
+            $huesped->estado=1;
+            $huesped->save();
+            $index++;
+        }
         return $huesped;
     }
 
@@ -50,6 +71,19 @@ class HuespedRepository{
         $huesped->fecha_modificacion=Carbon::now('America/La_Paz')->toDateTimeString();
         $huesped->update();
         return  $huesped;
+    }
+
+    public function estadoHuesped($id,$estado){
+        $fecha=Carbon::now('America/La_Paz')->toDateTimeString();
+        $huesped=$this->obtenerHuespedPorId($id);
+        if ($estado==1) {
+            $huesped->fecha_ingreso=$fecha;
+        } else if ($estado==2) {
+            $huesped->fecha_salida=$fecha;
+        }
+        $huesped->estado_huesped_id=$estado;
+        $huesped->update();
+        return $huesped;
     }
 
     public function eliminar($id){

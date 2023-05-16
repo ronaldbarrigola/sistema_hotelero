@@ -3,7 +3,7 @@
 
     <div class="btn-group" role="group" aria-label="First group">
         <button id= "btnCreateHuesped" class="btn btn-success">NUEVO</button>
-        <button id= "btnRetornarReserva" class="btn btn-primary" onclick="slideReserva()">Volver</button>   {{-- slideReserva()  se encuentra en el modulo reserva.crete_edit --}}
+        <button class="btn btn-primary" onclick="slideReserva()">Volver</button>   {{-- slideReserva()  se encuentra en el modulo reserva.crete_edit --}}
     </div>
 
     {{-- CHECKBOX BUSQUEDA EXACTA --}}
