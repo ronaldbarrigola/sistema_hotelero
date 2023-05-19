@@ -154,12 +154,8 @@
             $("#editTransaccion").val("");
             $("#panel_detalle_transaccion").show();
             $("#panel_campos_transaccion").hide();
-            // $('#modalViewTransaccion').removeClass('modal-lg');
-            // $('#modalViewTransaccion').addClass('modal-xl');
             $("#title_modal_view_transaccion").text("NUEVO CARGO");
-
             limpiarDatoTransaccion();
-
             $.ajax({
                 type: "GET",
                 url: "{{route('createtransaccion')}}",

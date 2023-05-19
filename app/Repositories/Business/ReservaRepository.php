@@ -7,6 +7,7 @@ use App\Entidades\Business\Reserva;
 use App\Entidades\Business\Transaccion;
 use App\Repositories\Business\TransaccionRepository;
 use App\Repositories\Business\HotelProductoRepository;
+use App\Repositories\Business\HuespedRepository;
 use Carbon\Carbon;
 use DB;
 
@@ -14,11 +15,13 @@ class ReservaRepository{
 
     protected $transaccionRep;
     protected $hotelProductoRep;
+    protected $huespedRep;
 
     //===constructor=============================================================================================
-    public function __construct(TransaccionRepository $transaccionRep,HotelProductoRepository $hotelProductoRep){
+    public function __construct(TransaccionRepository $transaccionRep,HotelProductoRepository $hotelProductoRep,HuespedRepository $huespedRep){
         $this->transaccionRep=$transaccionRep;
         $this->hotelProductoRep=$hotelProductoRep;
+        $this->huespedRep=$huespedRep;
     }
 
     public function obtenerReservas(){
@@ -82,7 +85,9 @@ class ReservaRepository{
         if($reservas!=null){
             $porcentaje=0;
             foreach($reservas as $row){
-                $porcentaje=($row->pago*100)/$row->cargo;
+                if($row->cargo>0){ //Para evitar division entre cero
+                   $porcentaje=($row->pago*100)/$row->cargo;
+                }
                 $row->porcentaje=round($porcentaje,2);
             }
         }
@@ -108,19 +113,20 @@ class ReservaRepository{
         $reserva=$this->obtenerReservaPorId($id);
         if(!is_null($reserva)){
             switch ($estado) {
-                case 0:
+                case 0: //RESERVA
                     $reserva->estado_reserva_id=0;//0: Reserva
                     $reserva->update();
                     $response=true;
                     break;
-                case 1:
+                case 1: //CHECK IN
                     if($reserva->estado_reserva_id==0){
                         $disponible=$this->validarHabitacionReserva($reserva->habitacion_id,$reserva->fecha_ini);
                         if($disponible){
                             $fecha=$reserva->fecha_ini;
-                            $fecha_inicial = Carbon::parse($fecha)->format('Y-m-d');
+                            $fecha_reserva=Carbon::parse($fecha)->format('Y-m-d');
                             $fecha_actual = Carbon::now()->format('Y-m-d');
-                            if($fecha_inicial==$fecha_actual){
+                            $fecha_anterior = Carbon::now()->subDay(1)->format('Y-m-d');
+                            if($fecha_reserva==$fecha_anterior||$fecha_reserva==$fecha_actual){
                                 $reserva->estado_reserva_id=1;//1:Check In
                                 $reserva->update();
                                 $response=true;
@@ -132,20 +138,19 @@ class ReservaRepository{
                         }
 
                     } else {
-                       $message="No puede ejecutar la accion Check In";
+                       $message="El estado deberia estar en Reserva, para ejecutar la accion Check In";
                     }
                     break;
-                case 2:
+                case 2: //STAND BY
                     if($reserva->estado_reserva_id==1){ //Verifica si el estado esta en Check In
                        $reserva->estado_reserva_id=2;//2: Stand By
                        $reserva->update();
                        $response=true;
                     } else {
-                       $message="No puede ejecutar la accion Stand By";
+                       $message="El estado deberia estar en Check In, para ejecutar la accion Stand By";
                     }
                     break;
-                case 3:
-
+                case 3: //CHECK OUT
                     if($reserva->estado_reserva_id==1){ //Verifica si el estado esta en Check In
                         $saldo=$this->transaccionRep->saldo($id);
                         if($saldo>0){
@@ -153,10 +158,12 @@ class ReservaRepository{
                         } else {
                             $reserva->estado_reserva_id=3;//3: Check Out
                             $reserva->update();
+                            //Ejecutar Chek Out para todos los huespedes de la reserva
+                            $this->huespedRep->checkOutPorReservaId($reserva->id);
                             $response=true;
                         }
                     } else {
-                       $message="No puede ejecutar la accion Check Out";
+                       $message="El estado deberia estar en Check In, para ejecutar la accion Check Out";
                     }
 
                     break;
@@ -177,8 +184,6 @@ class ReservaRepository{
         ->first()->fecha;
 
         if($fecha_fin!=null){
-            //$fecha_ini=Carbon::parse($fecha_ini)->format('Y-m-d H:i:s');
-            //$fecha_fin=Carbon::parse($fecha_fin)->format('Y-m-d H:i:s');
             $fecha_ini=Carbon::parse($fecha_ini);
             $fecha_fin=Carbon::parse($fecha_fin);
             if ($fecha_fin->greaterThan($fecha_ini)) {
@@ -197,25 +202,12 @@ class ReservaRepository{
 
             $fecha_ini=$request->get('fecha_ini');
             $fecha_fin=$request->get('fecha_fin');
-            $habitacion_id=$request->get('habitacion_id');
 
             $hora_ini=$request->get('hora_ini');
             $hora_fin=$request->get('hora_fin');
 
             $fecha_ini=$fecha_ini."T".$hora_ini;
             $fecha_fin=$fecha_fin."T".$hora_fin;
-
-            // $starDate = Carbon::parse($fecha_ini);
-            // $endDate = Carbon::parse($fecha_fin);
-
-            // $diferencia_en_dias=$starDate->diffInDays($endDate);
-            // if($diferencia_en_dias==0){
-            //     $fecha_ini=$fecha_ini."T03:00:00"; //03:00 am
-            //     $fecha_fin=$fecha_fin."T21:00:00"; //21:00 pm
-            // } else {
-            //     $fecha_ini=$fecha_ini."T12:00:00";
-            //     $fecha_fin=$fecha_fin."T12:00:00";
-            // }
 
             $reserva=new Reserva($request->all());           ;
             $reserva->fecha_ini=$fecha_ini;
@@ -237,6 +229,13 @@ class ReservaRepository{
 
             $this->transaccionRep->insertarDesdeReserva($request);
 
+            $chk_huesped=$request->get('chkHuesped');
+            $chk_huesped=($chk_huesped!=null)?true:false;
+
+            if($chk_huesped){//Insertar cliente como huesped
+                $this->huespedRep->insertarHuesped($reserva->id,$reserva->cliente_id);
+            }
+
             DB::commit();
         }catch(\Exception $e){
             DB::rollback();
@@ -253,23 +252,11 @@ class ReservaRepository{
             $fecha_ini=$request->get('fecha_ini');
             $fecha_fin=$request->get('fecha_fin');
 
-            $starDate = Carbon::parse($fecha_ini);
-            $endDate = Carbon::parse($fecha_fin);
-
             $hora_ini=$request->get('hora_ini');
             $hora_fin=$request->get('hora_fin');
 
             $fecha_ini=$fecha_ini."T".$hora_ini;
             $fecha_fin=$fecha_fin."T".$hora_fin;
-
-            // $diferencia_en_dias=$starDate->diffInDays($endDate);
-            // if($diferencia_en_dias==0){
-            //     $fecha_ini=$fecha_ini."T03:00:00"; //03:00 am
-            //     $fecha_fin=$fecha_fin."T21:00:00"; //21:00 pm
-            // } else {
-            //     $fecha_ini=$fecha_ini."T12:00:00";
-            //     $fecha_fin=$fecha_fin."T12:00:00";
-            // }
 
             //Validaciones
             $cantidad=($request['reserva_cantidad']!=null)?$request['reserva_cantidad']:0;
@@ -322,13 +309,44 @@ class ReservaRepository{
         return  $reserva;
     }
 
-    public function eliminar($id){
+    public function validarEliminacion($id){ //Usado para eliminar desde calendario
+        $response=false;
+        $message="";
         $reserva=$this->obtenerReservaPorId($id);
-        if ( is_null($reserva) ){
-            App::abort(404);
+        if($reserva->estado_reserva_id==0){
+            $response=true;
+        } else {
+            $transacciones=$this->transaccionRep->obtenerTransacciones($id);
+            if($transacciones==null){
+                $response=true;
+            } else {
+                $message="No puede eliminar la reserva, porque ya tiene operaciones registradas";
+            }
         }
-        $reserva->delete();//Eliminacion logica y en cascada con sus relaciones
-        return $reserva;
+        return response()->json(array ('response'=>$response,'message'=>$message));
+    }
+
+    public function eliminar($id){
+        $response=false;
+        $message="";
+        $reserva=$this->obtenerReservaPorId($id);
+        if($reserva->estado_reserva_id==0){
+            $reserva->usuario_modif_id=Auth::user()->id;
+            $reserva->fecha_modificacion=Carbon::now('America/La_Paz')->toDateTimeString();
+            $reserva->delete();//Eliminacion logica y en cascada con sus relaciones
+            $response=true;
+        } else {
+            $transacciones=$this->transaccionRep->obtenerTransacciones($id);
+            if($transacciones==null){
+                $reserva->usuario_modif_id=Auth::user()->id;
+                $reserva->fecha_modificacion=Carbon::now('America/La_Paz')->toDateTimeString();
+                $reserva->delete();//Eliminacion logica y en cascada con sus relaciones
+                $response=true;
+            } else {
+                $message="No puede eliminar la reserva, porque ya tiene operaciones registradas";
+            }
+        }
+        return response()->json(array ('response'=>$response,'reserva'=>$reserva,'message'=>$message));
     }
 
 }//fin clase

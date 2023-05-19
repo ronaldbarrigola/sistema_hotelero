@@ -31,22 +31,30 @@ class HuespedRepository{
         return Huesped::find($id);
     }
 
+    public function insertarHuesped($reserva_id,$cliente_id){//Usuado desde la creacion reserva
+        $huesped=new Huesped();
+        $huesped->estado_huesped_id=1;//0:Pendiente 1: Check In 2: Check Out
+        $huesped->cliente_id=$cliente_id;
+        $huesped->reserva_id=$reserva_id;
+        $huesped->usuario_alta_id=Auth::user()->id;
+        $huesped->usuario_modif_id=Auth::user()->id;
+        $huesped->fecha_ingreso=Carbon::now('America/La_Paz')->toDateTimeString();
+        $huesped->fecha=Carbon::now('America/La_Paz')->toDateTimeString();
+        $huesped->fecha_creacion=Carbon::now('America/La_Paz')->toDateTimeString();
+        $huesped->fecha_modificacion=Carbon::now('America/La_Paz')->toDateTimeString();
+        $huesped->estado=1;
+        $huesped->save();
+        return $huesped;
+    }
+
     public function insertarDesdeRequest(Request $request){
         //Obtener array
         $vec_cliente_id=$request->get('vec_huesped_cliente_id');
-        // $vec_check_in=$request->get('vec_huesped_check_in');
         //Variable
         $reserva_id=$request->get('huesped_reserva_id');
         $huesped=null;
         $index=0;
         foreach ($vec_cliente_id as $cliente_id) {
-            // $check_in=($vec_check_in[$index]!=null)?$vec_check_in[$index]:0;
-            $estado_huesped_id=0;
-            $fecha_ingreso=null;
-            // if($check_in){
-            //     $estado_huesped_id=1; //0:Pendiente 1: Check In 2: Check Out
-            //     $fecha_ingreso=Carbon::now('America/La_Paz')->toDateTimeString();
-            // }
             $huesped=new Huesped();
             $huesped->estado_huesped_id=1; //0:Pendiente 1: Check In 2: Check Out
             $huesped->cliente_id=$cliente_id;
@@ -84,6 +92,23 @@ class HuespedRepository{
         $huesped->estado_huesped_id=$estado;
         $huesped->update();
         return $huesped;
+    }
+
+    public function checkOutPorReservaId($reserva_id){
+        $huespedes=DB::table('res_huesped as h')
+        ->select('h.id')
+        ->where('h.reserva_id','=',$reserva_id)
+        ->where('h.estado_huesped_id','=',1) //Check In
+        ->where('h.estado','=','1')
+        ->get();
+        if($huespedes!=null){
+            foreach ($huespedes as $row) {
+                $huesped=$this->obtenerHuespedPorId($row->id);
+                $huesped->fecha_salida=Carbon::now('America/La_Paz')->toDateTimeString();
+                $huesped->estado_huesped_id=2; //Check Out
+                $huesped->update();
+            }
+        }
     }
 
     public function eliminar($id){

@@ -18,6 +18,7 @@
                 <th>Detalle</th>
                 <th>Estado</th>
                 <th>Cargos</th>
+                <th>Huespedes</th>
                 <th>Modificar</th>
                 <th>Eliminar</th>
             </thead>
@@ -54,6 +55,12 @@
                                 orderable:false,
                                 render: function(data){
                                     return '<button id="'+data+ '" class="btn btn-primary" onclick="slideTransaccion(id);">Cargos</button>'; //slideTransaccion(id) se encuentra en el modulo transaccion.crete_edit
+                                }
+                            },
+                            {data:'id',
+                                orderable:false,
+                                render: function(data){
+                                    return '<button id="'+data+ '" class="btn btn-success" onclick="slideHuesped(this);">Huesped</button>';
                                 }
                             },
                             {data:'id',

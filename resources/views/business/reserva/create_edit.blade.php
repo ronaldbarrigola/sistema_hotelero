@@ -1,6 +1,5 @@
 
 <div class="modal fade modal-slide-in-right" aria-hidden="true" role="dialog" tabindex="-1" data-backdrop="static" data-keyboard="false" id="modalViewReserva">
-    <!--Los parametros: data-backdrop="static" data-keyboard="false" es para que no se cierre el mormulario modal al hacer click en cualquier parte-->
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
 
@@ -40,32 +39,6 @@
         </div>
     </div>
 </div> <!--End Modal-->
-
-
-<!--Begin Modal Eliminar-->
-<div class="modal fade modal-slide-in-right" aria-hidden="true" data-backdrop="static" data-keyboard="false"  tabindex="-1" role="dialog" id="modalDeleteReserva">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-            <h5 class="modal-title">ELIMINAR</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">X</span>
-                </button>
-            </div>
-
-            <div class="modal-body">
-                <p>¿desea eliminar el registro con id <span id="delete_reserva_id" style="color:red;"></span> ?</p>
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                <button type="button" id="btnDeleteReserva" class="btn btn-primary" data-dismiss="modal" onclick="deleteReservaOK();">Confirmar</button>
-            </div>
-
-        </div>
-    </div>
- </div>
- <!--End Modal Eliminar-->
 
 @push('scripts')
   <script>
@@ -132,6 +105,7 @@
 
        function createReserva(){
             $("#editReserva").val("");
+            $(".panel_huesped").show();
             $("#title_modal_view_reserva").text("NUEVA RESERVA");
             limpiarDatoReserva();
             $.ajax({
@@ -157,7 +131,9 @@
         function editReserva($id){
             limpiarDatoReserva();
             var reserva_id=$id;
+
             $("#editReserva").val("modificar");
+            $(".panel_huesped").hide();
             $("#title_modal_view_reserva").text("MODIFICAR RESERVA");
             $.ajax({
                 async: false, //Evitar la ejecucion  Asincrona
@@ -306,29 +282,37 @@
        }
 
         function deleteReserva($id){
-            $("#delete_reserva_id").text($id);
-            $("#modalDeleteReserva").modal("show");
+            boot4.confirm({
+                msg:"Esta seguro de eliminar la reserva?",
+                title:"Confirmación",
+                callback:function(result){
+                    if(result){
+                        executeDeleteReserva($id)
+                    }//fin if
+                }
+            });
         }
 
-        function deleteReservaOK(){
-            var $id = $('#delete_reserva_id').text();
+        function executeDeleteReserva($id){ //La eliminacion es tambien desde calendario
             url=URL_BASE + "/business/reserva";
             url_delete= url + "/" + $id;
-
             $.ajax({
                 type: "POST",
                 url: url_delete,
                 data:{'_method':'DELETE','_token': '{{ csrf_token() }}'},
                 dataType: 'json',
                 success: function(result){
-                    try {
-                        datatable_reserva.ajax.reload();//recargar registro datatables.
-                    }
-                    catch(err) {
-                       //En caso de que se cree la reserva desde el TimeLines
+                    if(result.response){
+                        try {
+                            datatable_reserva.ajax.reload();//recargar registro datatables.
+                        }
+                        catch(err) {
+                            //En caso de que se cree la reserva desde el TimeLines
+                        }
+                    } else {
+                        messageAlert(result.message);
                     }
 
-                    $("#modalDeleteReserva").modal("hide");
                 },
                 error:function(result){
 

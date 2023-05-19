@@ -93,6 +93,7 @@ Route::get('/busines/transaccion/createtransaccionpago', [TransaccionPagoControl
 Route::get('/busines/huesped/createhuesped', [HuespedController::class,'create'])->name('createhuesped');
 Route::get('/busines/huesped/edithuesped', [HuespedController::class,'edit'])->name('edithuesped');
 Route::get('/busines/reserva/obtenerReservas', [ReservaController::class,'obtenerReservasTimeLines'])->name('obtenerReservas');
+Route::get('/busines/reserva/validar_eliminacion', [ReservaController::class,'validarEliminacion'])->name('validar_eliminacion');
 Route::get('/business/ciudad/listaciudades', [CiudadController::class,'obtenerCiudadesPorPaisId'])->name('listaciudades');
 Route::get('/base/persona/buscarPersonaDocId', [PersonaController::class,'buscarPersonaClientePorDocId'])->name('buscarPersonaDocId');
 Route::get('/base/persona/obtenerpersonas', [PersonaController::class,'obtenerPersonas'])->name('obtenerpersonas');

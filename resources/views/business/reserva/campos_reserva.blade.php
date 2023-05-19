@@ -13,7 +13,6 @@
                             <select name="cliente_id" id="cliente_id" required class="form-control selectpicker border" data-live-search="true" >
                                <!--Se carga los datos por ajax-->
                             </select>
-                            {{-- <button type="button" id="btnModalInfoCliente" class="input-group-btn btn btn-light"><span class="icon-table2"></span></button> --}}
                             <button type="button" id="btnModalCreateCliente" class="input-group-btn btn btn-light"><span class="icon-plus"></span></button>
                         </div>
                     </div>
@@ -72,10 +71,17 @@
 
                 <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
-                    <label for="procedencia_ciudad_id" class="my-0" ><strong>Ciudad Procedencia:</strong></label>
-                    <select name="procedencia_ciudad_id" id="procedencia_ciudad_id" required class="form-control selectpicker border" data-live-search="true" >
-                          <!--Se carga los datos por ajax-->
-                    </select>
+                        <label for="procedencia_ciudad_id" class="my-0" ><strong>Ciudad Procedencia:</strong></label>
+                        <select name="procedencia_ciudad_id" id="procedencia_ciudad_id" required class="form-control selectpicker border" data-live-search="true" >
+                            <!--Se carga los datos por ajax-->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="panel_huesped col-lg-6 col-md-6 col-sm-6 col-12" style="display:flex;align-items: center;">
+                    <div class="form-group">
+                        <label class="form-check-label" for="chkHuesped"><strong>Huesped:</strong></label>
+                        <input type="checkbox" class="form-control" name="chkHuesped" id="chkHuesped" checked style="transform:scale(0.6);">
                     </div>
                 </div>
            </div>

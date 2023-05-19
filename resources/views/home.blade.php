@@ -8,8 +8,8 @@
             @include('business/transaccion/actionbar',['','titulo'=>'CARGOS'])
        </div>
        <div class="cabecera_huesped" style="display:none">
-        @include('business/huesped/actionbar',['','titulo'=>'HUESPED'])
-   </div>
+            @include('business/huesped/actionbar',['','titulo'=>'HUESPED'])
+       </div>
     @endsection
 
     @section('panelCuerpo')
@@ -67,7 +67,7 @@
             timeline = new vis.Timeline(container, items, groups, options);
 
             // add event listener
-            timeline.on('select', onSelect);
+            //timeline.on('select', onSelect);
 
             timeline.on('contextmenu', function (props) {
                 props.event.preventDefault(); // Para evitar que se abra el menú del navegador
@@ -207,25 +207,19 @@
                 //---------- EVENTO ADICIONAR ITEM -----------------------
                 onAdd: function (item, callback) {
                     if (item.end == null) {
-                        // solo ingresa aca cuando se a���ade con doble click , por tanto no se tiene fecha final(box) y se debe convertir en rango(range)
-                        //pedir cuantas noches se quedara
                         item.start.setHours(12);
                         item.start.setMinutes(0);
                         item.start.setSeconds(0);
                         var f = item.start;
                         item.end = new Date(f.getFullYear(), f.getMonth(), f.getDate() + 1, 12, 0, 0);
                     }
-
                     var fecha_ini=item.start;
                     var fecha_fin=item.end;
                     var habitacion_id=item.group;
-
                     createReserva(); //Visualizar formulario modal reserva, se encuentra en reserva.crete_edit
                     setDateReserva(fecha_ini,fecha_fin); //la funcion setDateReserva, se encuentra en reserva.crete_edit
                     setHabitacion(habitacion_id) //la funcion setHabitacion se, encuentra en reserva.crete_edit
-                    //callback(item); // send back adjusted new item
                     callback(null); //Para que desaparesca el item por defecto
-
                 },
 
                 //---------- EVENTO MOVER ITEM -----------------------
@@ -265,28 +259,33 @@
 
                 //---------- EVENTO ELIMINAR ITEM -----------------------
                 onRemove: function (item, callback) {
-                    callback(item); // confirm deletion
-                    deleteReserva(item.id)
+                    $.ajax({
+                        async: false, //Evitar la ejecucion  Asincrona
+                        type: "GET",
+                        url: "{{route('validar_eliminacion')}}",
+                        data:{reserva_id:item.id,'_token':'{{ csrf_token() }}'},
+                        dataType: 'json',
+                        success: function(result){
+                            if(result.response){
+                                prettyConfirm("Eliminar Reserva","Esta seguro de eliminar la reserva?", function (ok) {
+                                    if (ok) {
+                                        executeDeleteReserva(item.id);
+                                        callback(item); // confirm delete
+                                    } else {
+                                        callback(null); //Cancel delete
+                                    }
+                                });
+                            } else {
+                                messageAlert(result.message);
+                                callback(null); //Cancel delete
+                            }
+
+                        }
+                    }); //End Ajax
                 },
             };
         }
 
-        // function logEvent(event, properties) {
-        //     var log = document.getElementById('log');
-        //     var msg = document.createElement('div');
-        //     msg.innerHTML = 'event=' + JSON.stringify(event) + ', ' +
-        //         'properties=' + JSON.stringify(properties);
-        //     log.firstChild ? log.insertBefore(msg, log.firstChild) : log.appendChild(msg);
-        // }
-
-        //=========== EVENTOS TIMELINE================================
-        function onSelect(properties) {
-            //prettyMessage(properties.toString());
-        }
-
-        function prettyMessage(text) {
-            swal(text);
-        }
         //=============MODAL DE CONFIRMACION================
         function prettyConfirm(title, text, callback) {
             swal({
@@ -298,33 +297,34 @@
             }, callback);
         }
 
-        //======MODAL PIDIENDO DATOS============================
-        function prettyPrompt(title, text, inputValue, callback) {
-            swal({
-                title: title,
-                text: text,
-                type: 'input',
-                showCancelButton: true,
-                inputValue: inputValue
-            }, callback);
-        }
-
         function checkIn($this){
-            var reserva_id=$this.id;
-            var estado_reserva_id=1;//Check In
-            estadoReserva(reserva_id,estado_reserva_id);
+            prettyConfirm("Check In","Esta seguro de ejecutar la accion Check In?", function (ok) {
+                if (ok) {
+                    var reserva_id=$this.id;
+                        var estado_reserva_id=1;//Check In
+                        estadoReserva(reserva_id,estado_reserva_id);
+                }
+            });
         }
 
         function standBy($this){
-            var reserva_id=$this.id;
-            var estado_reserva_id=2;//Stand By
-            estadoReserva(reserva_id,estado_reserva_id);
+            prettyConfirm("Stand By","Esta seguro de ejecutar la accion Stand By", function (ok) {
+                if (ok) {
+                    var reserva_id=$this.id;
+                    var estado_reserva_id=2;//Stand By
+                    estadoReserva(reserva_id,estado_reserva_id);
+                }
+            });
         }
 
         function checkOut($this){
-            var reserva_id=$this.id;
-            var estado_reserva_id=3;//Check Out
-            estadoReserva(reserva_id,estado_reserva_id);
+            prettyConfirm("Check Out","Esta seguro de ejecutar la accion Check Out", function (ok) {
+                if (ok) {
+                    var reserva_id=$this.id;
+                    var estado_reserva_id=3;//Check Out
+                    estadoReserva(reserva_id,estado_reserva_id);
+                }
+            });
         }
 
         function estadoReserva(reserva_id,estado_reserva_id){
@@ -337,6 +337,7 @@
 
                 },
                 success: function(result){
+
                    if(result.response){
                         var item = items.get(reserva_id);
                         items.update({id: reserva_id,className:result.reserva.color});
@@ -344,6 +345,9 @@
                     messageAlert(result.message);
                    }
                 },//End success
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+
+                }, //END error
                 complete:function(result, textStatus ){
 
                 }

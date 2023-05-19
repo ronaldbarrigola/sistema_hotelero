@@ -73,12 +73,12 @@
                 dataType: 'json',
                 beforeSend: function () {
                     $("#btnGuardarHuesped").attr('disabled','disabled');
-                    $("#btnGuardarHuesped").val("Procesando");
+                    $("#btnGuardarHuesped").html("Procesando");
                 },
                 success: function(result){
                     $("#modalViewHuesped").modal("hide");
                     $("#btnGuardarHuesped").removeAttr('disabled');
-                    $("#btnGuardarHuesped").val("Guardar");
+                    $("#btnGuardarHuesped").html("Guardar");
                     datatable_huesped.ajax.reload();
                     limpiarDatoHuesped();
                 },//End success

@@ -122,17 +122,15 @@ class ReservaController extends Controller
         return response()->json(array ('reserva'=>$reserva,'persona'=>$persona,'estadoReserva'=>$estadoReserva));
     }
 
+    public function validarEliminacion(Request $request){
+        $id=$request["reserva_id"];
+        $reserva=$this->reservaRep->validarEliminacion($id);
+        return $reserva;
+    }
+
     public function destroy(Request $request,$id){
         $reserva=$this->reservaRep->eliminar($id);
-
-        if($request->ajax()){
-             return response()->json(array (
-                'msg'     => 'reserva ' . $reserva->id. ', eliminada',
-                'id'      => $reserva->id
-            ));
-        }
-
-        return Redirect::route('business.reserva.index');
+        return $reserva;
     }
 
     public function obtenerReservasTimeLines(){
