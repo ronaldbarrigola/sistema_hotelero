@@ -27,7 +27,10 @@
     <div class="col-lg-6 col-md-6 col-sm-6 col-12">
         <div class="form-group">
             <label for="precio" class="my-0"><strong>Precio:</strong></label>
-            <input type="number" name="precio" id="precio" required class="form-control">
+            <div class="input-group-prepend">
+                <span class="input-group-text"><strong>Bs.</strong></span>
+                <input type="number" name="precio" id="precio" required class="form-control">
+            </div>
         </div>
     </div>
 
@@ -37,19 +40,7 @@
             <select name="tipo_habitacion_id" id="tipo_habitacion_id" required class="form-control selectpicker border" data-live-search="true" >
                <option value="">--Seleccione--</option>
                @foreach($tipoHabitaciones as $lista_tipoHabitaciones)
-                 <option value="{{$lista_tipoHabitaciones->id}}"> {{$lista_tipoHabitaciones->descripcion}}</option>
-               @endforeach
-            </select>
-        </div>
-    </div>
-
-    <div class="col-lg-6 col-md-6 col-sm-6 col-12">
-        <div class="form-group">
-            <label for="agencia_id" class="my-0" ><strong>Hotel:</strong></label>
-            <select name="agencia_id" id="agencia_id" required class="form-control selectpicker border" data-live-search="true" >
-               <option value="">--Seleccione--</option>
-               @foreach($agencias as $lista_agencias)
-                 <option value="{{$lista_agencias->agencia_id}}"> {{$lista_agencias->agencia}}</option>
+                 <option value="{{$lista_tipoHabitaciones->id}}"> {{$lista_tipoHabitaciones->tipo_habitacion}}</option>
                @endforeach
             </select>
         </div>

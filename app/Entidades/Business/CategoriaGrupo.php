@@ -2,21 +2,15 @@
 namespace App\Entidades\Business;
 use Illuminate\Database\Eloquent\Model;
 
-class Categoria extends Model
+class CategoriaGrupo extends Model
 {
-    protected $table='pro_categoria';
+    protected $table='pro_grupo';
     protected $primaryKey="id";
     public $timestamps=false;
 
-    protected $fillable=['grupo_id',
-                         'descripcion',
+    protected $fillable=['grupo',
                          'estado',
                          'fecha_creacion',
                          'fecha_modificacion'
                         ];
-
-    public function producto()
-    {
-        return $this->belongsTo('App\Business\Producto');  //Relacion N:1
-    }
 }

@@ -2,13 +2,7 @@
     {{-- NUEVO REGISTRO --}}
 
     <div class="btn-group" role="group" aria-label="First group">
-        <button id= "btnCreateHuesped" class="btn btn-success">NUEVO</button>
-        <button class="btn btn-primary" onclick="slideReserva()">Volver</button>   {{-- slideReserva()  se encuentra en el modulo reserva.crete_edit --}}
-    </div>
-
-    <div class="form-group mt-1" role="group">
-        <span>CLIENTE : </span><strong id="huesped_nombre_cliente"></strong>
-        <span>NRO. HABITACION : </span><strong id="huesped_nro_habitacion"></strong>
+        <button id= "btnCreateTipoHabitacion" class="btn btn-success">NUEVO</button>
     </div>
 
     {{-- BUSQUEDA --}}
@@ -16,7 +10,7 @@
         <div class="input-group-prepend">
             <div class="input-group-text">{{$titulo}}</div>
         </div>
-        <input id="txtBuscar" type="text" class="form-control" size="60" placeholder="Buscar"  >
+        <input id="txtBuscar" type="text" class="form-control" placeholder="Buscar"  >
         <div class="input-group-append">
             <button id="btnBuscar" class="input-group-btn btn btn-primary"><span class="icon-Lupa"></span></button>
         </div>
@@ -29,7 +23,7 @@
 
             $('#btnBuscar').on( 'click', function () {
                 var valor_buscado = $.trim($("#txtBuscar").val());
-                datatable_huesped.search(valor_buscado).draw();
+                datatable_datos.search(valor_buscado).draw();
                 ContendorBotonBuscar=$(this).closest('div');
                 ContendorBotonBuscar.find('.btn_texto_filtro_tabla').remove();
                 if(valor_buscado!==""){
@@ -39,7 +33,7 @@
 
             $(this).on('click', '.btn_texto_filtro_tabla', function() {
                $(this).remove();
-               datatable_huesped.search('').draw();
+               datatable_datos.search('').draw();
             });
 
             $('#txtBuscar').keypress(function(e){
@@ -50,7 +44,7 @@
 
             $(this).on('click', '.btn_texto_filtro_tabla', function() {
                $(this).remove();
-               datatable_huesped.search('').draw();
+               datatable_datos.search('').draw();
             });
 
         });//fin ready

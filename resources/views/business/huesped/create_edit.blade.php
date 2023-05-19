@@ -55,18 +55,6 @@
         }
 
         function storeHuesped(){
-
-            $("input[name='vec_huesped_check_in[]']").each(function(indice, elemento) {
-                var checkbox = $(elemento);
-                if (checkbox.is(':checked')) {
-                   $(elemento).prop('checked', true);
-                   $(elemento).val(1); //Check in
-                } else {
-                   $(elemento).prop('checked', true);
-                   $(elemento).val(0); //Pendiente
-                }
-            });
-
             var formdata = new FormData($("#frmHuesped")[0]); //Serializa con imagenes multimedia
             url=URL_BASE + "/business/huesped";
 
@@ -146,23 +134,45 @@
            $('.cabecera_principal').hide();
            $('.cabecera_transaccion').hide();
            $('.cabecera_huesped').show();
+           $('#huesped_nombre_cliente').text("");
+           $('#huesped_nro_habitacion').text("");
            $("#tbl_huesped tbody tr").find('td').remove();
            $(".carouselReserva").carousel(2);
            var reserva_id=$this.id;
-           $("#huesped_reserva_id").val(reserva_id);
-           datatable_huesped.ajax.reload();
-        }
+            $.ajax({
+                type: "GET",
+                url: "{{route('obtenerReservaPorId')}}",
+                data:{reserva_id:reserva_id,'_token': '{{ csrf_token() }}'},
+                dataType: 'json',
+                beforeSend: function () {
 
-        function huespedCheckIn($id){
-            var huesped_id=$id;
-            var estado_huesped_id=1;//Check In
-            estadoHuesped(huesped_id,estado_huesped_id);
+                },
+                success: function(result){
+                    var cliente=result.cliente;
+                    var nro_habitacion=result.habitacion.num_habitacion;
+                    $('#huesped_nombre_cliente').text(cliente.toUpperCase()); //El campo nombre_cliente se encuenta en el modulo transaccion.actionbar
+                    $('#huesped_nro_habitacion').text(nro_habitacion); //El campo nro_habitacion se encuenta en el modulo transaccion.actionbar
+                    $('#huesped_reserva_id').val(reserva_id); //El campo foreign_reserva_id se encuenta en el modulo transaccion.create_edit
+                    datatable_huesped.ajax.reload();
+                },//End success
+                complete:function(result, textStatus ){
+
+                }
+            }); //End Ajax
         }
 
         function huespedCheckOut($id){
-            var huesped_id=$id;
-            var estado_huesped_id=2;//Check Out
-            estadoHuesped(huesped_id,estado_huesped_id);
+            boot4.confirm({
+                msg:"Ejecutar la accion Check Out?",
+                title:"Confirmación",
+                callback:function(result){
+                    if(result){
+                        var huesped_id=$id;
+                        var estado_huesped_id=2;//Check Out
+                        estadoHuesped(huesped_id,estado_huesped_id);
+                    }// fin if
+                }
+            });
         }
 
         function estadoHuesped(huesped_id,estado_huesped_id){

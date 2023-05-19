@@ -13,7 +13,7 @@
            <select name="categoria_id" id="categoria_id"  class="form-control selectpicker border" required data-live-search="true" >
               <option value="">--Seleccione--</option>
               @foreach($categorias as $lista_categoria)
-              <option value="{{$lista_categoria->id}}"> {{$lista_categoria->descripcion}}</option>
+              <option value="{{$lista_categoria->id}}"> {{$lista_categoria->descripcion}} | {{$lista_categoria->grupo}}</option>
             @endforeach
            </select>
         </div>

@@ -5,22 +5,26 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use App\Repositories\Business\CategoriaRepository;
+use App\Repositories\Business\CategoriaGrupoRepository;
 
 class CategoriaController extends Controller
 {
     protected $categoriaRep;
+    protected $categoriaGrupoRep;
 
-    public function __construct(CategoriaRepository $categoriaRep){
+    public function __construct(CategoriaRepository $categoriaRep,CategoriaGrupoRepository $categoriaGrupoRep){
         $this->middleware('auth');
         $this->middleware('guest');
         $this->categoriaRep=$categoriaRep;
+        $this->categoriaGrupoRep=$categoriaGrupoRep;
     }
 
      public function index(Request $request){
         if($request->ajax()){
             return $this->categoriaRep->obtenerCategoriaDataTables();
         }else{
-            return view('business.categoria.index');
+            $grupos=$this->categoriaGrupoRep->obtenerGrupos();
+            return view('business.categoria.index',["grupos"=>$grupos]);
         }
     }
 

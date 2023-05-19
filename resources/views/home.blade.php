@@ -71,11 +71,10 @@
 
             timeline.on('contextmenu', function (props) {
                 props.event.preventDefault(); // Para evitar que se abra el menú del navegador
-
+                var $menu = $('.context-menu'); //.context-menu se ecuentra en el modulo contextmenu
+                $menu.empty();
                 if(props.item!=null){
-                    //BEGIN: Insertar elementos al menu contextual se ecuentra en el modulo contextmenu
-                    var $menu = $('.context-menu');
-                    $menu.empty();
+                    //BEGIN: Insertar elementos al menu contextual
                     var btnCargos="<div class='col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='slideTransaccion(id)' style='text-align:left'>Cargos</button></div>"; //slideReservaTransaccion(id) se encuentra en el modulo transaccion.crete_edit
                     var btnHuesped="<div class='m=0 col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='slideHuesped(this)' style='text-align:left'>Huesped</button></div>";
                     var btnCheckIn="<div class='m=0 col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='checkIn(this)' style='text-align:left'>Check In</button></div>";
@@ -88,13 +87,17 @@
                     $menu.append(btnCheckOut);
                     $menu.append(btnStandBy);
 
-                    $menu.css({
-                        display: 'block',
-                        left: props.event.pageX,
-                        top: props.event.pageY
-                    });
                     //END: Insertar elementos al menu contextual se ecuentra en el modulo contextmenu
+                } else {
+                    var btnNuevaReserva="<div class='col-12'><button type='button' id='"+props.item+"' data-habitacion_id='"+ props.group +"' data-fecha_ini='"+ addDaysToDate(props.time,1) +"' data-fecha_fin='"+ addDaysToDate(props.time,2) +"' class='form-control btn btn-light' onclick='nuevaReserva(this)' style='text-align:left'>Nueva Reserva</button></div>";
+                    $menu.append(btnNuevaReserva);
                 }
+
+                $menu.css({
+                    display: 'block',
+                    left: props.event.pageX,
+                    top: props.event.pageY
+                });
 
             });
         }); //End ready
@@ -164,25 +167,6 @@
                 }
             }); //End Ajax
         }
-
-        // function loadItems(){
-        //     // CREANDO ITEMS EN FORMATO JSON, PUEDE VENIR DE AJAX
-        //     items = new vis.DataSet([
-        //                 { id: 1, title: 'TITULO PRUEBA', content: 'Item 1', start: '2023-02-08T00:00:00', end: '2023-02-09T00:00:00', group: 1, className: 'bg-info text-white' },
-        //                 { id: 2, content: "Item 2", start: '2023-02-08T12:00:00', end: '2023-02-09T12:00:00', group: 2, style: 'color:#ffffff; background-color:#ec0dd2' },
-        //                 { id: 3, content: 'Item 3', start: '2023-02-09T12:00:00', end: '2023-02-11T12:00:00', group: 1, className: 'bg-primary text-white' },
-        //                 { id: 4, content: 'Item 4', start: '2023-02-10T12:00:00', end: '2023-02-11T12:00:00', group: 4, className: 'bg-primary text-white' },
-        //                 { id: 5, content: 'Item 5 en mantenimiento', start: min, end: max, group: 3, className: 'bg-danger text-white', type: "background" },
-        //                 { id: 6, content: 'item 6', start: '2023-02-11T14:00:00', end: '2023-02-15T14:00:00', group: 5, value: 0.72, visibleFrameTemplate: '', className: 'bg-primary text-white' },
-        //                 { id: 7, content: 'item 7', group: 1, start: '2023-02-13', end: '2023-02-14', group: 7, visibleFrameTemplate: '<div class="progress-wrapper"><div class="progress" style="width:80%"></div><label class="progress-label">80%<label></div>' },
-        //                 { id: 8, content: 'Item 8', group: 7, start: '2023-02-14', end: '2023-02-15', group: 8, editable: false },
-
-        //                 ]);
-        //     items.on('*', function (event, properties) {
-        //         logEvent(event, properties);
-        //         //console.log(properties.items[0]);
-        //     });
-        // }
 
         function loadOptions(){
             options = {
@@ -287,13 +271,13 @@
             };
         }
 
-        function logEvent(event, properties) {
-            var log = document.getElementById('log');
-            var msg = document.createElement('div');
-            msg.innerHTML = 'event=' + JSON.stringify(event) + ', ' +
-                'properties=' + JSON.stringify(properties);
-            log.firstChild ? log.insertBefore(msg, log.firstChild) : log.appendChild(msg);
-        }
+        // function logEvent(event, properties) {
+        //     var log = document.getElementById('log');
+        //     var msg = document.createElement('div');
+        //     msg.innerHTML = 'event=' + JSON.stringify(event) + ', ' +
+        //         'properties=' + JSON.stringify(properties);
+        //     log.firstChild ? log.insertBefore(msg, log.firstChild) : log.appendChild(msg);
+        // }
 
         //=========== EVENTOS TIMELINE================================
         function onSelect(properties) {
@@ -364,6 +348,15 @@
 
                 }
             }); //End Ajax
+        }
+
+        function nuevaReserva($his){
+            var fecha_ini=$($his).data("fecha_ini");
+            var fecha_fin=$($his).data("fecha_fin");
+            var habitacion_id=$($his).data("habitacion_id");
+            createReserva(); //Visualizar formulario modal reserva, se encuentra en reserva.crete_edit
+            setDateReserva(fecha_ini,fecha_fin); //la funcion setDateReserva, se encuentra en reserva.crete_edit
+            setHabitacion(habitacion_id) //la funcion setHabitacion se, encuentra en reserva.crete_edit
         }
 
     </script>

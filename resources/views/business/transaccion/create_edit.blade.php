@@ -238,6 +238,9 @@
         }
 
         function slideTransaccion($id){
+
+            $('#nombre_cliente').text("");
+            $('#nro_habitacion').text("");
             $("#tbl_transaccion tbody tr").find('td').remove();
             $('#tbl_transaccion tfoot tr th').html("");
 
@@ -245,6 +248,7 @@
             $('.cabecera_huesped').hide();
             $('.cabecera_transaccion').show();
             $('.carouselReserva').carousel(1);
+
             var reserva_id=$id;
             $.ajax({
                 type: "GET",
@@ -255,11 +259,10 @@
 
                 },
                 success: function(result){
-                    var nro_reserva=result.reserva.id;
                     var cliente=result.cliente;
                     var nro_habitacion=result.habitacion.num_habitacion;
                     $('#nombre_cliente').text(cliente.toUpperCase()); //El campo nombre_cliente se encuenta en el modulo transaccion.actionbar
-                    $('#nro_habitacion').text(nro_habitacion); //El campo nro_reserva se encuenta en el modulo transaccion.actionbar
+                    $('#nro_habitacion').text(nro_habitacion); //El campo nro_habitacion se encuenta en el modulo transaccion.actionbar
                     $('#foreign_reserva_id').val(reserva_id); //El campo foreign_reserva_id se encuenta en el modulo transaccion.create_edit
                     datatable_transaccion.ajax.reload();
                 },//End success

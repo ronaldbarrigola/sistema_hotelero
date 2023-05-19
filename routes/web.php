@@ -11,6 +11,7 @@ use App\Http\Controllers\UsuarioRolController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\CiudadController;
 use App\Http\Controllers\HabitacionController;
+use App\Http\Controllers\TipoHabitacionController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\ReservaController;
 use App\Http\Controllers\ProductoController;
@@ -76,6 +77,7 @@ Route::get('/busines/cliente/editcliente', [ClienteController::class,'edit'])->n
 Route::get('/base/persona/obtenerclientes', [ClienteController::class,'obtenerClientes'])->name('obtenerclientes');
 Route::get('/busines/habitacion/edithabitacion', [HabitacionController::class,'edit'])->name('edithabitacion');
 Route::get('/business/habitacion/obtenerHabitaciones', [HabitacionController::class,'obtenerHabitaciones'])->name('obtenerHabitaciones');
+Route::get('/busines/tipo_habitacion/edittipohabitacion', [TipoHabitacionController::class,'edit'])->name('edittipohabitacion');
 Route::get('/busines/categoria/editcategoria', [CategoriaController::class,'edit'])->name('editcategoria');
 Route::get('/busines/producto/editproducto', [ProductoController::class,'edit'])->name('editproducto');
 Route::get('/busines/hotel_producto/edithotelproducto', [HotelProductoController::class,'edit'])->name('edithotelproducto');
@@ -103,6 +105,7 @@ Route::post('/business/huesped/estado', [HuespedController::class,'estadoHuesped
 //Rutas generales
 Route::resource('business/cliente', ClienteController::class);
 Route::resource('business/habitacion', HabitacionController::class);
+Route::resource('business/tipo_habitacion', TipoHabitacionController::class);
 Route::resource('business/categoria', CategoriaController::class);
 Route::resource('business/producto', ProductoController::class);
 Route::resource('business/hotel_producto', HotelProductoController::class);

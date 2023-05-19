@@ -38,6 +38,7 @@ class HabitacionRepository{
             DB::beginTransaction();
 
             $habitacion=new Habitacion($request->all());
+            $habitacion->agencia_id=Auth::user()->agencia_id;
             $habitacion->usuario_alta_id=Auth::user()->id;
             $habitacion->usuario_modif_id=Auth::user()->id;
             $habitacion->fecha_creacion=Carbon::now('America/La_Paz')->toDateTimeString();

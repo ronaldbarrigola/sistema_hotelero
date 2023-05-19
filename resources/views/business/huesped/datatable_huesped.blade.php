@@ -10,7 +10,6 @@
                 <th style="text-align:center">Fecha Ingreso</th>
                 <th style="text-align:center">Fecha Salida</th>
                 <th style="text-align:center">Estado</th>
-                <th style="text-align:center">Check In</th>
                 <th style="text-align:center">Check Out</th>
                 <th style="text-align:center">Eliminar</th>
             </thead>
@@ -47,28 +46,20 @@
                         {data:'tipo_documento'},
                         {data:'fecha_ingreso'},
                         {data:'fecha_salida'},
-                        {data:'estado_huesped'},
+                        {data:'estado_huesped',className: "text-center"},
                         {data:'id',
-                            orderable:false,
-                            render: function ( data, type, row ){
-                                if(row.estado_huesped_id==0){
-                                    return '<button id="'+row.id+ '" class="btn btn-primary" onclick="huespedCheckIn(id);">Check In</button>';
-                                } else {
-                                    return '<button id="'+row.id+ '" class="btn btn-secondary" disabled>Check In</button>';
-                                }
-                            }
-                        },
-                        {data:'id',
+                            className: "text-center",
                             orderable:false,
                             render: function ( data, type, row ){
                                 if(row.estado_huesped_id==1){
-                                    return '<button id="'+row.id+ '" class="btn btn-warning" onclick="huespedCheckOut(id);">Check Out</button>';
+                                    return '<button id="'+row.id+ '" class="btn btn-primary" onclick="huespedCheckOut(id);">Check Out</button>';
                                 } else {
                                     return '<button id="'+row.id+ '" class="btn btn-secondary" disabled>Check Out</button>';
                                 }
                             }
                         },
                         {data:'id',
+                                className: "text-center",
                                 orderable:false,
                                 render: function(data){
                                     return '<button id="'+data+ '" class="btn btn-danger" onclick="deleteHuesped(id);">Eliminar</button></a>';

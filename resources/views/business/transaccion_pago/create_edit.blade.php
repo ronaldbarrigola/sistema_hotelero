@@ -208,11 +208,6 @@
                 },
                 success: function(result){
                     $("#transaccion_pago_id").val(result.transaccion_pago.id);
-                    // $.each(result.formaPagos, function(i, v) { //Obtner forma de pago con importe_id por desarrollar
-                    //     if(v.id!="PM"){ //No debe cargar la opcion pago multiple en la tabla tbl_forma_pago
-                    //        cargarFilaFormaPago(0,v.id,v.descripcion,"","")
-                    //     }
-                    // });
                     $("#modalViewTransaccionPago").modal("show");
                 },//End success
                 complete:function(result, textStatus ){

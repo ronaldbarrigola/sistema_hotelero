@@ -74,7 +74,6 @@
 
             // ══════════════════════ Cargando columnas para datatables  ══════════════════════
             var columnas=[
-                            // {data:'cargo_id',className: "text-center"},
                             {data:'id',className: "text-center"},
                             {data:'fecha'},
                             {data:'producto'},

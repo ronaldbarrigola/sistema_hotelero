@@ -21,7 +21,6 @@
                 <th style="text-align:center">Materno</th>
                 <th style="text-align:center">Nro Doc</th>
                 <th style="text-align:center">Tipo Ddoc</th>
-                <th style="text-align:center">Check In</th>
                 <th style="text-align:center">Eliminar</th>
             </thead>
             <tbody>
@@ -48,7 +47,6 @@
                .append($('<td>').append(materno))
                .append($('<td>').append(nro_doc))
                .append($('<td>').append(tipo_doc))
-               .append($('<td>').append('<input type="checkbox" name="vec_huesped_check_in[]" value="0" class="form-control">'))
                .append($('<td style="text-align:center">').append('<button type="button" class="btn btn-danger" onclick="eliminarFilaHuesped(this);">Eliminar</button>'))
             );
             huespedValidateSave();

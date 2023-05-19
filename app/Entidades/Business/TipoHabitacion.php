@@ -17,4 +17,10 @@ class TipoHabitacion extends Model
         'fecha_creacion',
         'fecha_modificacion'
     ];
+
+    public function delete() //Eliminacion logica
+    {
+        $this->estado = false;
+        $this->save();
+    }
 }

@@ -82,7 +82,7 @@
                 dataType: 'json',
                 beforeSend: function () {
                     $("#btnGuardarHabitacion").attr('disabled','disabled');
-                    $("#btnGuardarHAbitacion").text("Procesando");
+                    $("#btnGuardarHabitacion").text("Procesando");
                 },
                 success: function(result){
 
@@ -128,8 +128,6 @@
                      $('#precio').val(data.habitacion.precio);
                      $('#tipo_habitacion_id').selectpicker('val', data.habitacion.tipo_habitacion_id);
                      $("#tipo_habitacion_id").selectpicker('refresh');
-                     $('#agencia_id').selectpicker('val',data.habitacion.agencia_id);
-                     $("#agencia_id").selectpicker('refresh');
                      $('#estado_habitacion_id').selectpicker('val',data.habitacion.estado_habitacion_id);
                      $("#estado_habitacion_id").selectpicker('refresh');
                      $("#modalViewHabitacion").modal("show");
@@ -144,8 +142,6 @@
             $("#precio").val("");
             $("#tipo_habitacion_id").selectpicker("val","");
             $("#tipo_habitacion_id").selectpicker("refresh");
-            $('#agencia_id').selectpicker('val',"");
-            $("#agencia_id").selectpicker('refresh');
             $('#estado_habitacion_id').selectpicker('val',"");
             $("#estado_habitacion_id").selectpicker('refresh');
         }
