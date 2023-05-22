@@ -55,7 +55,7 @@
                 if ($('.panel_anticipo').is(':visible')) {
                     $("#anticipo_monto").focus();
                 } else {
-                    $("#pago_nombre").focus();
+                    $("#pago_cliente_id").focus();
                 }
             })
         });//Fin ready
@@ -121,13 +121,14 @@
             $("#title_modal_view_transaccion_pago").text("PAGO");
             $('.panel_anticipo').hide();
             $('.panel_pago').show();
+            var reserva_id=$("#foreign_reserva_id").val();
             requiredPago(true);
             requiredAnticipo(false);
             $.ajax({
                 async: false, //Evitar la ejecucion  Asincrona
                 type: "GET",
                 url: "{{route('createtransaccionpago')}}",
-                data:{'_token': '{{ csrf_token() }}'},
+                data:{reserva_id:reserva_id,'_token': '{{ csrf_token() }}'},
                 dataType: 'json',
                 beforeSend: function () {
 
@@ -223,11 +224,19 @@
                 $("#forma_pago_id").append('<option  value="'+ v.id +'" >'+v.descripcion+'</option>');
             });
             $("#forma_pago_id").selectpicker('refresh');
+
+            $("#pago_cliente_id").find('option').remove();
+            $("#pago_cliente_id").append('<option  value="" selected>--Seleccione--</option>');
+            $.each(result.huespedes, function(i, v) {
+                $("#pago_cliente_id").append('<option  value="'+ v.cliente_id +'" >'+v.cliente+'</option>');
+            });
+            $("#pago_cliente_id").selectpicker('refresh');
         }
 
         function limpiarDatoTransaccionPago(){
             $("#pago_nombre").val("");
             $("#pago_nit").val("");
+            $("#pago_celular").val("");
             $("#pago_email").val("");
             $("#pago_detalle").val("");
             $("#tbl_detalle_transaccion_pago tbody tr").find('td').remove();

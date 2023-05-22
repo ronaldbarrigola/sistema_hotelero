@@ -6,18 +6,21 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use App\Repositories\Business\TransaccionPagoRepository;
 use App\Repositories\Business\FormaPagoRepository;
+use App\Repositories\Business\HuespedRepository;
 
 
 class TransaccionPagoController extends Controller
 {
     protected $transaccionPagoRep;
     protected $formaPagoRep;
+    protected $huespedRep;
 
-    public function __construct(TransaccionPagoRepository $transaccionPagoRep,FormaPagoRepository $formaPagoRep){
+    public function __construct(TransaccionPagoRepository $transaccionPagoRep,FormaPagoRepository $formaPagoRep,HuespedRepository $huespedRep){
         $this->middleware('auth');
         $this->middleware('guest');
         $this->transaccionPagoRep=$transaccionPagoRep;
         $this->formaPagoRep=$formaPagoRep;
+        $this->huespedRep=$huespedRep;
     }
 
      public function index(Request $request){
@@ -28,9 +31,11 @@ class TransaccionPagoController extends Controller
         }
     }
 
-    public function create(){
+    public function create(Request $request){
+        $reserva_id=($request["reserva_id"]!=null)?$request["reserva_id"]:0;
         $formaPagos=$this->formaPagoRep->obtenerFormaPagos();
-        return response()->json(array ('formaPagos'=>$formaPagos));
+        $huespedes=$this->huespedRep->obtenerClienteHuesped($reserva_id);
+        return response()->json(array ('formaPagos'=>$formaPagos,"huespedes"=>$huespedes));
     }
 
     public function store(Request $request){

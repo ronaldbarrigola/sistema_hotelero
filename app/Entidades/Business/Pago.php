@@ -13,9 +13,11 @@ class Pago extends Model
     protected $fillable=[
         'fecha',
         'forma_pago_id',
-        'nombre',
+        'cliente_id',
         'nit',
+        'nombre',
         'email',
+        'celular',
         'detalle',
         'agencia_id',
         'usuario_alta_id',

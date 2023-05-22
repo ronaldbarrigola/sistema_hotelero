@@ -14,13 +14,42 @@ class HuespedRepository{
        ->join('res_estado_huesped as e','e.id','=','h.estado_huesped_id')
        ->join('bas_persona as p','p.id','=','h.cliente_id')
        ->join('bas_tipo_doc as d','d.id','=','p.tipo_doc_id')
-       ->select('h.id',DB::raw('IFNULL(p.doc_id,"") as doc_id'),'d.nombre as tipo_documento','p.nombre','p.paterno','p.materno',DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) AS huesped'),'h.fecha_ingreso','h.fecha_salida','h.estado_huesped_id','e.descripcion as estado_huesped')
+       ->select('h.id','h.cliente_id',DB::raw('IFNULL(p.doc_id,"") as doc_id'),'d.nombre as tipo_documento','p.nombre','p.paterno','p.materno',DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) as cliente'),'h.fecha_ingreso','h.fecha_salida','h.estado_huesped_id','e.descripcion as estado_huesped')
        ->where('h.reserva_id','=',$reserva_id)
+       ->where('p.estado','=','1')
        ->where('h.estado','=','1')
        ->orderBy('h.id','desc')
        ->get();
        return  $huespedes;
     }
+
+    public function obtenerClienteHuesped($reserva_id){ //Usado para realizar pagos
+        $cliente=DB::table('cli_cliente as c')
+        // ->leftjoin('con_cliente_datofactura as cdf','cdf.cliente_id','=','c.id')
+        // ->leftjoin('con_datofactura as df','df.id','=','cdf.datofactura_id')
+        ->join('bas_persona as p','p.id','=','c.id')
+        ->join('res_reserva as r','r.cliente_id','=','c.id')
+        ->select('c.id as cliente_id','p.nombre','p.paterno','p.materno',DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) as cliente'))
+        ->where('r.id','=',$reserva_id)
+        ->where('p.estado','=','1')
+        ->where('r.estado','=','1')
+        ->where('c.estado','=','1');
+
+        $excluir = $cliente->pluck('cliente_id')->toArray();
+
+        $huesped=DB::table('res_huesped as h')
+        ->join('bas_persona as p','p.id','=','h.cliente_id')
+        ->select('h.cliente_id','p.nombre','p.paterno','p.materno',DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) as cliente'))
+        ->whereNotIn('h.cliente_id', $excluir)
+        ->where('h.reserva_id','=',$reserva_id)
+        ->where('p.estado','=','1')
+        ->where('h.estado','=','1')
+        ->orderBy('h.id','desc');
+
+        $huespedes = $huesped->union($cliente)->get();
+
+        return  $huespedes;
+     }
 
     public function obtenerHuespedesDataTables($reserva_id){
         $huespedes=$this->obtenerHuespedes($reserva_id);
