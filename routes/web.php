@@ -20,6 +20,7 @@ use App\Http\Controllers\CargoController;
 use App\Http\Controllers\TransaccionController;
 use App\Http\Controllers\TransaccionPagoController;
 use App\Http\Controllers\HuespedController;
+use App\Http\Controllers\DatoFacturaController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -97,6 +98,7 @@ Route::get('/busines/reserva/validar_eliminacion', [ReservaController::class,'va
 Route::get('/business/ciudad/listaciudades', [CiudadController::class,'obtenerCiudadesPorPaisId'])->name('listaciudades');
 Route::get('/base/persona/buscarPersonaDocId', [PersonaController::class,'buscarPersonaClientePorDocId'])->name('buscarPersonaDocId');
 Route::get('/base/persona/obtenerpersonas', [PersonaController::class,'obtenerPersonas'])->name('obtenerpersonas');
+Route::get('/business/datofactura/nit', [DatoFacturaController::class,'obtenerDatoFacturaPorNit'])->name('dato_factura');
 
 //Post
 Route::post('/business/hotel_producto/activatehotelproducto', [HotelProductoController::class,'activate'])->name('activatehotelproducto');

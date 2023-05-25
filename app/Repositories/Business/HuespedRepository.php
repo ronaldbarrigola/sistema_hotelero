@@ -25,11 +25,11 @@ class HuespedRepository{
 
     public function obtenerClienteHuesped($reserva_id){ //Usado para realizar pagos
         $cliente=DB::table('cli_cliente as c')
-        // ->leftjoin('con_cliente_datofactura as cdf','cdf.cliente_id','=','c.id')
-        // ->leftjoin('con_datofactura as df','df.id','=','cdf.datofactura_id')
+        ->leftjoin('con_cliente_datofactura as cdf','cdf.cliente_id','=','c.id')
+        ->leftjoin('con_datofactura as df','df.id','=','cdf.datofactura_id')
         ->join('bas_persona as p','p.id','=','c.id')
         ->join('res_reserva as r','r.cliente_id','=','c.id')
-        ->select('c.id as cliente_id','p.nombre','p.paterno','p.materno',DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) as cliente'))
+        ->select('c.id as cliente_id',DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) as cliente'),DB::raw('IFNULL(df.nit,"") as nit'),DB::raw('IFNULL(df.nombre,"") as nombre'),DB::raw('IFNULL(df.celular,"") as celular'),DB::raw('IFNULL(df.email,"") as email'))
         ->where('r.id','=',$reserva_id)
         ->where('p.estado','=','1')
         ->where('r.estado','=','1')
@@ -38,8 +38,10 @@ class HuespedRepository{
         $excluir = $cliente->pluck('cliente_id')->toArray();
 
         $huesped=DB::table('res_huesped as h')
+        ->leftjoin('con_cliente_datofactura as cdf','cdf.cliente_id','=','h.cliente_id')
+        ->leftjoin('con_datofactura as df','df.id','=','cdf.datofactura_id')
         ->join('bas_persona as p','p.id','=','h.cliente_id')
-        ->select('h.cliente_id','p.nombre','p.paterno','p.materno',DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) as cliente'))
+        ->select('h.cliente_id',DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) as cliente'),DB::raw('IFNULL(df.nit,"") as nit'),DB::raw('IFNULL(df.nombre,"") as nombre'),DB::raw('IFNULL(df.celular,"") as celular'),DB::raw('IFNULL(df.email,"") as email'))
         ->whereNotIn('h.cliente_id', $excluir)
         ->where('h.reserva_id','=',$reserva_id)
         ->where('p.estado','=','1')

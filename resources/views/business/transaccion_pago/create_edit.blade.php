@@ -58,6 +58,29 @@
                     $("#pago_cliente_id").focus();
                 }
             })
+
+            $(document).on("change", "#pago_cliente_id", function(){
+                var nit=$('#pago_cliente_id option:selected').data("nit");
+                var nombre=$('#pago_cliente_id option:selected').data("nombre");
+                var celular=$('#pago_cliente_id option:selected').data("celular");
+                var email=$('#pago_cliente_id option:selected').data("email");
+                $("#pago_nit").val(nit);
+                $("#pago_nombre").val(nombre);
+                $("#pago_celular").val(celular);
+                $("#pago_email").val(email);
+            });
+
+            $('#pago_nit').on('blur',function(e){
+               var nit=$("#pago_nit").val()
+               if(nit!=""&&nit!=null) {
+                  datoFactura(nit)
+               } else {
+                   $("#pago_nombre").val("");
+                   $("#pago_celular").val("");
+                   $("#pago_email").val("");
+               }
+            });
+
         });//Fin ready
 
         function submitFormTransaccionPago(event) {
@@ -217,6 +240,27 @@
             });//End Ajax
         }
 
+        function datoFactura(nit){
+            $.ajax({
+                type: "GET",
+                url: "{{route('dato_factura')}}",
+                data:{nit:nit,'_token': '{{ csrf_token() }}'},
+                dataType: 'json',
+                success: function(result){
+                    if(result.response){
+                        $("#pago_nit").val(result.datofactura.nit);
+                        $("#pago_nombre").val(result.datofactura.nombre);
+                        $("#pago_celular").val(result.datofactura.celular);
+                        $("#pago_email").val(result.datofactura.email);
+                    } else {
+                        $("#pago_nombre").val("");
+                        $("#pago_celular").val("");
+                        $("#pago_email").val("");
+                    }
+                }
+            });//End Ajax
+        }
+
         function loadDataTransaccionPagoAjax(result){
             $("#forma_pago_id").find('option').remove();
             $("#forma_pago_id").append('<option  value="">--Seleccione--</option>');
@@ -228,7 +272,7 @@
             $("#pago_cliente_id").find('option').remove();
             $("#pago_cliente_id").append('<option  value="" selected>--Seleccione--</option>');
             $.each(result.huespedes, function(i, v) {
-                $("#pago_cliente_id").append('<option  value="'+ v.cliente_id +'" >'+v.cliente+'</option>');
+                $("#pago_cliente_id").append('<option  value="'+ v.cliente_id +'"  data-nit="'+ v.nit +'" data-nombre="'+ v.nombre +'" data-celular="'+ v.celular +'" data-email="'+ v.email +'">'+v.cliente+'</option>');
             });
             $("#pago_cliente_id").selectpicker('refresh');
         }

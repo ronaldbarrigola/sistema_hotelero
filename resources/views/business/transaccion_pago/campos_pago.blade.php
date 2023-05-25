@@ -8,7 +8,7 @@
 
             <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                 <div class="form-group">
-                    <label for="pago_cliente_id" class="my-0" ><strong>Huesped:</strong></label>
+                    <label for="pago_cliente_id" class="my-0" ><strong>Cliente:</strong></label>
                     <div class="input-group-append">
                         <select id="pago_cliente_id" name="pago_cliente_id" required class="form-control selectpicker" data-live-search="true">
                             {{--Datos cargados mediante ajax--}}
