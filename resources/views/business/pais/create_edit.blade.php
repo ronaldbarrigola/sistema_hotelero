@@ -1,6 +1,6 @@
 
 <div class="modal fade modal-slide-in-right" aria-hidden="true" role="dialog" tabindex="-1" data-backdrop="static" data-keyboard="false" id="modalViewPais">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog">
         <div class="modal-content">
 
             <div class="modal-header">
@@ -28,11 +28,9 @@
 
                     <br>
 
-                    <div class="row">
-                        <div class="col-md-4 offset-md-4 d-flex justify-content-between">
-                            <button class="btn btn-success" id="btnGuardarPais" type="submit">Guardar</button>
-                            <button type="button" class="btn btn-primary" data-dismiss="modal">Cancelar</button>
-                        </div>
+                    <div class="d-flex justify-content-around">
+                        <button class="btn btn-success" id="btnGuardarPais" type="submit">Guardar</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Cancelar</button>
                     </div>
 
                 </form>
@@ -86,7 +84,7 @@
                     $("#btnGuardarPais").text("Procesando");
                 },
                 success: function(result){
-                    if(result.response!="202"){  //202: producto existente
+                    if(result.response!="202"){//202: producto existente
                         $("#modalViewPais").modal("hide");
                         datatable_datos.ajax.reload();//recargar registro datatables.
                         limpiarDatoPais();

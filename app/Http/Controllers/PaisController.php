@@ -25,7 +25,7 @@ class PaisController extends Controller
 
     public function store(Request $request){
         $paises=$this->paisRep->insertarDesdeRequest($request);
-        return response()->json(array ('paises'=>$paises));
+        return $paises;
     }
 
     public function edit(Request $request){
