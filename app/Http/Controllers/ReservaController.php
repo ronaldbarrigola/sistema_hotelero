@@ -14,7 +14,7 @@ use App\Repositories\Business\ReservaRepository;
 use App\Repositories\Business\TransaccionRepository;
 
 //Para cliente
-use App\Repositories\Base\CiudadRepository;
+use App\Repositories\Business\ClienteCiudadRepository;
 use App\Repositories\Business\ClienteRepository;
 use App\Repositories\Business\PaisRepository;
 
@@ -35,7 +35,7 @@ class ReservaController extends Controller
     protected $transaccionRep;
 
     //===constructor=============================================================================================
-    public function __construct(ClienteRepository $clienteRep,ReservaRepository $reservaRep,EstadoReservaRepository $estadoReservaRep,HabitacionRepository $habitacionRep,MotivoRepository $motivoRep,PaqueteRepository $paqueteRep,ServicioRepository $servicioRep,PaisRepository $paisRep,CiudadRepository $ciudadRep,TransaccionRepository $transaccionRep){
+    public function __construct(ClienteRepository $clienteRep,ReservaRepository $reservaRep,EstadoReservaRepository $estadoReservaRep,HabitacionRepository $habitacionRep,MotivoRepository $motivoRep,PaqueteRepository $paqueteRep,ServicioRepository $servicioRep,PaisRepository $paisRep,ClienteCiudadRepository $ciudadRep,TransaccionRepository $transaccionRep){
         $this->middleware('auth');
         $this->middleware('guest');
         $this->clienteRep=$clienteRep;

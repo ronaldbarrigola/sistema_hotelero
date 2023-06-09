@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Base;
 
+use App\Entidades\Business\Ciudad;
 use DB;
 
 class CiudadRepository{
@@ -15,15 +16,4 @@ class CiudadRepository{
         ->get();
         return $ciudades;
     }
-
-    public function obtenerCiudadesPorPaisId($pais_id){
-        $ciudades=DB::table('cli_ciudad as c')
-               ->select('c.id','c.descripcion')
-               ->where('c.pais_id','=',$pais_id)
-               ->where('c.estado','=','1')
-               ->orderBy('c.descripcion','asc')
-               ->get();
-        return $ciudades;
-     }
-
 }

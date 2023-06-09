@@ -1,6 +1,4 @@
-
 <div class="modal fade modal-slide-in-right" aria-hidden="true" role="dialog" tabindex="-1" data-backdrop="static" data-keyboard="false" id="modalViewCliente">
-    <!--Los parametros: data-backdrop="static" data-keyboard="false" es para que no se cierre el mormulario modal al hacer click en cualquier parte-->
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
 

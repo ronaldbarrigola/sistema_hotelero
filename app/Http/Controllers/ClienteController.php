@@ -5,7 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use App\Repositories\Base\PersonaRepository;
 use App\Repositories\Base\TipoDocRepository;
-use App\Repositories\Base\CiudadRepository;
+use App\Repositories\Business\ClienteCiudadRepository;
 use App\Repositories\Base\SexoRepository;
 use App\Repositories\Base\EstadoCivilRepository;
 use App\Repositories\Business\ClienteRepository;
@@ -26,7 +26,7 @@ class ClienteController extends Controller
     protected $clienteRep;
 
     //===constructor=============================================================================================
-    public function __construct(ClienteRepository $clienteRep,PersonaRepository $personaRep,TipoDocRepository $tipoDocRep,PaisRepository $paisRep,CiudadRepository $ciudadRep,ProfesionRepository $profesionRep,EmpresaRepository $empresaRep,SexoRepository $sexoRep,EstadoCivilRepository $estadoCivilRep){
+    public function __construct(ClienteRepository $clienteRep,PersonaRepository $personaRep,TipoDocRepository $tipoDocRep,PaisRepository $paisRep,ClienteCiudadRepository $ciudadRep,ProfesionRepository $profesionRep,EmpresaRepository $empresaRep,SexoRepository $sexoRep,EstadoCivilRepository $estadoCivilRep){
         $this->middleware('auth');
         $this->middleware('guest');
         $this->personaRep=$personaRep;

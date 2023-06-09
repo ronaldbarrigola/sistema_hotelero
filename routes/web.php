@@ -9,7 +9,6 @@ use App\Http\Controllers\PersonaController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\UsuarioRolController;
 use App\Http\Controllers\ClienteController;
-use App\Http\Controllers\CiudadController;
 use App\Http\Controllers\HabitacionController;
 use App\Http\Controllers\TipoHabitacionController;
 use App\Http\Controllers\CategoriaController;
@@ -21,6 +20,8 @@ use App\Http\Controllers\TransaccionController;
 use App\Http\Controllers\TransaccionPagoController;
 use App\Http\Controllers\HuespedController;
 use App\Http\Controllers\DatoFacturaController;
+use App\Http\Controllers\PaisController;
+use App\Http\Controllers\ClienteCiudadController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -49,7 +50,6 @@ Route::resource('seguridad/roles', RolController::class);
 
 
 // MENU  POR ROLES
-//Route::resource('seguridad/rolmenus', 'RolMenuController');
 Route::get('/seguridad/rolmenu/asignacion_menus', [RolMenuController::class,'asignacionMenusPorIdRol']);
 Route::post('/seguridad/rolmenu/guardar_asignacion_menus', [RolMenuController::class,'guardarAsignacionMenus']);
 Route::get('/seguridad/rolmenu/lista_menus', [RolMenuController::class,'listaMenusPorIdRol']);
@@ -93,9 +93,11 @@ Route::get('/busines/transaccion_pago/edittransaccionpago', [TransaccionPagoCont
 Route::get('/busines/transaccion/createtransaccionpago', [TransaccionPagoController::class,'create'])->name('createtransaccionpago');
 Route::get('/busines/huesped/createhuesped', [HuespedController::class,'create'])->name('createhuesped');
 Route::get('/busines/huesped/edithuesped', [HuespedController::class,'edit'])->name('edithuesped');
+Route::get('/busines/pais/editpais', [PaisController::class,'edit'])->name('editpais');
+Route::get('/busines/ciudad/editciudad', [ClienteCiudadController::class,'edit'])->name('editciudad');
 Route::get('/busines/reserva/obtenerReservas', [ReservaController::class,'obtenerReservasTimeLines'])->name('obtenerReservas');
 Route::get('/busines/reserva/validar_eliminacion', [ReservaController::class,'validarEliminacion'])->name('validar_eliminacion');
-Route::get('/business/ciudad/listaciudades', [CiudadController::class,'obtenerCiudadesPorPaisId'])->name('listaciudades');
+Route::get('/business/ciudad/listaciudades', [ClienteCiudadController::class,'obtenerCiudadesPorPaisId'])->name('listaciudades');
 Route::get('/base/persona/buscarPersonaDocId', [PersonaController::class,'buscarPersonaClientePorDocId'])->name('buscarPersonaDocId');
 Route::get('/base/persona/obtenerpersonas', [PersonaController::class,'obtenerPersonas'])->name('obtenerpersonas');
 Route::get('/business/datofactura/nit', [DatoFacturaController::class,'obtenerDatoFacturaPorNit'])->name('dato_factura');
@@ -117,5 +119,7 @@ Route::resource('business/cargo', CargoController::class);
 Route::resource('business/transaccion', TransaccionController::class);
 Route::resource('business/transaccion_pago', TransaccionPagoController::class);
 Route::resource('business/huesped', HuespedController::class);
+Route::resource('business/pais', PaisController::class);
+Route::resource('business/ciudad', ClienteCiudadController::class);
 
 

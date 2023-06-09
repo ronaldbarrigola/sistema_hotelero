@@ -1,7 +1,7 @@
 
 <div class="row">
 
-    <input type="hidden" name="habitacion_id" id="categoria_id">
+    <input type="hidden" name="categoria_id" id="categoria_id">
 
     <div class="col-lg-6 col-md-6 col-sm-6 col-12">
         <div class="form-group">
