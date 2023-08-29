@@ -122,7 +122,6 @@
 
                     if(result){
                         url_update_pass=URL_BASE+"/seguridad/usuarios/updatepass";
-                        console.log(url_update_pass);
                         $.ajax({
                             type: "POST",
                             url: url_update_pass,

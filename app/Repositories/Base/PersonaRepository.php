@@ -63,7 +63,7 @@ class PersonaRepository{
     }
 
     public function insertarDesdeRequest(Request $request){
-        $persona=new Persona($request->all());//CREA OBJETO CON TODOS LOS CAMPOS RECIBIDOS DEL REQUEST
+        $persona=new Persona($request->all());
         $persona->estado=1;
         $persona->save();
         return $persona;

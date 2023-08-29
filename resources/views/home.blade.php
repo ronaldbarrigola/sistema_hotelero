@@ -56,8 +56,13 @@
         var options="";
         var timeline="";
 
-        var min = new Date(2023, 0, 1); //
-        var max = new Date(2023, 5, 31); //
+        //Calcular fecha minimo y maximo para el timeline
+        var fecha = new Date();
+        var anio = fecha.getFullYear();
+        var anio_min=anio - 1;
+        var anio_max=anio + 1;
+        var min = new Date(anio_min, 0, 1);
+        var max = new Date(anio_max, 12, 31);
 
         $(document).ready(function(){
 
@@ -65,9 +70,6 @@
             loadItems(); //Cargar reservas realizadas
             loadOptions();
             timeline = new vis.Timeline(container, items, groups, options);
-
-            // add event listener
-            //timeline.on('select', onSelect);
 
             timeline.on('contextmenu', function (props) {
                 props.event.preventDefault(); // Para evitar que se abra el menú del navegador
@@ -146,12 +148,19 @@
                             //     tipoGrafico='point';
                             // }
 
+                            var nombre="";
+                            if(v.tipo_persona_id=="J"){ //J:Persona Juridica N:Persona Natural
+                                nombre=v.nombre;
+                            } else {
+                                nombre=v.paterno;
+                            }
+
                             if(v.estado_reserva_id==0||v.estado_reserva_id==1){
                                 var porcentaje=(v.porcentaje!=null)?v.porcentaje:0;
                                 var visibleFrameTemplate='<div class="progress-wrapper"><div class="progress" style="width:'+porcentaje+'%"></div><label class="progress-label">'+porcentaje+'%<label></div>';
-                                dataItems.push({id:v.id,content:v.paterno,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,editable:Boolean(v.editable),visibleFrameTemplate:visibleFrameTemplate})
+                                dataItems.push({id:v.id,content:nombre,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,editable:Boolean(v.editable),visibleFrameTemplate:visibleFrameTemplate})
                             } else {
-                                dataItems.push({id:v.id,content:v.paterno,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,editable:Boolean(v.editable)})
+                                dataItems.push({id:v.id,content:nombre,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,editable:Boolean(v.editable)})
                             }
 
                             //dataItems.push({id:v.id,content:v.paterno,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,visibleFrameTemplate:visibleFrameTemplate,type:tipoGrafico})
@@ -169,11 +178,12 @@
         }
 
         function loadOptions(){
+            var fechaActual = new Date(); //Para que el timeline se ubique en la fecha actual
             options = {
+                 start: fechaActual,
+                 end: fechaActual,
                 editable: true,
                 stack: true,
-                //showCurrentTime: true,
-
                 visibleFrameTemplate: function (item) {
                     if (item == null) return;//evitando error al crear rango(al presionar tecla crtl y arrastrar)
                     if (item.visibleFrameTemplate != '') {

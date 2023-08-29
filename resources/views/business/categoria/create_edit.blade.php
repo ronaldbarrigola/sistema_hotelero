@@ -86,9 +86,6 @@
 
                 },//End success
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
-                    console.log(XMLHttpRequest);
-                    console.log(textStatus);
-                    console.log(errorThrown);
                 }, //END error
                 complete:function(result, textStatus ){
                     $("#modalViewCategoria").modal("hide");

@@ -85,7 +85,7 @@
             }
 
             $.ajax({
-                async: false,//Evitar la ejecucion  Asincrona
+                //async: false,//Evitar la ejecucion  Asincrona
                 type: "POST",
                 processData: false, //importante para enviar imagen
                 contentType: false, //importante para enviar imagen
@@ -94,17 +94,16 @@
                 data:formdata,
                 dataType: 'json',
                 beforeSend: function () {
-                    $("#btnGuardarCliente").attr('disabled','disabled');
-                    $("#btnGuardarCliente").val("Procesando");
+                   $("#btnGuardarCliente").attr('disabled','disabled');
+                   $("#btnGuardarCliente").html("Procesando");
                 },
                 success: function(result){
-
                     //BEGIN:Es para cuando se hace el llamado al formulario modal desde otro modulo
                     $("#cliente_id").find('option').remove();
                     $("#huesped_cliente_id").find('option').remove();
                     $.each(result.clientes , function(i, v) {
-                        $("#cliente_id").append('<option value="' + v.id + '" data-nombre="' + v.nombre + '" data-paterno="' + v.paterno + '" data-materno="' + v.materno + '" data-nro_doc="' + v.doc_id + '" data-tipo_doc="' + v.tipo_documento + '">' + v.cliente + " | " + v.doc_id + '</option>');
-                        $("#huesped_cliente_id").append('<option value="' + v.id + '" data-nombre="' + v.nombre + '" data-paterno="' + v.paterno + '" data-materno="' + v.materno + '" data-nro_doc="' + v.doc_id + '" data-tipo_doc="' + v.tipo_documento + '">' + v.cliente + " | " + v.doc_id + '</option>');
+                        $("#cliente_id").append('<option value="' + v.id + '" data-nombre="' + v.nombre + '" data-paterno="' + v.paterno + '" data-materno="' + v.materno + '" data-nro_doc="' + v.doc_id + '" data-tipo_doc="' + v.tipo_documento + '">' + v.cliente + " " + v.doc_id + '</option>');
+                        $("#huesped_cliente_id").append('<option value="' + v.id + '" data-nombre="' + v.nombre + '" data-paterno="' + v.paterno + '" data-materno="' + v.materno + '" data-nro_doc="' + v.doc_id + '" data-tipo_doc="' + v.tipo_documento + '">' + v.cliente + " " + v.doc_id + '</option>');
                     });
                     $("#cliente_id").selectpicker('refresh');
                     $("#cliente_id").selectpicker('val', result.cliente.id);
@@ -117,7 +116,7 @@
 
                     $("#modalViewCliente").modal("hide");
                     $("#btnGuardarCliente").removeAttr('disabled');
-                    $("#btnGuardarCliente").val("Guardar");
+                    $("#btnGuardarCliente").html("Guardar");
                     $("#doc_id").val("");
                     limpiarDatoCliente();
 
@@ -155,6 +154,9 @@
             $("#doc_id").val("");
             limpiarDatoCliente();
 
+            $(".persona_natural").show();
+            setRequiredPersonaNatutal(true);
+
             $.ajax({
                 type: "GET",
                 url: "{{route('createcliente')}}",
@@ -165,6 +167,8 @@
                 },
                 success: function(result){
                     loadDataClienteAjax(result);
+                    $('#tipo_persona_id').selectpicker('val','N');
+                    $("#tipo_persona_id").selectpicker('refresh');
                     $('#modalViewCliente').modal('show');
                 },//End success
                 complete:function(result, textStatus ){
@@ -188,19 +192,33 @@
                 },
                 success: function(result){
                     loadDataClienteAjax(result);
+                    if(result.persona.tipo_persona_id=="J"){
+                        $(".persona_natural").hide();
+                        setRequiredPersonaNatutal(false);
+                    } else {
+                        $(".persona_natural").show();
+                        setRequiredPersonaNatutal(true);
+                        $('#paterno').val(result.persona.paterno);
+                        $('#materno').val(result.persona.materno);
+                        $('#sexo_id').selectpicker('val', result.persona.sexo_id);
+                        $("#sexo_id").selectpicker('refresh');
+                        $('#fecha_nac').val(result.persona.fecha_nac);
+                        $('#estado_civil_id').selectpicker('val', result.persona.estado_civil_id);
+                        $("#estado_civil_id").selectpicker('refresh');
+                        $('#profesion_id').selectpicker('val', result.cliente.profesion_id);
+                        $("#profesion_id").selectpicker('refresh');
+                        $('#empresa_id').selectpicker('val', result.cliente.empresa_id);
+                        $("#empresa_id").selectpicker('refresh');
+                    }
                     //Datos persona
                     $('#persona_id').val(result.persona.id);
+                    $('#nombre').val(result.persona.nombre);
                     $('#doc_id').val(result.persona.doc_id);
                     $('#tipo_doc_id').selectpicker('val', result.persona.tipo_doc_id);
                     $("#tipo_doc_id").selectpicker('refresh');
-                    $('#nombre').val(result.persona.nombre);
-                    $('#paterno').val(result.persona.paterno);
-                    $('#materno').val(result.persona.materno);
-                    $('#sexo_id').selectpicker('val', result.persona.sexo_id);
-                    $("#sexo_id").selectpicker('refresh');
-                    $('#fecha_nac').val(result.persona.fecha_nac);
-                    $('#estado_civil_id').selectpicker('val', result.persona.estado_civil_id);
-                    $("#estado_civil_id").selectpicker('refresh');
+                    $('#tipo_persona_id').selectpicker('val',result.persona.tipo_persona_id);
+                    $("#tipo_persona_id").selectpicker('refresh');
+
                     $('#email').val(result.persona.email);
                     $('#telefono').val(result.persona.telefono);
                     $('#direccion').val(result.persona.direccion);
@@ -208,11 +226,7 @@
                     //Datos cliente
                     $('#pais_id').selectpicker('val', result.cliente.pais_id);
                     $("#pais_id").selectpicker('refresh');
-                    $('#profesion_id').selectpicker('val', result.cliente.profesion_id);
-                    $("#profesion_id").selectpicker('refresh');
-                    $('#empresa_id').selectpicker('val', result.cliente.empresa_id);
-                    $("#empresa_id").selectpicker('refresh');
-                    $('#detalle').val(result.cliente.detalle);
+
 
                     $("#ciudad_id").find('option').remove();
                     $.each( result.ciudades , function(i, v) {
@@ -223,6 +237,7 @@
                     $('#ciudad_id').selectpicker('val', result.cliente.ciudad_id);
                     $("#ciudad_id").selectpicker('refresh');
 
+
                     $("#modalViewCliente").modal("show");
                 },//End success
                 complete:function(result, textStatus ){
@@ -232,37 +247,49 @@
         }
 
         function loadDataClienteAjax(result){
+            $("#tipo_persona_id").find('option').remove();
+            $.each(result.tipo_persona, function(i, v) {
+                $("#tipo_persona_id").append('<option  value="' + v.id + '">' + v.descripcion + '</option>');
+            });
+            $("#tipo_persona_id").selectpicker('refresh');
+
             $("#tipo_doc_id").find('option').remove();
+            $("#tipo_doc_id").append('<option  value="" selected>Seleccione</option>');
             $.each(result.tipo_docs, function(i, v) {
                 $("#tipo_doc_id").append('<option  value="' + v.id + '" >' + v.nombre + '</option>');
             });
             $("#tipo_doc_id").selectpicker('refresh');
 
             $("#sexo_id").find('option').remove();
+            $("#sexo_id").append('<option  value="" selected>Seleccione</option>');
             $.each(result.sexos, function(i, v) {
                 $("#sexo_id").append('<option  value="' + v.id + '" >' + v.nombre + '</option>');
             });
             $("#sexo_id").selectpicker('refresh');
 
             $("#estado_civil_id").find('option').remove();
+            $("#estado_civil_id").append('<option  value="" selected>Seleccione</option>');
             $.each(result.estados_civiles, function(i, v) {
                 $("#estado_civil_id").append('<option  value="' + v.id + '" >' + v.nombre + '</option>');
             });
             $("#estado_civil_id").selectpicker('refresh');
 
             $("#pais_id").find('option').remove();
+            $("#pais_id").append('<option  value="" selected>Seleccione</option>');
             $.each(result.paises, function(i, v) {
                 $("#pais_id").append('<option  value="' + v.id + '" >' + v.descripcion + '</option>');
             });
             $("#pais_id").selectpicker('refresh');
 
             $("#profesion_id").find('option').remove();
+            $("#profesion_id").append('<option  value="" selected>Seleccione</option>');
             $.each(result.profesiones, function(i, v) {
                 $("#profesion_id").append('<option  value="' + v.id + '" >' + v.descripcion + '</option>');
             });
             $("#profesion_id").selectpicker('refresh');
 
             $("#empresa_id").find('option').remove();
+            $("#empresa_id").append('<option  value="" selected>Seleccione</option>');
             $.each(result.empresas, function(i, v) {
                 $("#empresa_id").append('<option  value="' + v.id + '" >' + v.descripcion + '</option>');
             });
@@ -316,6 +343,13 @@
             $("#profesion_id").selectpicker('refresh');
             $("#empresa_id").selectpicker('refresh');
 
+        }
+
+        function setRequiredPersonaNatutal(enabled){
+            $("#paterno").prop('required',Boolean(enabled));
+            $("#sexo_id").prop('required',Boolean(enabled));
+            $("#fecha_nac").prop('required',Boolean(enabled));
+            $("#estado_civil_id").prop('required',Boolean(enabled));
         }
 
   </script>

@@ -78,12 +78,6 @@
                     </div>
                 </div>
 
-                <div class="panel_huesped col-lg-6 col-md-6 col-sm-6 col-12" style="display:flex;align-items: center;">
-                    <div class="form-group">
-                        <label class="form-check-label" for="chkHuesped"><strong>Huesped:</strong></label>
-                        <input type="checkbox" class="form-control" name="chkHuesped" id="chkHuesped" checked style="transform:scale(0.6);">
-                    </div>
-                </div>
            </div>
         </div>
     </div>

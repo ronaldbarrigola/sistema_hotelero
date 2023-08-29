@@ -14,7 +14,7 @@ class Persona extends Model
     protected $fillable = [
         'nombre','paterno','materno',
         'sexo_id','fecha_nac','tipo_doc_id','doc_id','ciudad_exp_id','estado_civil_id',
-        'email','telefono','direccion',
+        'tipo_persona_id','email','telefono','direccion',
         'usuario_alta_id','estado'
     ];
 
@@ -41,7 +41,8 @@ class Persona extends Model
         $nombre=($this->nombre!=null)?$this->nombre:"";
         $paterno=($this->paterno!=null)?$this->paterno:"";
         $materno=($this->materno!=null)?$this->materno:"";
-        return $nombre." ".$paterno." ". $materno;
+        $nombre_completo=$nombre." ".$paterno." ". $materno;
+        return $nombre_completo;
     }
 
 }

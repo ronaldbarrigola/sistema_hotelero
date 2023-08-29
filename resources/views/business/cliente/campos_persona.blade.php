@@ -1,5 +1,16 @@
 
 <div class="row">
+    <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+        <div class="form-group">
+            <label for="tipo_persona_id" class="my-0" ><strong>Tipo Persona:</strong></label>
+            <select name="tipo_persona_id" id="tipo_persona_id" required class="form-control selectpicker border">
+                 <!--Llenar campos por ajax-->
+            </select>
+        </div>
+    </div>
+</div>
+
+<div class="row">
 
     <input type="hidden" id="persona_id" name="persona_id">
 
@@ -13,7 +24,7 @@
     <div class="col-lg-4 col-md-4 col-sm-4 col-12">
         <div class="form-group">
             <label for="tipo_doc_id" class="my-0" ><strong>Tipo Documento Id.:</strong></label>
-            <select name="tipo_doc_id" id="tipo_doc_id" required class="form-control selectpicker border" data-live-search="true">
+            <select name="tipo_doc_id" id="tipo_doc_id" required class="form-control selectpicker border">
                  <!--Llenar campos por ajax-->
             </select>
         </div>
@@ -26,40 +37,40 @@
         </div>
     </div>
 
-    <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+    <div class="persona_natural col-lg-4 col-md-4 col-sm-4 col-12">
         <div class="form-group">
             <label for="paterno" class="my-0"><strong>Ap. Paterno:</strong></label>
             <input type="text" name="paterno" id="paterno" required class="form-control" placeholder="Ap. Paterno">
         </div>
     </div>
 
-    <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+    <div class="persona_natural col-lg-4 col-md-4 col-sm-4 col-12">
         <div class="form-group">
             <label for="materno" class="my-0"><strong>Ap. Materno:</strong></label>
             <input type="text" name="materno" id="materno" class="form-control" placeholder="Ap. Materno">
         </div>
     </div>
 
-    <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+    <div class="persona_natural col-lg-4 col-md-4 col-sm-4 col-12">
         <div class="form-group">
             <label for="sexo_id" class="my-0" ><strong>Sexo:</strong></label>
-            <select name="sexo_id" id="sexo_id" required class="form-control selectpicker border" data-live-search="true" >
+            <select name="sexo_id" id="sexo_id" required class="form-control selectpicker border">
                 <!--Llenar campos por ajax-->
             </select>
         </div>
     </div>
 
-    <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+    <div class="persona_natural col-lg-4 col-md-4 col-sm-4 col-12">
         <div class="form-group ">
             <label for="fecha_nac" class="my-0"><strong>Fecha Nacimiento:</strong></label>
-            <input type="date" id="fecha_nac" name="fecha_nac" required class="form-control">
+            <input type="date" id="fecha_nac" required name="fecha_nac" class="form-control">
         </div>
     </div>
 
-    <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+    <div class="persona_natural col-lg-4 col-md-4 col-sm-4 col-12">
         <div class="form-group">
             <label for="estado_civil_id" class="my-0" ><strong>Estado Civil:</strong></label>
-            <select name="estado_civil_id" id="estado_civil_id" required class="form-control selectpicker border" data-live-search="true" >
+            <select name="estado_civil_id" id="estado_civil_id" required class="form-control selectpicker border">
                  <!--Llenar campos por ajax-->
             </select>
         </div>
@@ -67,22 +78,22 @@
 
     <div class="col-lg-4 col-md-4 col-sm-4 col-12">
         <div class="form-group">
-            <label for="email" class="my-0"><strong>Email Personal:</strong></label>
+            <label for="email" class="my-0"><strong>Email:</strong></label>
             <input type="text" name="email" id="email" class="form-control" placeholder="email">
         </div>
     </div>
 
     <div class="col-lg-4 col-md-4 col-sm-4 col-12">
         <div class="form-group">
-            <label for="telefono" class="my-0"><strong>Telefono Personal:</strong></label>
-            <input type="text" name="telefono" required id="telefono" class="form-control" placeholder="Telefono">
+            <label for="telefono" class="my-0"><strong>Telefono:</strong></label>
+            <input type="text" name="telefono" id="telefono" class="form-control" placeholder="Telefono">
         </div>
     </div>
 
     <div class="col-lg-4 col-md-4 col-sm-4 col-12">
         <div class="form-group">
             <label for="direccion" class="my-0"><strong>Dirección:</strong></label>
-            <input type="text" name="direccion" id="direccion" required class="form-control" placeholder="Dirección">
+            <input type="text" name="direccion" id="direccion" class="form-control" placeholder="Dirección">
         </div>
     </div>
 </div>
@@ -98,6 +109,18 @@
                     }
                 }
             });
+
+            $(document).on("change", "#tipo_persona_id", function(){
+                var tipo_persona_id=$("#tipo_persona_id").val();
+                if(tipo_persona_id=="J"){
+                    $(".persona_natural").hide();
+                    setRequiredPersonaNatutal(false);
+                } else {
+                    $(".persona_natural").show();
+                    setRequiredPersonaNatutal(true);
+                }
+            });
+
         });
 
         //BUSQUEDA POR DOCUMENTO DE IDENTIDAD

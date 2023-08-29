@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use App\Repositories\Base\PersonaRepository;
+use App\Repositories\Base\TipoPersonaRepository;
 use App\Repositories\Base\TipoDocRepository;
 use App\Repositories\Business\ClienteCiudadRepository;
 use App\Repositories\Base\SexoRepository;
@@ -16,6 +17,7 @@ use App\Repositories\Business\EmpresaRepository;
 class ClienteController extends Controller
 {
     protected $personaRep;
+    protected $tipoPersonaRep;
     protected $tipoDocRep;
     protected $paisRep;
     protected $ciudadRep;
@@ -26,10 +28,11 @@ class ClienteController extends Controller
     protected $clienteRep;
 
     //===constructor=============================================================================================
-    public function __construct(ClienteRepository $clienteRep,PersonaRepository $personaRep,TipoDocRepository $tipoDocRep,PaisRepository $paisRep,ClienteCiudadRepository $ciudadRep,ProfesionRepository $profesionRep,EmpresaRepository $empresaRep,SexoRepository $sexoRep,EstadoCivilRepository $estadoCivilRep){
+    public function __construct(ClienteRepository $clienteRep,TipoPersonaRepository $tipoPersonaRep,PersonaRepository $personaRep,TipoDocRepository $tipoDocRep,PaisRepository $paisRep,ClienteCiudadRepository $ciudadRep,ProfesionRepository $profesionRep,EmpresaRepository $empresaRep,SexoRepository $sexoRep,EstadoCivilRepository $estadoCivilRep){
         $this->middleware('auth');
         $this->middleware('guest');
         $this->personaRep=$personaRep;
+        $this->tipoPersonaRep=$tipoPersonaRep;
         $this->tipoDocRep=$tipoDocRep;
         $this->paisRep=$paisRep;
         $this->ciudadRep=$ciudadRep;
@@ -51,6 +54,7 @@ class ClienteController extends Controller
     }
 
     public function create(){
+        $tipo_persona=$this->tipoPersonaRep->obtenerTipoPersona();
         $tipo_docs=$this->tipoDocRep->obtenerTipoDocs();
         $paises=$this->paisRep->obtenerPaises();
         $ciudades=$this->ciudadRep->obtenerCiudades();
@@ -58,7 +62,7 @@ class ClienteController extends Controller
         $empresas=$this->empresaRep->obtenerEmpresas();
         $sexos=$this->sexoRep->obtenerSexos();
         $estados_civiles=$this->estadoCivilRep->obtenerEstadosCiviles();
-        return response()->json(array ('tipo_docs'=>$tipo_docs,'paises'=>$paises,'ciudades'=>$ciudades,'profesiones'=>$profesiones,'empresas'=>$empresas,'sexos'=>$sexos,'estados_civiles'=>$estados_civiles));
+        return response()->json(array ('tipo_docs'=>$tipo_docs,'tipo_persona'=>$tipo_persona,'paises'=>$paises,'ciudades'=>$ciudades,'profesiones'=>$profesiones,'empresas'=>$empresas,'sexos'=>$sexos,'estados_civiles'=>$estados_civiles));
     }
 
     public function store(Request $request){
@@ -72,6 +76,7 @@ class ClienteController extends Controller
         $persona=$this->personaRep->obtenerPersonaPorId($id);
         $cliente=$this->clienteRep->obtenerClientePorId($id);
 
+        $tipo_persona=$this->tipoPersonaRep->obtenerTipoPersona();
         $tipo_docs=$this->tipoDocRep->obtenerTipoDocs();
         $paises=$this->paisRep->obtenerPaises();
         $profesiones=$this->profesionRep->obtenerProfesiones();
@@ -84,7 +89,7 @@ class ClienteController extends Controller
             $ciudades=$this->ciudadRep->obtenerCiudadesPorPaisId($cliente->pais_id);
         }
 
-        return response()->json(array ('persona'=>$persona,'cliente'=>$cliente,'tipo_docs'=>$tipo_docs,'paises'=>$paises,'ciudades'=>$ciudades,'profesiones'=>$profesiones,'empresas'=>$empresas,'sexos'=>$sexos,'estados_civiles'=>$estados_civiles));
+        return response()->json(array ('persona'=>$persona,'tipo_persona'=>$tipo_persona,'cliente'=>$cliente,'tipo_docs'=>$tipo_docs,'paises'=>$paises,'ciudades'=>$ciudades,'profesiones'=>$profesiones,'empresas'=>$empresas,'sexos'=>$sexos,'estados_civiles'=>$estados_civiles));
     }
 
     public function update(Request $request,$id){

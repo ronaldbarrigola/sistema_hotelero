@@ -12,6 +12,7 @@
                         <thead>
                             <th>Id</th>
                             <th>Cliente</th>
+                            <th>Tipo Persona</th>
                             <th>Nro. Documento</th>
                             <th>Tipo Documento</th>
                             <th>Pais</th>
@@ -49,6 +50,7 @@
             var columnas=[
                             {data:'id'},
                             {data:'cliente'},
+                            {data:'tipo_persona'},
                             {data:'doc_id'},
                             {data:'tipo_documento'},
                             {data:'pais'},

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Entidades\Business\Reserva;
 use App\Entidades\Business\Transaccion;
+use App\Repositories\Base\PersonaRepository;
 use App\Repositories\Business\TransaccionRepository;
 use App\Repositories\Business\HotelProductoRepository;
 use App\Repositories\Business\HuespedRepository;
@@ -16,12 +17,14 @@ class ReservaRepository{
     protected $transaccionRep;
     protected $hotelProductoRep;
     protected $huespedRep;
+    protected $personaRep;
 
     //===constructor=============================================================================================
-    public function __construct(TransaccionRepository $transaccionRep,HotelProductoRepository $hotelProductoRep,HuespedRepository $huespedRep){
+    public function __construct(TransaccionRepository $transaccionRep,HotelProductoRepository $hotelProductoRep,PersonaRepository $personaRep,HuespedRepository $huespedRep){
         $this->transaccionRep=$transaccionRep;
         $this->hotelProductoRep=$hotelProductoRep;
         $this->huespedRep=$huespedRep;
+        $this->personaRep=$personaRep;
     }
 
     public function obtenerReservas(){
@@ -73,7 +76,7 @@ class ReservaRepository{
         ->join('bas_persona as p','p.id','=','r.cliente_id')
         ->join('gob_habitacion as h','h.id','=','r.habitacion_id')
         ->join('res_estado_reserva as er','er.id','=','r.estado_reserva_id')
-        ->select('r.id','r.estado_reserva_id',DB::raw('DATE_FORMAT(r.fecha,"%d/%m/%Y") as fecha'),'p.paterno',DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) AS cliente'),'r.habitacion_id','h.num_habitacion',DB::raw('DATE_FORMAT(r.fecha_ini,"%Y-%m-%d %H:%i:%s") as fecha_ini'),DB::raw('DATE_FORMAT(r.fecha_fin,"%Y-%m-%d %H:%i:%s") as fecha_fin'),'er.descripcion as estado_reserva','er.color','er.editable','r.servicio_id',DB::raw('(SELECT IFNULL(sum(tr.monto),0) FROM con_transaccion tr WHERE tr.reserva_id = r.id AND tr.estado=1) as cargo'),DB::raw('(SELECT IFNULL(sum(trp.monto),0) FROM con_transaccion_pago as trp INNER JOIN con_transaccion as tr ON trp.transaccion_id=tr.id WHERE tr.reserva_id = r.id AND tr.estado=1 AND trp.estado=1) as pago'))
+        ->select('r.id','r.estado_reserva_id',DB::raw('DATE_FORMAT(r.fecha,"%d/%m/%Y") as fecha'),'p.tipo_persona_id',DB::raw('IFNULL(p.nombre,"") as nombre'),DB::raw('IFNULL(p.paterno,"") as paterno'),DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) AS cliente'),'r.habitacion_id','h.num_habitacion',DB::raw('DATE_FORMAT(r.fecha_ini,"%Y-%m-%d %H:%i:%s") as fecha_ini'),DB::raw('DATE_FORMAT(r.fecha_fin,"%Y-%m-%d %H:%i:%s") as fecha_fin'),'er.descripcion as estado_reserva','er.color','er.editable','r.servicio_id',DB::raw('(SELECT IFNULL(sum(tr.monto),0) FROM con_transaccion tr WHERE tr.reserva_id = r.id AND tr.estado=1) as cargo'),DB::raw('(SELECT IFNULL(sum(trp.monto),0) FROM con_transaccion_pago as trp INNER JOIN con_transaccion as tr ON trp.transaccion_id=tr.id WHERE tr.reserva_id = r.id AND tr.estado=1 AND trp.estado=1) as pago'))
         ->whereDate('r.fecha_ini','>=',$fecha_filtro)
         ->where('r.estado','=','1')
         ->where('p.estado','=','1')
@@ -229,11 +232,12 @@ class ReservaRepository{
 
             $this->transaccionRep->insertarDesdeReserva($request);
 
-            $chk_huesped=$request->get('chkHuesped');
-            $chk_huesped=($chk_huesped!=null)?true:false;
-
-            if($chk_huesped){//Insertar cliente como huesped
-                $this->huespedRep->insertarHuesped($reserva->id,$reserva->cliente_id);
+            $persona=$this->personaRep->obtenerPersonaPorId($reserva->cliente_id); //El id cliente es lo mismo que id persona
+            if(!is_null($persona)){
+                $tipo_persona_id=$persona->tipo_persona_id;
+                if($tipo_persona_id!="J"){ //Si no es persona juridica puede ser huesped
+                    $this->huespedRep->insertarHuesped($reserva->id,$reserva->cliente_id);
+                }
             }
 
             DB::commit();

@@ -95,6 +95,8 @@
             $("#habitacion_id").selectpicker('val',habitacion_id);
             $("#habitacion_id").selectpicker('refresh');
 
+            //$("#habitacion_id").prop( "disabled",true);
+
             //Cargar precio de habitacion
             var precio=$('#habitacion_id option:selected').data("precio");
             var precio_unidad_ref=(precio!=null&&precio!=""&&precio>0)?precio:0;
@@ -261,11 +263,19 @@
                         var fecha_salida=result.reserva.fecha_fin;
                         var habitacion_id=result.reserva.habitacion_id;
                         var color=result.estadoReserva.color;
+
+                        var nombre="";
+                        if(result.persona.tipo_persona_id=="J"){ //J:Persona Juridica N:Persona Natural
+                            nombre=result.persona.nombre;
+                        } else {
+                            nombre=result.persona.paterno;
+                        }
+
                         var visibleFrameTemplate='<div class="progress-wrapper"><div class="progress" style="width:0%"></div><label class="progress-label">0%<label></div>';
                         if($("#editReserva").val()==""){//Creacion de un nuevo Item
-                            items.add({id:reserva_id,content:content,start:fecha_ingreso,end:fecha_salida,group:habitacion_id,visibleFrameTemplate:visibleFrameTemplate,className:color});
+                            items.add({id:reserva_id,content:nombre,start:fecha_ingreso,end:fecha_salida,group:habitacion_id,visibleFrameTemplate:visibleFrameTemplate,className:color});
                         } else if($("#editReserva").val()=="modificar") {
-                            items.update({id:reserva_id,content:content,start:fecha_ingreso,end:fecha_salida,group:habitacion_id});
+                            items.update({id:reserva_id,content:nombre,start:fecha_ingreso,end:fecha_salida,group:habitacion_id});
                         }
                     }
                 },//End success
@@ -324,7 +334,7 @@
             $("#cliente_id").find('option').remove();
             $("#cliente_id").append('<option  value="">--Seleccione--</option>');
             $.each(result.clientes, function(i, v) {
-                $("#cliente_id").append('<option  value="' + v.id + '" >' + v.cliente + " | " + v.doc_id + '</option>');
+                $("#cliente_id").append('<option  value="' + v.id + '" >' + v.cliente + " " + v.doc_id + '</option>');
             });
             $("#cliente_id").selectpicker('refresh');
 
