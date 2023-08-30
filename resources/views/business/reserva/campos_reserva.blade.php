@@ -37,14 +37,14 @@
                     </div>
                 </div>
 
-                <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+                {{-- <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
                         <label for="paquete_id" class="my-0" ><strong>Paquete:</strong></label>
                         <select name="paquete_id" id="paquete_id"  class="form-control selectpicker border" data-live-search="true" >
                              <!--Se carga los datos por ajax-->
                         </select>
                     </div>
-                </div>
+                </div> --}}
 
                 <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
@@ -193,14 +193,14 @@
         </div>
     </div>
 
-    <div class="row">
+    {{-- <div class="row">
         <div class="col-12">
             <div class="form-group">
                 <label for="detalle" class="my-0"><strong>Detalle:</strong></label>
                 <input type="text" name="detalle" id="detalle" class="form-control">
             </div>
         </div>
-    </div>
+    </div> --}}
 
     @push('scripts')
     <script>

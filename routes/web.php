@@ -96,6 +96,7 @@ Route::get('/busines/huesped/edithuesped', [HuespedController::class,'edit'])->n
 Route::get('/busines/pais/editpais', [PaisController::class,'edit'])->name('editpais');
 Route::get('/busines/ciudad/editciudad', [ClienteCiudadController::class,'edit'])->name('editciudad');
 Route::get('/busines/reserva/obtenerReservas', [ReservaController::class,'obtenerReservasTimeLines'])->name('obtenerReservas');
+Route::get('/busines/reserva/obtenerReservaPorIdTimeLines', [ReservaController::class,'obtenerReservasPorIdTimeLines'])->name('obtenerReservaPorIdTimeLines');
 Route::get('/busines/reserva/validar_eliminacion', [ReservaController::class,'validarEliminacion'])->name('validar_eliminacion');
 Route::get('/business/ciudad/listaciudades', [ClienteCiudadController::class,'obtenerCiudadesPorPaisId'])->name('listaciudades');
 Route::get('/base/persona/buscarPersonaDocId', [PersonaController::class,'buscarPersonaClientePorDocId'])->name('buscarPersonaDocId');

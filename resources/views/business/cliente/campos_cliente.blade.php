@@ -3,7 +3,7 @@
 
     <div class="col-lg-6 col-md-6 col-sm-6 col-12">
         <div class="form-group">
-            <label for="pais_id" class="my-0" ><strong>Pais:</strong></label>
+            <label for="pais_id" class="my-0" ><strong>Pais Nacimiento:</strong></label>
             <select name="pais_id" id="pais_id" required class="form-control selectpicker border" data-live-search="true" >
                  <!--Llenar campos por ajax-->
             </select>
@@ -12,7 +12,7 @@
 
     <div class="col-lg-6 col-md-6 col-sm-6 col-12">
         <div class="form-group">
-           <label for="ciudad_id" class="my-0" ><strong>Ciudad:</strong></label>
+           <label for="ciudad_id" class="my-0" ><strong>Ciudad Nacimiento:</strong></label>
            <select name="ciudad_id" id="ciudad_id" required class="form-control selectpicker border" data-live-search="true" >
 
            </select>

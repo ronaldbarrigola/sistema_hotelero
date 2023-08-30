@@ -275,7 +275,7 @@
                         if($("#editReserva").val()==""){//Creacion de un nuevo Item
                             items.add({id:reserva_id,content:nombre,start:fecha_ingreso,end:fecha_salida,group:habitacion_id,visibleFrameTemplate:visibleFrameTemplate,className:color});
                         } else if($("#editReserva").val()=="modificar") {
-                            items.update({id:reserva_id,content:nombre,start:fecha_ingreso,end:fecha_salida,group:habitacion_id});
+                            updateItemForId(reserva_id);
                         }
                     }
                 },//End success

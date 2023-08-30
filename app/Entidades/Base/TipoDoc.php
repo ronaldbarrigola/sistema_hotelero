@@ -16,4 +16,10 @@ class TipoDoc extends Model
         'estado'
     ];
 
+    //Relacion 1 a muchos
+    public function persona()
+    {
+       return $this->hasMany(Persona::class,'tipo_doc_id','id');
+    }
+
 }

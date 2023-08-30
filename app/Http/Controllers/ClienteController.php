@@ -68,7 +68,9 @@ class ClienteController extends Controller
     public function store(Request $request){
         $cliente=$this->clienteRep->insertarDesdeRequest($request);
         $clientes=$this->clienteRep->obtenerClientes();
-        return response()->json(array ('clientes'=>$clientes,'cliente'=>$cliente));
+        $persona=$cliente->persona; //Cargar entidad relacion 1 a 1
+        $tipo_documento=$persona->tipo_documento; //Cargar entidad relacion 1 a N inversa
+        return response()->json(array ('clientes'=>$clientes,'cliente'=>$cliente,'persona'=>$persona,'tipo_documento'=>$tipo_documento));
     }
 
     public function edit(Request $request){
@@ -96,7 +98,9 @@ class ClienteController extends Controller
         $request->request->add(['id'=>$id]);//El mismo id se usa mapra persona y cliente
         $cliente=$this->clienteRep->modificarDesdeRequest($request);
         $clientes=$this->clienteRep->obtenerClientes();
-        return response()->json(array ('cliente'=>$cliente,'clientes'=>$clientes));
+        $persona=$cliente->persona; //Cargar entidad relacion 1 a 1
+        $tipo_documento=$persona->tipo_documento; //Cargar entidad relacion 1 a N inversa
+        return response()->json(array ('clientes'=>$clientes,'cliente'=>$cliente,'persona'=>$persona,'tipo_documento'=>$tipo_documento));
     }
 
     public function destroy(Request $request,$id){

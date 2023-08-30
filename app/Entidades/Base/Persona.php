@@ -45,4 +45,10 @@ class Persona extends Model
         return $nombre_completo;
     }
 
+    //Relacion uno a muchos (Inversa)
+    public function tipo_documento()
+    {
+       return $this->belongsTo(TipoDoc::class,'tipo_doc_id','id');
+    }
+
 }

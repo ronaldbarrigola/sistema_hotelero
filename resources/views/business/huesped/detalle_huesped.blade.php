@@ -96,7 +96,7 @@
                 success: function(result){
                     $("#huesped_cliente_id").append('<option value="" selected>seleccione</option>');
                     $.each(result.clientes,function(i, v) {
-                        $("#huesped_cliente_id").append('<option value="' + v.id + '" data-nombre="' + v.nombre + '" data-paterno="' + v.paterno + '" data-materno="' + v.materno + '" data-nro_doc="' + v.doc_id + '" data-tipo_doc="' + v.tipo_documento + '">' + v.cliente + " | " + v.doc_id + '</option>');
+                        $("#huesped_cliente_id").append('<option value="' + v.id + '" data-nombre="' + v.nombre + '" data-paterno="' + v.paterno + '" data-materno="' + v.materno + '" data-nro_doc="' + v.doc_id + '" data-tipo_doc="' + v.tipo_documento + '">' + v.cliente + " " + v.doc_id + '</option>');
                     });
                     $("#huesped_cliente_id").selectpicker('refresh');
                 },//End success

@@ -84,7 +84,7 @@ class ReservaRepository{
         ->orderBy('r.id','desc')
         ->get();
 
-        //Calcular Saldo
+        //Calcular porcentaje de pago
         if($reservas!=null){
             $porcentaje=0;
             foreach($reservas as $row){
@@ -96,6 +96,30 @@ class ReservaRepository{
         }
 
         return $reservas;
+    }
+
+    public function obtenerReservasPorIdTimeLines($reserva_id){ //Usado para actualizar datos de pago del item en la linea de tiempo
+        $reserva= DB::table('res_reserva as r')
+        ->join('bas_persona as p','p.id','=','r.cliente_id')
+        ->join('gob_habitacion as h','h.id','=','r.habitacion_id')
+        ->join('res_estado_reserva as er','er.id','=','r.estado_reserva_id')
+        ->select('r.id','r.estado_reserva_id',DB::raw('DATE_FORMAT(r.fecha,"%d/%m/%Y") as fecha'),'p.tipo_persona_id',DB::raw('IFNULL(p.nombre,"") as nombre'),DB::raw('IFNULL(p.paterno,"") as paterno'),DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) AS cliente'),'r.habitacion_id','h.num_habitacion',DB::raw('DATE_FORMAT(r.fecha_ini,"%Y-%m-%d %H:%i:%s") as fecha_ini'),DB::raw('DATE_FORMAT(r.fecha_fin,"%Y-%m-%d %H:%i:%s") as fecha_fin'),'er.descripcion as estado_reserva','er.color','er.editable','r.servicio_id',DB::raw('(SELECT IFNULL(sum(tr.monto),0) FROM con_transaccion tr WHERE tr.reserva_id = r.id AND tr.estado=1) as cargo'),DB::raw('(SELECT IFNULL(sum(trp.monto),0) FROM con_transaccion_pago as trp INNER JOIN con_transaccion as tr ON trp.transaccion_id=tr.id WHERE tr.reserva_id = r.id AND tr.estado=1 AND trp.estado=1) as pago'))
+        ->where('r.id','=',$reserva_id)
+        ->where('r.estado','=','1')
+        ->where('p.estado','=','1')
+        ->where('er.estado','=','1')
+        ->first();
+
+        //Calcular porcentaje de pago
+        if($reserva!=null){
+            $porcentaje=0;
+            if($reserva->cargo>0){ //Para evitar division entre cero
+                $porcentaje=($reserva->pago*100)/$reserva->cargo;
+            }
+            $reserva->porcentaje=round($porcentaje,2);
+        }
+
+        return $reserva;
     }
 
     public function obtenerReservaPorId($id){

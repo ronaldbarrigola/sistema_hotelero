@@ -135,16 +135,17 @@
                     $("#btnGuardarTransaccion").html("Procesando");
                 },
                 success: function(result){
-
+                    $("#modalViewTransaccion").modal("hide");
+                    $("#btnGuardarTransaccion").removeAttr('disabled');
+                    $("#btnGuardarTransaccion").html("Guardar");
+                    datatable_transaccion.ajax.reload();;//recargar registro datatables.
+                    updateItemForId(result.transaccion.reserva_id);
                 },//End success
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
 
                 }, //END error
                 complete:function(result, textStatus ){
-                    $("#modalViewTransaccion").modal("hide");
-                    $("#btnGuardarTransaccion").removeAttr('disabled');
-                    $("#btnGuardarTransaccion").html("Guardar");
-                    datatable_transaccion.ajax.reload();;//recargar registro datatables.
+
                 }//END complete
 
             }); //End Ajax

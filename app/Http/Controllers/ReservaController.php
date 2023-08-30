@@ -142,4 +142,14 @@ class ReservaController extends Controller
         return response()->json(array('reservas'=>$reservas,'response'=>$response));
     }
 
+    public function obtenerReservasPorIdTimeLines(Request $request){ //Usado para actualizar datos de pago del item en la linea de tiempo
+        $id=$request["reserva_id"];
+        $response=true;
+        $reserva=$this->reservaRep->obtenerReservasPorIdTimeLines($id);
+        if (is_null($reserva) ){
+          $response=false;
+        }
+        return response()->json(array('reserva'=>$reserva,'response'=>$response));
+    }
+
 }

@@ -16,13 +16,6 @@
                 </div>
             </div>
 
-            <div class="panel_concepto col-lg-6 col-md-6 col-sm-6 col-12">
-                <div class="form-group">
-                    <label for="concepto" class="my-0" ><strong>Concepto:</strong></label>
-                    <input type="text" name="concepto"  id="concepto" maxlength="100" class="form-control">
-                </div>
-            </div>
-
         </div>
     </div>
 </div>

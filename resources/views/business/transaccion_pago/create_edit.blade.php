@@ -123,16 +123,17 @@
                     $("#btnGuardarTransaccionPago").html("Procesando");
                 },
                 success: function(result){
-
+                    $("#modalViewTransaccionPago").modal("hide");
+                    $("#btnGuardarTransaccionPago").removeAttr('disabled');
+                    $("#btnGuardarTransaccionPago").html("Guardar");
+                    datatable_transaccion.ajax.reload();
+                    updateItemForId(result.transaccion.reserva_id);
                 },//End success
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
 
                 }, //END error
                 complete:function(result, textStatus ){
-                    $("#modalViewTransaccionPago").modal("hide");
-                    $("#btnGuardarTransaccionPago").removeAttr('disabled');
-                    $("#btnGuardarTransaccionPago").html("Guardar");
-                    datatable_transaccion.ajax.reload();
+
                 }//END complete
 
             }); //End Ajax

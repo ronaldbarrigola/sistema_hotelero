@@ -49,7 +49,7 @@ class TransaccionController extends Controller
     public function update(Request $request, $id){
         $request->request->add(['id'=>$id]);
         $transaccion=$this->transaccionRep->modificarDesdeRequest($request);
-        return  $transaccion;
+        return response()->json(array ('transaccion'=>$transaccion));
     }
 
     public function destroy(Request $request,$id){

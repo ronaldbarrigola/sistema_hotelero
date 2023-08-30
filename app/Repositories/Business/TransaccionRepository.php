@@ -130,101 +130,113 @@ class TransaccionRepository{
     }
 
     public function insertarDesdeRequest(Request $request){
+        $transaccion=null;
+        try{
+            DB::beginTransaction();
 
-        $modulo=($request['modulo']!=null)?$request['modulo']:"";
-        $reserva_id=($request['foreign_reserva_id']!=null)?$request['foreign_reserva_id']:0;
-        $cargo_id=0;
-        if($modulo=="RESERVA"){
-            $cargo=$this->cargoRep->insertarDesdeRequest($request);
-            if(!is_null($cargo)){
-                $cargo_id= $cargo->id;
-            }
-        }
-
-        //Obtener array
-        $vec_estado= $request->get('vec_estado');
-        $vec_hotel_producto = $request->get('vec_hotel_producto_id');
-        $vec_cantidad=$request['vec_cantidad'];
-        $vec_precio_unidad=$request['vec_precio_unidad'];
-        $vec_descuento_porcentaje=$request['vec_descuento_porcentaje'];
-        $vec_descuento=$request['vec_descuento'];
-        $vec_monto=$request['vec_monto'];
-
-        //variable
-        $venta_id=($request->get('venta_id')!=null)?$request->get('venta_id'):0;
-
-        $index=0;
-        foreach ($vec_hotel_producto as $hotel_producto_id) {
-                $estado=$vec_estado[$index];
-
-                //Validaciones
-                $cantidad=($vec_cantidad[$index]!=null)?$vec_cantidad[$index]:0;
-                $precio_unidad=($vec_precio_unidad[$index]!=null)?$vec_precio_unidad[$index]:0;
-                $descuento_porcentaje=($vec_descuento_porcentaje[$index]!=null)?$vec_descuento_porcentaje[$index]:0;
-                $descuento=($vec_descuento[$index]!=null)?$vec_descuento[$index]:0;
-                $monto=($vec_monto[$index]!=null)?$vec_monto[$index]:0;
-
-                if($estado=='nuevo'){
-                    $transaccion=new Transaccion();
-                    $transaccion->venta_id=$venta_id;
-                    $transaccion->cargo_id=$cargo_id;
-                    $transaccion->reserva_id=$reserva_id;
-                    $transaccion->cantidad=$cantidad;
-                    $transaccion->precio_unidad=$precio_unidad;
-                    $transaccion->descuento_porcentaje=$descuento_porcentaje;
-                    $transaccion->descuento=$descuento;
-                    $transaccion->monto=$monto;
-                    $transaccion->hotel_producto_id=$hotel_producto_id;
-                    $transaccion->usuario_alta_id=Auth::user()->id;
-                    $transaccion->usuario_modif_id=Auth::user()->id;
-                    $transaccion->fecha=Carbon::now('America/La_Paz')->toDateTimeString();
-                    $transaccion->fecha_creacion=Carbon::now('America/La_Paz')->toDateTimeString();
-                    $transaccion->fecha_modificacion=Carbon::now('America/La_Paz')->toDateTimeString();
-                    $transaccion->estado=1;
-                    $transaccion->save();
+            $modulo=($request['modulo']!=null)?$request['modulo']:"";
+            $reserva_id=($request['foreign_reserva_id']!=null)?$request['foreign_reserva_id']:0;
+            $cargo_id=0;
+            if($modulo=="RESERVA"){
+                $cargo=$this->cargoRep->insertarDesdeRequest($request);
+                if(!is_null($cargo)){
+                    $cargo_id= $cargo->id;
                 }
-                $index++;
+            }
+
+            //Obtener array
+            $vec_estado= $request->get('vec_estado');
+            $vec_hotel_producto = $request->get('vec_hotel_producto_id');
+            $vec_cantidad=$request['vec_cantidad'];
+            $vec_precio_unidad=$request['vec_precio_unidad'];
+            $vec_descuento_porcentaje=$request['vec_descuento_porcentaje'];
+            $vec_descuento=$request['vec_descuento'];
+            $vec_monto=$request['vec_monto'];
+
+            //variable
+            $venta_id=($request->get('venta_id')!=null)?$request->get('venta_id'):0;
+
+            $index=0;
+            foreach ($vec_hotel_producto as $hotel_producto_id) {
+                    $estado=$vec_estado[$index];
+
+                    //Validaciones
+                    $cantidad=($vec_cantidad[$index]!=null)?$vec_cantidad[$index]:0;
+                    $precio_unidad=($vec_precio_unidad[$index]!=null)?$vec_precio_unidad[$index]:0;
+                    $descuento_porcentaje=($vec_descuento_porcentaje[$index]!=null)?$vec_descuento_porcentaje[$index]:0;
+                    $descuento=($vec_descuento[$index]!=null)?$vec_descuento[$index]:0;
+                    $monto=($vec_monto[$index]!=null)?$vec_monto[$index]:0;
+
+                    if($estado=='nuevo'){
+                        $transaccion=new Transaccion();
+                        $transaccion->venta_id=$venta_id;
+                        $transaccion->cargo_id=$cargo_id;
+                        $transaccion->reserva_id=$reserva_id;
+                        $transaccion->cantidad=$cantidad;
+                        $transaccion->precio_unidad=$precio_unidad;
+                        $transaccion->descuento_porcentaje=$descuento_porcentaje;
+                        $transaccion->descuento=$descuento;
+                        $transaccion->monto=$monto;
+                        $transaccion->hotel_producto_id=$hotel_producto_id;
+                        $transaccion->usuario_alta_id=Auth::user()->id;
+                        $transaccion->usuario_modif_id=Auth::user()->id;
+                        $transaccion->fecha=Carbon::now('America/La_Paz')->toDateTimeString();
+                        $transaccion->fecha_creacion=Carbon::now('America/La_Paz')->toDateTimeString();
+                        $transaccion->fecha_modificacion=Carbon::now('America/La_Paz')->toDateTimeString();
+                        $transaccion->estado=1;
+                        $transaccion->save();
+                    }
+                    $index++;
+            }
+
+            DB::commit();
+        }catch(\Exception $e){
+            DB::rollback();
         }
 
         return $transaccion;
     }
 
     public function modificarDesdeRequest(Request $request){
+        $transaccion=null;
+        try{
+            DB::beginTransaction();
+            $id= $request->get('id');
+            $cantidad=$request['cantidad'];
+            $precio_unidad=$request['precio_unidad'];
+            $descuento_porcentaje=$request['descuento_porcentaje'];
+            $descuento=$request['descuento'];
+            $monto=$request['monto'];
 
-         $id= $request->get('id');
-         $cantidad=$request['cantidad'];
-         $precio_unidad=$request['precio_unidad'];
-         $descuento_porcentaje=$request['descuento_porcentaje'];
-         $descuento=$request['descuento'];
-         $monto=$request['monto'];
+            $cantidad=($cantidad!=null)?$cantidad:0;
+            $precio_unidad=($precio_unidad!=null)?$precio_unidad:0;
+            $descuento_porcentaje=($descuento_porcentaje!=null)?$descuento_porcentaje:0;
+            $descuento=($descuento!=null)?$descuento:0;
+            $monto=($monto!=null)?$monto:0;
 
-         $cantidad=($cantidad!=null)?$cantidad:0;
-         $precio_unidad=($precio_unidad!=null)?$precio_unidad:0;
-         $descuento_porcentaje=($descuento_porcentaje!=null)?$descuento_porcentaje:0;
-         $descuento=($descuento!=null)?$descuento:0;
-         $monto=($monto!=null)?$monto:0;
+            $transaccion=$this->obtenerTransaccionPorId($id);
+            $transaccion->cantidad=$cantidad;
+            $transaccion->precio_unidad=$precio_unidad;
+            $transaccion->descuento_porcentaje=$descuento_porcentaje;
+            $transaccion->descuento=$descuento;
+            $transaccion->monto=$monto;
+            $transaccion->usuario_modif_id=Auth::user()->id;
+            $transaccion->fecha_modificacion=Carbon::now('America/La_Paz')->toDateTimeString();
+            $transaccion->update();
 
-         $transaccion=$this->obtenerTransaccionPorId($id);
-         $transaccion->cantidad=$cantidad;
-         $transaccion->precio_unidad=$precio_unidad;
-         $transaccion->descuento_porcentaje=$descuento_porcentaje;
-         $transaccion->descuento=$descuento;
-         $transaccion->monto=$monto;
-         $transaccion->usuario_modif_id=Auth::user()->id;
-         $transaccion->fecha_modificacion=Carbon::now('America/La_Paz')->toDateTimeString();
-         $transaccion->update();
+            $transaccion->transaccionDetalle()->delete();
+            $request->request->add(['transaccion_id'=> $transaccion->id]);
+            $this->transaccionDetalleRep->insertarDesdeRequest($request);
+            DB::commit();
+        }catch(\Exception $e){
+            DB::rollback();
+        }
 
-         $transaccion->transaccionDetalle()->delete();
-         $request->request->add(['transaccion_id'=> $transaccion->id]);
-         $this->transaccionDetalleRep->insertarDesdeRequest($request);
-
+        return $transaccion;
     }
 
     public function eliminar($id){
         $transaccion=$this->obtenerTransaccionPorId($id);
-        if ( is_null($transaccion) ){
-            App::abort(404);
-        }
         $transaccion->delete();//Eliminacion logica
         return $transaccion;
     }

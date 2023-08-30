@@ -26,7 +26,7 @@ class Cliente extends Model
     //Relacion 1 a 1 Con Persona
     public function persona()
     {
-       return $this->hasOne('App\Entidades\Base\Persona','id');
+       return $this->hasOne('App\Entidades\Base\Persona','id','id');
     }
 
      //Relacion 1 a muchos

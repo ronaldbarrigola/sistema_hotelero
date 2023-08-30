@@ -163,11 +163,45 @@
                                 dataItems.push({id:v.id,content:nombre,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,editable:Boolean(v.editable)})
                             }
 
-                            //dataItems.push({id:v.id,content:v.paterno,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,visibleFrameTemplate:visibleFrameTemplate,type:tipoGrafico})
-
                         });
 
                         items = new vis.DataSet(dataItems);
+                    }
+
+                },//End success
+                complete:function(result, textStatus ){
+
+                }
+            }); //End Ajax
+        }
+
+        function updateItemForId($id){
+            $.ajax({
+                async: false, //Evitar la ejecucion  Asincrona
+                type: "GET",
+                url: "{{route('obtenerReservaPorIdTimeLines')}}",
+                data:{reserva_id:$id,'_token':'{{ csrf_token() }}'},
+                dataType: 'json',
+                beforeSend: function () {
+
+                },
+                success: function(result){
+                    if(result.response){
+                        var nombre="";
+                        var v=result.reserva;
+                        if(v.tipo_persona_id=="J"){ //J:Persona Juridica N:Persona Natural
+                            nombre=v.nombre;
+                        } else {
+                            nombre=v.paterno;
+                        }
+
+                        if(v.estado_reserva_id==0||v.estado_reserva_id==1){
+                            var porcentaje=(v.porcentaje!=null)?v.porcentaje:0;
+                            var visibleFrameTemplate='<div class="progress-wrapper"><div class="progress" style="width:'+porcentaje+'%"></div><label class="progress-label">'+porcentaje+'%<label></div>';
+                            items.update({id:v.id,content:nombre,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,editable:Boolean(v.editable),visibleFrameTemplate:visibleFrameTemplate})
+                        } else {
+                            items.update({id:v.id,content:nombre,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,editable:Boolean(v.editable)})
+                        }
                     }
 
                 },//End success
@@ -205,8 +239,8 @@
                 width: '100%',
                 min: min,                // lower limit of visible range
                 max: max,                // upper limit of visible range
-                zoomMin: 1000 * 60 * 60 * 24 * 10 * 1,             // one day in milliseconds
-                zoomMax: 1000 * 60 * 60 * 24 * 20 * 1,     // about three months in milliseconds
+                zoomMin: 1000 * 60 * 60 * 24 * 10 * 1,// one day in milliseconds
+                zoomMax: 1000 * 60 * 60 * 24 * 20 * 1,// about three months in milliseconds
 
                 //-----------  always snap to full hours, independent of the scale ------------------------------------------------
                 snap: function (date, scale, step) {

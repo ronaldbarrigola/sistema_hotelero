@@ -58,16 +58,7 @@ class ClienteRepository{
 
             $request->request->add(['usuario_alta_id'=>Auth::user()->id]);
             $request->request->add(['usuario_modif_id'=>Auth::user()->id]);
-
-            $docId=$request['doc_id'];
-            $doc_id=$this->personaRep->buscarPersonaClientePorDocId($docId);
-
-            if (is_null($doc_id)){
-                $persona=$this->personaRep->insertarDesdeRequest($request);
-            } else {
-                $persona=$this->personaRep->modificarDesdeRequest($request);
-            }
-
+            $persona=$this->personaRep->insertarDesdeRequest($request);
             if($persona!=null){
                 $cliente=new Cliente($request->all());//CREA OBJETO CON TODOS LOS CAMPOS RECIBIDOS DEL REQUEST
                 $cliente->id=$persona->id;

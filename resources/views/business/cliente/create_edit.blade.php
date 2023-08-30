@@ -85,7 +85,6 @@
             }
 
             $.ajax({
-                //async: false,//Evitar la ejecucion  Asincrona
                 type: "POST",
                 processData: false, //importante para enviar imagen
                 contentType: false, //importante para enviar imagen
@@ -94,8 +93,8 @@
                 data:formdata,
                 dataType: 'json',
                 beforeSend: function () {
-                   $("#btnGuardarCliente").attr('disabled','disabled');
-                   $("#btnGuardarCliente").html("Procesando");
+                    $("#btnGuardarCliente").attr('disabled','disabled');
+                    $("#btnGuardarCliente").html("Procesando");
                 },
                 success: function(result){
                     //BEGIN:Es para cuando se hace el llamado al formulario modal desde otro modulo
@@ -120,11 +119,20 @@
                     $("#doc_id").val("");
                     limpiarDatoCliente();
 
+
                     try {
                         datatable_datos.ajax.reload();//recargar registro datatables.
                     }
                     catch(err) {
-                      //Sin acciones
+                      //En caso de que se cree la reserva desde el TimeLines
+                    }
+
+                    try {
+                       cargarFilaHuesped(result.persona.id,result.persona.nombre,result.persona.paterno,result.persona.materno,result.persona.doc_id,result.tipo_documento.nombre) //Se encuentra modulo huesped detalle_huesped
+                       $("#huesped_cliente_id").selectpicker('val','');
+                       $("#huesped_cliente_id").selectpicker('refresh');
+                    }
+                    catch(err) {
                       //En caso de que se cree la reserva desde el TimeLines
                     }
 
@@ -137,14 +145,6 @@
                 }//END complete
 
             });//End Ajax
-
-            try {
-                addHuesped();
-            }
-            catch(err){
-            }
-
-
        }
 
        function createCliente(){

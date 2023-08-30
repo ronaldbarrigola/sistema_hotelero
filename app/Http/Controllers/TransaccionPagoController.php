@@ -40,12 +40,18 @@ class TransaccionPagoController extends Controller
 
     public function store(Request $request){
         $tipo_pago = $request->get('tipo_pago');
+        $transaccion=null;
         if($tipo_pago=="ANTICIPO") {
             $transaccionPago=$this->transaccionPagoRep->insertarAnticipoDesdeRequest($request);
         } else {
             $transaccionPago=$this->transaccionPagoRep->insertarDesdeRequest($request);
         }
-        return response()->json(array ('transaccionPago'=>$transaccionPago));
+
+        if($transaccionPago!=null){
+            $transaccion=$transaccionPago->transaccion; //Cargar entidad relacion 1 a N inversa
+        }
+
+        return response()->json(array ('transaccion'=>$transaccion,'transaccionPago'=>$transaccionPago));
     }
 
     public function edit(Request $request){
@@ -53,12 +59,6 @@ class TransaccionPagoController extends Controller
         $formaPagos=$this->formaPagoRep->obtenerFormaPagos();
         $transaccionPago=$this->transaccionPagoRep->obtenerTransaccionPorId($id);
         return response()->json(array ('transaccionPago'=>$transaccionPago,'formaPagos'=>$formaPagos));
-    }
-
-    public function update(Request $request, $id){
-        // $request->request->add(['id'=>$id]);
-        // $transaccionPago=$this->transaccionPagoRep->modificarDesdeRequest($request);
-        // return  $transaccionPago;
     }
 
     public function destroy(Request $request,$id){

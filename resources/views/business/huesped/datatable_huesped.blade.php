@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-12">
-        <table id="tbl_huesped" class="table table-striped table-bordered table-condensed table-hover" style="width:100%">
+        <table id="tbl_huesped" class="table table-striped table-bordered table-sm table-hover" style="width:100%">
             <thead>
                 <th style="text-align:center">Nombre</th>
                 <th style="text-align:center">Paterno</th>
