@@ -67,6 +67,10 @@
               $("#doc_id").focus();
           })
 
+          $(document).on("click", "#btnModalCreateProfesion", function(){
+                createProfesion(false);
+          });
+
         }); //Fin ready
 
         function submitFormCliente(event) {

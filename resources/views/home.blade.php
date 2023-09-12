@@ -36,6 +36,7 @@
 
         @include('business/reserva/create_edit')
         @include('business/cliente/create_edit')
+        @include('business/profesion/create_edit')
         @include('business/contextmenu/menu')
     @endsection
 @endsection
@@ -119,9 +120,9 @@
                     var estilo="";
                     if(result.response){
                         $.each(result.habitaciones,function(i, v) {
-                            estilo=`text-align: left;background-color: ${v.color}`;
+                            // estilo=`text-align: left;background-color: ${v.color}`;
                             //dataGroups.push({id:v.id,content:v.num_habitacion,style:"color: red; background-color: pink;"})
-                            dataGroups.push({id:v.id,content:v.num_habitacion + " " + v.tipo_habitacion,style:estilo})
+                            dataGroups.push({id:v.id,content:v.num_habitacion + " " + v.tipo_habitacion,style:v.estilo})
                         });
                         groups = new vis.DataSet(dataGroups);
                     }

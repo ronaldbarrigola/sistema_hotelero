@@ -2,8 +2,10 @@
 
 namespace App\Repositories\Business;
 
+use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Entidades\Business\Profesion;
+use Illuminate\Support\Str;
 use DB;
 
 class ProfesionRepository{

@@ -28,9 +28,8 @@
             </div>
         </div>
         @include('partials/confirmaeliminacion',['url_base_eliminar'=>'business/cliente'])
-
         @include('business/cliente/create_edit')
-
+        @include('business/profesion/create_edit')
     @endsection
 @endsection
 

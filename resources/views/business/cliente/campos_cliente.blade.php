@@ -21,10 +21,13 @@
 
     <div class="persona_natural col-lg-6 col-md-6 col-sm-6 col-12">
         <div class="form-group">
-           <label for="profesion_id" class="my-0" ><strong>Profesion:</strong></label>
-           <select name="profesion_id" id="profesion_id"  class="form-control selectpicker border" data-live-search="true" >
-               <!--Llenar campos por ajax-->
-           </select>
+            <label for="profesion_id" class="my-0" ><strong>Profesion:</strong></label>
+            <div class="input-group-append">
+                <select name="profesion_id" id="profesion_id"  class="form-control selectpicker border" data-live-search="true" >
+                    <!--Llenar campos por ajax-->
+                </select>
+                <button type="button" id="btnModalCreateProfesion" class="input-group-btn btn btn-light"><span class="icon-plus"></span></button>
+            </div>
         </div>
     </div>
 

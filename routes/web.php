@@ -22,6 +22,7 @@ use App\Http\Controllers\HuespedController;
 use App\Http\Controllers\DatoFacturaController;
 use App\Http\Controllers\PaisController;
 use App\Http\Controllers\ClienteCiudadController;
+use App\Http\Controllers\ProfesionController;
 use App\Http\Controllers\ReporteController;
 
 use Illuminate\Support\Facades\Route;
@@ -96,6 +97,8 @@ Route::get('/busines/huesped/createhuesped', [HuespedController::class,'create']
 Route::get('/busines/huesped/edithuesped', [HuespedController::class,'edit'])->name('edithuesped');
 Route::get('/busines/pais/editpais', [PaisController::class,'edit'])->name('editpais');
 Route::get('/busines/ciudad/editciudad', [ClienteCiudadController::class,'edit'])->name('editciudad');
+Route::get('/busines/ciudad/editprofesion', [ProfesionController::class,'edit'])->name('editprofesion');
+Route::get('/busines/ciudad/obtener_profesiones', [ProfesionController::class,'obtenerProfesiones'])->name('obtener_profesiones');
 Route::get('/busines/reserva/obtenerReservas', [ReservaController::class,'obtenerReservasTimeLines'])->name('obtenerReservasTimeLine');
 Route::get('/busines/reserva/obtenerReservaPorIdTimeLines', [ReservaController::class,'obtenerReservasPorIdTimeLines'])->name('obtenerReservaPorIdTimeLines');
 Route::get('/busines/reserva/validar_eliminacion', [ReservaController::class,'validarEliminacion'])->name('validar_eliminacion');
@@ -129,5 +132,6 @@ Route::resource('business/transaccion_pago', TransaccionPagoController::class);
 Route::resource('business/huesped', HuespedController::class);
 Route::resource('business/pais', PaisController::class);
 Route::resource('business/ciudad', ClienteCiudadController::class);
+Route::resource('business/profesion', ProfesionController::class);
 
 

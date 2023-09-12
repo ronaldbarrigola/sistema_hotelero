@@ -90,7 +90,6 @@
                     var menuRaiz={"id": null, "nombre": "MENU","asignado":0};//creando en nodo raiz, con nombre menu
                     li=generarMenusRecursivo(JsonDato,menuRaiz);
                     $("#lista_menu").html(li);
-                    //console.log(li);
                 },'json');
             }
             //=====================================================================================================================
@@ -149,7 +148,6 @@
                 event.preventDefault();event.stopPropagation();//evitando realizar submit (con recarga de pagina) para realizar manualmente con json.
                 form=$(this);
                 var formData = new FormData(form[0]);//contiene todos los datos de los controles dentro el formulario
-                //console.log($("input[name='vec_asignado[]']").serializeArray());
                 //$.ajaxSetup({headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}});
                 var url=URL_BASE+"/seguridad/rolmenu/guardar_asignacion_menus";
                 activarEstadoProcesando("#modalAsignarMenu","#btnGuardar");
@@ -189,13 +187,11 @@
                     },
                     complete:function(jqXHR, textStatus ){
                         //completado correctamente
-                        //console.log(jqXHR.responseJSON.id);
                         if(jqXHR.status===200){
                             //location.reload();//recarga la pagina actual.
                             desactivarEstadoProcesando("#modalAsignarMenu","#btnGuardar");
                             //$('#tblListaDatos').DataTable().ajax.reload();//recargar registro datatables.
                             $("#modalAsignarMenu").modal("hide");
-                            //console.log(jqXHR);
                             toastr.success('Se guardo correctamente','Rol con ID:'+jqXHR.responseJSON.id);
                         }
                     }
