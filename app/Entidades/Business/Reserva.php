@@ -35,8 +35,6 @@ class Reserva extends Model
         'hora_ini',
         'hora_fin',
         'detalle',
-        'num_adulto',
-        'num_nino',
         'estado',
         'fecha_creacion',
         'fecha_modificacion'

@@ -139,7 +139,9 @@
                     $("#btnGuardarTransaccion").removeAttr('disabled');
                     $("#btnGuardarTransaccion").html("Guardar");
                     datatable_transaccion.ajax.reload();;//recargar registro datatables.
-                    updateItemForId(result.transaccion.reserva_id);
+                    try {
+                        updateItemForId(result.transaccion.reserva_id);
+                    } catch(err) {}
                 },//End success
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
 
@@ -227,6 +229,9 @@
                 success: function(result){
                     datatable_transaccion.ajax.reload();
                     $("#modalDeleteTransaccion").modal("hide");
+                    try {
+                        updateItemForId(result.transaccion.reserva_id);
+                    } catch(err) {}
                 },
                 error:function(result){
 

@@ -46,6 +46,13 @@
         </div>
     </div>
 
+    {{-- <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+        <div class="form-group">
+            <label for="color" class="my-0"><strong>Color:</strong></label>
+            <input type="color" name="color" id="color" value="#FFFFFF" class="form-control">
+        </div>
+    </div> --}}
+
     <div class="col-lg-6 col-md-6 col-sm-6 col-12">
         <div class="form-group">
             <label for="estado_habitacion_id" class="my-0" ><strong>Estado Habitacion:</strong></label>

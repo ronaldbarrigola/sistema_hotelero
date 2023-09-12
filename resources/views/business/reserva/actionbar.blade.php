@@ -5,22 +5,14 @@
         <button id= "btnCreateReserva" class="btn btn-success">NUEVO</button>
     </div>
 
-    {{-- CHECKBOX BUSQUEDA EXACTA --}}
-    <div class="btn-group float-right mt-2" role="group">
-        <div class="form-check d-none">
-            <input type="checkbox" class="form-check-input" id="chkBusquedaExacta" checked>
-            <label class="form-check-label" for="chkBusquedaExacta">Búsq. palabra completa en columna </label>
-        </div>
-    </div>
-
     {{-- BUSQUEDA --}}
     <div class="input-group mt-1">
         <div class="input-group-prepend">
             <div class="input-group-text">{{$titulo}}</div>
         </div>
-        <input id="txtBuscar" type="text" class="form-control" size="60" placeholder="Buscar"  >
+        <input id="txtBuscarReserva" type="text" class="form-control" size="60" placeholder="Buscar"  >
         <div class="input-group-append">
-            <button id="btnBuscar" class="input-group-btn btn btn-primary"><span class="icon-Lupa"></span></button>
+            <button id="btnBuscarReserva" class="input-group-btn btn btn-primary"><span class="icon-Lupa"></span></button>
         </div>
     </div>
 </div>
@@ -29,8 +21,8 @@
     <script>
         $(document).ready( function () {
 
-            $('#btnBuscar').on( 'click', function () {
-                var valor_buscado = $.trim($("#txtBuscar").val());
+            $('#btnBuscarReserva').on( 'click', function () {
+                var valor_buscado = $.trim($("#txtBuscarReserva").val());
                 datatable_reserva.search(valor_buscado).draw();
                 ContendorBotonBuscar=$(this).closest('div');
                 ContendorBotonBuscar.find('.btn_texto_filtro_tabla').remove();
@@ -44,9 +36,9 @@
                datatable_reserva.search('').draw();
             });
 
-            $('#txtBuscar').keypress(function(e){
+            $('#txtBuscarReserva').keypress(function(e){
             if(e.which == 13){//tecla ENTER
-               $('#btnBuscar').click();//dispara el evento click del boton btnBuscar
+               $('#btnBuscarReserva').click();//dispara el evento click del boton btnBuscar
             }
             });
 

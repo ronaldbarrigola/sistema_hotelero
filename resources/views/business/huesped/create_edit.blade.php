@@ -79,8 +79,20 @@
                     $("#modalViewHuesped").modal("hide");
                     $("#btnGuardarHuesped").removeAttr('disabled');
                     $("#btnGuardarHuesped").html("Guardar");
-                    datatable_huesped.ajax.reload();
+
+                    try {
+                        datatable_huesped.ajax.reload();
+                    }
+                    catch(err){}
+
+                    //Actualizar datos de Item en TimeLines
+                    try {
+                        var reserva_id=result.huesped.reserva_id;
+                        updateItemForId(reserva_id);
+                    } catch(err){}
+
                     limpiarDatoHuesped();
+
                 },//End success
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
 
@@ -186,6 +198,9 @@
                 },
                 success: function(result){
                     datatable_huesped.ajax.reload();
+                    try {
+                        updateItemForId(result.huesped.reserva_id);
+                    } catch(err) {}
                 },//End success
                 complete:function(result, textStatus ){
 
@@ -211,8 +226,13 @@
                                     datatable_huesped.ajax.reload();//recargar registro datatables.
                                 }
                                 catch(err) {
-                                //En caso de que se cree la reserva desde el TimeLines
+                                  //En caso de que se cree la reserva desde el TimeLines
                                 }
+
+                                try {
+                                    var reserva_id=result.huesped.reserva_id;
+                                    updateItemForId(reserva_id);
+                                } catch(err){}
                             },
                             error:function(result){
 

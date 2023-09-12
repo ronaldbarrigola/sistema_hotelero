@@ -21,6 +21,7 @@ class Habitacion extends Model
         'descripcion',
         'precio',
         'imagen',
+        'color',
         'estado',
         'fecha_creacion',
         'fecha_modificacion'

@@ -52,13 +52,8 @@ class TransaccionController extends Controller
         return response()->json(array ('transaccion'=>$transaccion));
     }
 
-    public function destroy(Request $request,$id){
+    public function destroy($id){
         $transaccion=$this->transaccionRep->eliminar($id);
-        if($request->ajax()){
-             return response()->json(array (
-                'msg'     => 'transaccion '.$transaccion->id.', eliminada',
-                'id'      => $transaccion->id
-            ));
-        }
+        return response()->json(array ('transaccion'=>$transaccion));
     }
 }

@@ -31,6 +31,19 @@ class ClienteRepository{
        return  $clientes;
     }
 
+    public function obtenerClientesPorReserva(){
+        $clientes=DB::table('bas_persona as p')
+        ->join('cli_cliente as c','c.id','=','p.id')
+        ->join('res_reserva as r','r.cliente_id','=','c.id')
+        ->select('c.id','p.nombre','p.paterno','p.materno',DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) AS cliente'))
+        ->where('p.estado','=','1')
+        ->where('c.estado','=','1')
+        ->where('r.estado','=','1')
+        ->orderBy('c.id','desc')
+        ->get();
+        return  $clientes;
+     }
+
     public function obtenerClientesDataTables(){
         $clientes=$this->obtenerClientes();
         return datatables()->of($clientes)->toJson();

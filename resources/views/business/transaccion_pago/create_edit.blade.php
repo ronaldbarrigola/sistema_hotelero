@@ -127,7 +127,9 @@
                     $("#btnGuardarTransaccionPago").removeAttr('disabled');
                     $("#btnGuardarTransaccionPago").html("Guardar");
                     datatable_transaccion.ajax.reload();
-                    updateItemForId(result.transaccion.reserva_id);
+                    try {
+                        updateItemForId(result.transaccion.reserva_id);
+                    } catch(err) {}
                 },//End success
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
 

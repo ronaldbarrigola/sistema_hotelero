@@ -143,7 +143,6 @@
                 "columns":columnas,
                 "footerCallback": function ( row, data, start, end, display ) {
                     var api = this.api(), data;
-
                     //BEGIN:Calcular cantidades
                     data = api.column( 4 ).data();// Total paginas
                     totalCantidad = data.length ?
@@ -158,7 +157,6 @@
                         data.reduce( function (a, b) {
                                 return parseFloat(a) + parseFloat(b);
                         } ) :0;
-
                     //END:Calcular precio precio unidad
 
                     //BEGIN:Calcular Totales

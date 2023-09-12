@@ -48,20 +48,6 @@
 
                 <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
-                        <label for="num_adulto" class="my-0"><strong>Numeros de adultos:</strong></label>
-                        <input type="number" name="num_adulto" id="num_adulto" max="99" class="form-control" placeholder="0">
-                    </div>
-                </div>
-
-                <div class="col-lg-6 col-md-6 col-sm-6 col-12">
-                    <div class="form-group">
-                        <label for="num_nino" class="my-0"><strong>Numero de Niños:</strong></label>
-                        <input type="number" name="num_nino" id="num_nino" max="99" class="form-control" placeholder="0">
-                    </div>
-                </div>
-
-                <div class="col-lg-6 col-md-6 col-sm-6 col-12">
-                    <div class="form-group">
                         <label for="procedencia_pais_id" class="my-0" ><strong>Pais Procedencia:</strong></label>
                         <select name="procedencia_pais_id" id="procedencia_pais_id" required class="form-control selectpicker border" data-live-search="true" >
                              <!--Se carga los datos por ajax-->
@@ -193,14 +179,14 @@
         </div>
     </div>
 
-    {{-- <div class="row">
+    <div class="row">
         <div class="col-12">
             <div class="form-group">
                 <label for="detalle" class="my-0"><strong>Detalle:</strong></label>
                 <input type="text" name="detalle" id="detalle" class="form-control">
             </div>
         </div>
-    </div> --}}
+    </div>
 
     @push('scripts')
     <script>

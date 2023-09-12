@@ -10,7 +10,6 @@
                 <table id="tblListaDatos" class="table table-striped table-bordered table-sm table-hover">
                     <thead>
                         <th>Categoria</th>
-                        <th>Grupo</th>
                         <th>Modificar</th>
                         <th>Eliminar</th>
                     </thead>
@@ -40,7 +39,6 @@
             // ══════════════════════ Cargando columnas para datatables  ══════════════════════
             var columnas=[
                             {data:'descripcion'},
-                            {data:'grupo'},
                             {data:'id',
                                 orderable:false,
                                 render: function(data){

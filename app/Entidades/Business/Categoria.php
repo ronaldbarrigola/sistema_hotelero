@@ -8,8 +8,7 @@ class Categoria extends Model
     protected $primaryKey="id";
     public $timestamps=false;
 
-    protected $fillable=['grupo_id',
-                         'descripcion',
+    protected $fillable=['descripcion',
                          'estado',
                          'fecha_creacion',
                          'fecha_modificacion'

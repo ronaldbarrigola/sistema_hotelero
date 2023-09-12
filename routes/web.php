@@ -22,6 +22,7 @@ use App\Http\Controllers\HuespedController;
 use App\Http\Controllers\DatoFacturaController;
 use App\Http\Controllers\PaisController;
 use App\Http\Controllers\ClienteCiudadController;
+use App\Http\Controllers\ReporteController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -95,7 +96,7 @@ Route::get('/busines/huesped/createhuesped', [HuespedController::class,'create']
 Route::get('/busines/huesped/edithuesped', [HuespedController::class,'edit'])->name('edithuesped');
 Route::get('/busines/pais/editpais', [PaisController::class,'edit'])->name('editpais');
 Route::get('/busines/ciudad/editciudad', [ClienteCiudadController::class,'edit'])->name('editciudad');
-Route::get('/busines/reserva/obtenerReservas', [ReservaController::class,'obtenerReservasTimeLines'])->name('obtenerReservas');
+Route::get('/busines/reserva/obtenerReservas', [ReservaController::class,'obtenerReservasTimeLines'])->name('obtenerReservasTimeLine');
 Route::get('/busines/reserva/obtenerReservaPorIdTimeLines', [ReservaController::class,'obtenerReservasPorIdTimeLines'])->name('obtenerReservaPorIdTimeLines');
 Route::get('/busines/reserva/validar_eliminacion', [ReservaController::class,'validarEliminacion'])->name('validar_eliminacion');
 Route::get('/business/ciudad/listaciudades', [ClienteCiudadController::class,'obtenerCiudadesPorPaisId'])->name('listaciudades');
@@ -107,6 +108,12 @@ Route::get('/business/datofactura/nit', [DatoFacturaController::class,'obtenerDa
 Route::post('/business/hotel_producto/activatehotelproducto', [HotelProductoController::class,'activate'])->name('activatehotelproducto');
 Route::post('/business/reserva/estado', [ReservaController::class,'estadoReserva'])->name('estadoreserva');
 Route::post('/business/huesped/estado', [HuespedController::class,'estadoHuesped'])->name('estadohuesped');
+
+//Reportes
+Route::get('/business/reporte/reservas', [ReporteController::class,'obtenerReservas'])->name('reportereservas');
+Route::get('/business/reporte/exportar_reservas', [ReporteController::class,'exportarReporteReservas'])->name('exportar_reservas');
+Route::get('/business/reporte/huespedes', [ReporteController::class,'obtenerHuespedes'])->name('reportehuespedes');
+Route::get('/business/reporte/exportar_huespedes', [ReporteController::class,'exportarReporteHuespedes'])->name('exportar_huespedes');
 
 //Rutas generales
 Route::resource('business/cliente', ClienteController::class);

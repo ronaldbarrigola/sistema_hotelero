@@ -11,8 +11,7 @@ class CategoriaRepository{
 
     public function obtenerCategorias(){
         $categorias=DB::table('pro_categoria as c')
-        ->leftjoin('pro_grupo as g','g.id','=','c.grupo_id')
-        ->select('c.id','descripcion','g.grupo')
+        ->select('c.id','descripcion')
         ->where('c.estado','=','1')
         ->orderBy('c.id','asc')
         ->get();
@@ -46,9 +45,6 @@ class CategoriaRepository{
 
     public function eliminar($id){
         $categoria=$this->obtenerCategoriaPorId($id);
-        if ( is_null($categoria) ){
-            App::abort(404);
-        }
         $categoria->fecha_modificacion =Carbon::now('America/La_Paz')->toDateTimeString();
         $categoria->estado='0';
         $categoria->update();

@@ -172,8 +172,6 @@
                     }
                     $("#motivo_id").selectpicker('val', result.reserva.motivo_id);
                     $("#motivo_id").selectpicker('refresh');
-                    $("#num_adulto").val(result.reserva.num_adulto);
-                    $("#num_nino").val(result.reserva.num_nino);
                     $("#procedencia_pais_id").selectpicker('val', result.reserva.procedencia_pais_id);
                     $("#procedencia_pais_id").selectpicker('refresh');
                     $("#fecha_ini").val(formatFecha(result.reserva.fecha_ini));
@@ -256,28 +254,15 @@
                     try {
                         datatable_reserva.ajax.reload();//recargar registro datatables.
                     }
-                    catch(err) { //En caso de que se cree la reserva desde el TimeLines
-                        var reserva_id=result.reserva.id;
-                        var content=result.persona.paterno;
-                        var fecha_ingreso=result.reserva.fecha_ini;
-                        var fecha_salida=result.reserva.fecha_fin;
-                        var habitacion_id=result.reserva.habitacion_id;
-                        var color=result.estadoReserva.color;
-
-                        var nombre="";
-                        if(result.persona.tipo_persona_id=="J"){ //J:Persona Juridica N:Persona Natural
-                            nombre=result.persona.nombre;
-                        } else {
-                            nombre=result.persona.paterno;
-                        }
-
-                        var visibleFrameTemplate='<div class="progress-wrapper"><div class="progress" style="width:0%"></div><label class="progress-label">0%<label></div>';
-                        if($("#editReserva").val()==""){//Creacion de un nuevo Item
-                            items.add({id:reserva_id,content:nombre,start:fecha_ingreso,end:fecha_salida,group:habitacion_id,visibleFrameTemplate:visibleFrameTemplate,className:color});
-                        } else if($("#editReserva").val()=="modificar") {
-                            updateItemForId(reserva_id);
-                        }
+                    catch(err){
+                        //En caso de que se cree la reserva desde el TimeLines
                     }
+
+                    //Actualizar datos de Item en TimeLines
+                    try {
+                        var reserva_id=result.reserva.id;
+                        updateItemForId(reserva_id);
+                    } catch(err){}
                 },//End success
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
 
@@ -468,8 +453,6 @@
             $("#servicio_id").selectpicker('refresh');
             $('#motivo_id').selectpicker('val', "");
             $("#motivo_id").selectpicker('refresh');
-            $('#num_adulto').val("");
-            $('#num_nino').val("");
             $('#procedencia_pais_id').selectpicker('val',"");
             $("#procedencia_pais_id").selectpicker('refresh');
             $('#procedencia_ciudad_id').selectpicker('val',"");
@@ -492,6 +475,9 @@
             $('.cabecera_huesped').hide()
             $('.cabecera_principal').show()
             $('.carouselReserva').carousel(0);
+            try {
+                timeline.redraw();
+            } catch(err) {} //Esto soluciona el problema de refrescar el item en timeline ante cualquier cambio o actualizacion
         }
 
   </script>

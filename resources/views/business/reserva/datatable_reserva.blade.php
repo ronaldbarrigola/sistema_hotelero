@@ -7,12 +7,9 @@
                 <th>Cliente</th>
                 <th>Num Hab.</th>
                 <th>Tipo Habitacion</th>
-                <th>Paquete</th>
                 <th>Servicio</th>
                 <th>Fecha Ingreso</th>
                 <th>Fecha Salida</th>
-                <th>Num Adulto</th>
-                <th>Num Niño</th>
                 <th>Pais Procedencia</th>
                 <th>Ciudad Procedencia</th>
                 <th>Detalle</th>
@@ -41,12 +38,9 @@
                             {data:'cliente'},
                             {data:'num_habitacion'},
                             {data:'tipo_habitacion'},
-                            {data:'paquete'},
                             {data:'servicio'},
                             {data:'fecha_ini'},
                             {data:'fecha_fin'},
-                            {data:'num_adulto'},
-                            {data:'num_nino'},
                             {data:'pais'},
                             {data:'ciudad'},
                             {data:'detalle'},

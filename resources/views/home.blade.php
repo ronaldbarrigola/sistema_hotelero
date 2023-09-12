@@ -102,6 +102,7 @@
                 });
 
             });
+
         }); //End ready
 
         function loadGroups(){
@@ -115,9 +116,12 @@
 
                 },
                 success: function(result){
+                    var estilo="";
                     if(result.response){
                         $.each(result.habitaciones,function(i, v) {
-                            dataGroups.push({id:v.id,content:v.num_habitacion})
+                            estilo=`text-align: left;background-color: ${v.color}`;
+                            //dataGroups.push({id:v.id,content:v.num_habitacion,style:"color: red; background-color: pink;"})
+                            dataGroups.push({id:v.id,content:v.num_habitacion + " " + v.tipo_habitacion,style:estilo})
                         });
                         groups = new vis.DataSet(dataGroups);
                     }
@@ -133,7 +137,7 @@
             $.ajax({
                 async: false, //Evitar la ejecucion  Asincrona
                 type: "GET",
-                url: "{{route('obtenerReservas')}}",
+                url: "{{route('obtenerReservasTimeLine')}}",
                 data:{'_token':'{{ csrf_token() }}'},
                 dataType: 'json',
                 beforeSend: function () {
@@ -149,18 +153,22 @@
                             // }
 
                             var nombre="";
+                            var title="";
+                            var tipo_habitacion="";
                             if(v.tipo_persona_id=="J"){ //J:Persona Juridica N:Persona Natural
                                 nombre=v.nombre;
                             } else {
                                 nombre=v.paterno;
                             }
+                            title=`<span>Nro. Reserva : ${v.id}</span><br><span>Cliente : ${v.cliente}</span><br><span>Tipo Habitacion : ${v.tipo_habitacion}</span>`;
 
                             if(v.estado_reserva_id==0||v.estado_reserva_id==1){
+                                nombre =v.cantidad_huesped_checkin + ", " + nombre
                                 var porcentaje=(v.porcentaje!=null)?v.porcentaje:0;
                                 var visibleFrameTemplate='<div class="progress-wrapper"><div class="progress" style="width:'+porcentaje+'%"></div><label class="progress-label">'+porcentaje+'%<label></div>';
-                                dataItems.push({id:v.id,content:nombre,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,editable:Boolean(v.editable),visibleFrameTemplate:visibleFrameTemplate})
+                                dataItems.push({id:v.id,content:nombre,title:title,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,editable:Boolean(v.editable),visibleFrameTemplate:visibleFrameTemplate})
                             } else {
-                                dataItems.push({id:v.id,content:nombre,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,editable:Boolean(v.editable)})
+                                dataItems.push({id:v.id,content:nombre,title:title,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,editable:Boolean(v.editable)})
                             }
 
                         });
@@ -188,6 +196,7 @@
                 success: function(result){
                     if(result.response){
                         var nombre="";
+                        var title="";
                         var v=result.reserva;
                         if(v.tipo_persona_id=="J"){ //J:Persona Juridica N:Persona Natural
                             nombre=v.nombre;
@@ -195,13 +204,19 @@
                             nombre=v.paterno;
                         }
 
+
+                        title=`<span>Nro. Reserva : ${v.id}</span><br><span>Cliente : ${v.cliente}</span><br><span>Tipo Habitacion : ${v.tipo_habitacion}</span>`;
+
                         if(v.estado_reserva_id==0||v.estado_reserva_id==1){
+                            nombre=v.cantidad_huesped_checkin + ", " + nombre
                             var porcentaje=(v.porcentaje!=null)?v.porcentaje:0;
                             var visibleFrameTemplate='<div class="progress-wrapper"><div class="progress" style="width:'+porcentaje+'%"></div><label class="progress-label">'+porcentaje+'%<label></div>';
-                            items.update({id:v.id,content:nombre,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,editable:Boolean(v.editable),visibleFrameTemplate:visibleFrameTemplate})
+                            items.update({id:v.id,content:nombre,title:title,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,editable:Boolean(v.editable),visibleFrameTemplate:visibleFrameTemplate});
                         } else {
-                            items.update({id:v.id,content:nombre,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,editable:Boolean(v.editable)})
+                            items.update({id:v.id,content:nombre,title:title,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,editable:Boolean(v.editable)})
                         }
+                       //timeline.redraw();
+                       //timeline.refresh();
                     }
 
                 },//End success

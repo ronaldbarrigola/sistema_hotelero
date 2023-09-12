@@ -15,10 +15,10 @@ class HabitacionRepository{
             ->leftjoin('gob_tipo_habitacion as th','th.id','=','h.tipo_habitacion_id')
             ->leftjoin('gob_estado_habitacion as eh','eh.id','=','h.estado_habitacion_id')
             ->leftjoin('bas_agencia as a','a.id','=','h.agencia_id')
-            ->select('h.id','h.descripcion as habitacion','h.num_habitacion','h.piso','a.nombre as agencia','th.descripcion as tipo_habitacion','eh.descripcion as estado_habitacion',DB::raw('IFNULL(h.precio,0) as precio'),'h.imagen')
+            ->select('h.id','h.descripcion as habitacion','h.num_habitacion','h.piso','a.nombre as agencia','th.descripcion as tipo_habitacion','eh.descripcion as estado_habitacion',DB::raw('IFNULL(h.precio,0) as precio'),'h.imagen','h.color')
             ->where('h.agencia_id','=',Auth::user()->agencia_id)
             ->where('h.estado','=','1')
-            ->orderBy('h.id','desc')
+            ->orderBy('h.id','asc')
             ->get();
         return $habitaciones;
     }
@@ -75,9 +75,6 @@ class HabitacionRepository{
 
     public function eliminar($id){
         $habitacion=$this->obtenerHabitacionPorId($id);
-        if ( is_null($habitacion) ){
-            App::abort(404);
-        }
         $habitacion->estado='0';
         $habitacion->update();
         return $habitacion;
