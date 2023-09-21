@@ -56,7 +56,7 @@
             });
 
             $(document).on("keyup", "#descuento_porcentaje", function(){
-              descuentoPorcentaje();
+                descuentoPorcentaje();
             });
 
             $(document).on("keyup", "#descuento", function(){

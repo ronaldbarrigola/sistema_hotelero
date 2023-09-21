@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Entidades\Business\Transaccion;
 use App\Repositories\Business\CargoRepository;
+use App\Repositories\Business\TransaccionPagoRepository;
 use App\Repositories\Business\TransaccionDetalleRepository;
 use Carbon\Carbon;
 use DB;
@@ -12,11 +13,13 @@ use DB;
 class TransaccionRepository{
 
     protected $cargoRep;
+    protected $transaccionPagoRep;
     protected $transaccionDetalleRep;
 
-    public function __construct(CargoRepository $cargoRep,TransaccionDetalleRepository $transaccionDetalleRep){
+    public function __construct(CargoRepository $cargoRep,TransaccionDetalleRepository $transaccionDetalleRep,TransaccionPagoRepository $transaccionPagoRep){
         $this->cargoRep=$cargoRep;
         $this->transaccionDetalleRep=$transaccionDetalleRep;
+        $this->transaccionPagoRep=$transaccionPagoRep;
     }
 
     public function obtenerTransacciones($reserva_id){
@@ -88,6 +91,7 @@ class TransaccionRepository{
             $precio_unidad=$request['reserva_precio_unidad'];
             $descuento_porcentaje=$request['reserva_descuento_porcentaje'];
             $descuento=$request['reserva_descuento'];
+            $anticipo=$request['reserva_anticipo'];
             $detalle=$request['detalle'];
 
             //Validaciones
@@ -95,6 +99,7 @@ class TransaccionRepository{
             $precio_unidad=($precio_unidad!=null)?$precio_unidad:0;
             $descuento_porcentaje=($descuento_porcentaje!=null)?$descuento_porcentaje:0;
             $descuento=($descuento!=null)?$descuento:0;
+            $anticipo=($anticipo!=null)?$anticipo:0;
             $detalle=($detalle!=null)?$detalle:"";
 
             $transaccion=new Transaccion();
@@ -116,6 +121,13 @@ class TransaccionRepository{
             $transaccion->fecha_modificacion=Carbon::now('America/La_Paz')->toDateTimeString();
             $transaccion->estado=1;
             $transaccion->save();
+
+            if($anticipo>0){
+                $request->request->add(['foreign_transaccion_id'=> $transaccion->id]);
+                $request->request->add(['anticipo_monto'=>$anticipo]);
+                $request->request->add(['forma_pago_id'=>'E']);//E:Efectivo
+                $this->transaccionPagoRep->insertarAnticipoDesdeRequest($request);
+            }
 
             $request->request->add(['transaccion_id'=> $transaccion->id]);
             $this->transaccionDetalleRep->insertarDesdeRequest($request);

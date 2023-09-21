@@ -146,7 +146,7 @@
                     </div>
                 </div>
 
-                <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
                         <label for="reserva_descuento_porcentaje" class="my-0"><strong>Descuento:</strong></label>
                         <div class="input-group-prepend">
@@ -156,7 +156,7 @@
                     </div>
                 </div>
 
-                <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+                <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
                         <label for="reserva_descuento" class="my-0"><strong>Descuento:</strong></label>
                         <div class="input-group-prepend">
@@ -175,6 +175,17 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label for="reserva_anticipo" class="my-0"><strong>Anticipo:</strong></label>
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><strong>Bs.</strong></span>
+                            <input type="number" name="reserva_anticipo"  id="reserva_anticipo" min="0" step="0.01" class="form-control" placeholder="0">
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -206,6 +217,10 @@
 
               $(document).on("keyup", "#reserva_precio_unidad", function(){
                   reservaCalcularCargo();
+              });
+
+              $(document).on("keyup", "#reserva_anticipo", function(){
+                  validarAnticipo();
               });
 
           }); //Fin ready
@@ -301,6 +316,17 @@
             descuento=(descuento!=null&&descuento!=""&&descuento>0)?descuento:0;
             cargo= cantidad*precio_unidad-descuento;
             $("#reserva_monto").val(cargo.toFixed(2));
+        }
+
+        function validarAnticipo(){
+            var monto=$("#reserva_monto").val();
+            var anticipo=$("#reserva_anticipo").val();
+            monto=(monto!=null&&monto!=""&&monto>0)?monto:0;
+            anticipo=(anticipo!=null&&anticipo!=""&&anticipo>0)?anticipo:0;
+            if(parseFloat(anticipo) > parseFloat(monto)){
+                $("#reserva_anticipo").val("");
+                messageAlert("El anticipo no debe ser mayor al total cargo");
+            }
         }
 
     </script>

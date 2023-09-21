@@ -467,6 +467,7 @@
             $('#reserva_descuento_porcentaje').val("");
             $('#reserva_descuento').val("");
             $('#reserva_monto').val("");
+            $('#reserva_anticipo').val("");
             $('#detalle').val("");
         }
 

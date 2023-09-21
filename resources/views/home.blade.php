@@ -120,9 +120,7 @@
                     var estilo="";
                     if(result.response){
                         $.each(result.habitaciones,function(i, v) {
-                            // estilo=`text-align: left;background-color: ${v.color}`;
-                            //dataGroups.push({id:v.id,content:v.num_habitacion,style:"color: red; background-color: pink;"})
-                            dataGroups.push({id:v.id,content:v.num_habitacion + " " + v.tipo_habitacion,style:v.estilo})
+                            dataGroups.push({id:v.id,content:v.num_habitacion + " " + v.codigo,style:v.estilo})
                         });
                         groups = new vis.DataSet(dataGroups);
                     }

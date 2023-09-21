@@ -45,9 +45,9 @@
         function cargarFilaTransaccion(transaccion_id,hotel_producto_id,producto,cantidad,precio_unidad,descuento_porcentaje,descuento,sub_total,estado){
             sub_total=cantidad*precio_unidad;
 
-            var input_precio_unidad='<input type="number" name="vec_precio_unidad[]" class="form-control" onkeydown="event.preventDefault()" required min="1" step="0.01" value="'+precio_unidad+'" onkeyup="transaccionSubTotal(this)" style="text-align:center;background-color:#f6f6f6;" placeholder="0">';
+            var input_precio_unidad='<input type="number" name="vec_precio_unidad[]" class="form-control" onkeydown="event.preventDefault()" required min="1" step="0.01" value="'+precio_unidad+'" style="text-align:center;background-color:#f6f6f6;" placeholder="0">';
             if(precio_unidad==""||precio_unidad==0||precio_unidad==null){
-                input_precio_unidad='<input type="number" name="vec_precio_unidad[]" class="form-control" required min="1" step="0.01" style="text-align:center;" placeholder="0">';
+                input_precio_unidad='<input type="number" name="vec_precio_unidad[]" class="form-control" required min="1" step="0.01" onkeyup="transaccionSubTotal(this)" style="text-align:center;" placeholder="0">';
             }
 
             $('#tbl_detalle_transaccion').append($('<tr>')
