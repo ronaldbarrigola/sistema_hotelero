@@ -22,9 +22,9 @@ class TransaccionPagoRepository{
     }
 
     public function obtenerAnticipoPorTransaccionId($id){
-        return TransaccionPago::where("transaccion_id",$id)->where("tipo_transaccion_id ","A")->where("estado",1)->first();
+        $transaccionPago=TransaccionPago::where("transaccion_id",$id)->where("tipo_transaccion_id","A")->where("estado",1)->first();
+        return $transaccionPago;
     }
-
 
     public function insertarAnticipoDesdeRequest(Request $request){
         $transaccionPago=null;
@@ -130,7 +130,7 @@ class TransaccionPagoRepository{
         return $transaccionPago;
     }
 
-    public function modificarDesdeRequest(Request $request){
+    public function modificarAnticipoDesdeRequest(Request $request){
        //Por implementar
     }
 

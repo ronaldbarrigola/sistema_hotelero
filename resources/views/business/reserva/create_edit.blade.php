@@ -184,6 +184,7 @@
                     $("#reserva_descuento_porcentaje").val(result.transaccion.descuento_porcentaje);
                     $("#reserva_descuento").val(result.transaccion.descuento);
                     $("#reserva_monto").val(result.transaccion.monto);
+                    $("#reserva_anticipo").val(result.transaccion_pago.monto);//Monto que corresponde a anticipo
 
                     $("#detalle").val(result.reserva.detalle);
                     $("#procedencia_ciudad_id").find('option').remove();

@@ -113,6 +113,8 @@ class ReporteRepository{
         $fecha_ini=($fecha_ini!=null)?Carbon::createFromFormat('Y-m-d',$fecha_ini)->format('Ymd'):null;
         $fecha_fin=($fecha_fin!=null)?Carbon::createFromFormat('Y-m-d',$fecha_fin)->format('Ymd'):null;
 
+        $fecha_actual=Carbon::now('America/La_Paz')->toDateTimeString();
+
         $huespedes= DB::table('res_huesped as u')
         ->join('bas_persona as p','p.id','=','u.cliente_id')
         ->join('cli_cliente as c','c.id','=','u.cliente_id')
@@ -122,7 +124,7 @@ class ReporteRepository{
         ->join('gob_habitacion as h','h.id','=','r.habitacion_id')
         ->leftjoin('cli_pais as cp','cp.id','=','r.procedencia_pais_id')
         ->leftjoin('cli_ciudad as cc','cc.id','=','r.procedencia_ciudad_id')
-        ->select('u.id','u.reserva_id',DB::raw('(CASE WHEN u.estado_huesped_id=2  THEN DATE_FORMAT(u.fecha_salida,"%Y%m%d")  ELSE  (CASE WHEN DATE_FORMAT(CURRENT_DATE(),"%Y%m%d") BETWEEN DATE_FORMAT(r.fecha_ini,"%Y%m%d") AND DATE_FORMAT(r.fecha_fin,"%Y%m%d") THEN DATE_FORMAT(CURRENT_DATE(),"%Y%m%d") ELSE DATE_FORMAT( u.fecha_ingreso,"%Y%m%d") END) END) AS fecha'),DB::raw('DATE_FORMAT(u.fecha_ingreso,"%d/%m/%Y") as fecha_ingreso'),DB::raw('DATE_FORMAT(u.fecha_salida,"%d/%m/%Y") as fecha_salida'),DB::raw('CONCAT(IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")," ",IFNULL(p.nombre,"")) AS huesped'),'h.num_habitacion','cp.descripcion as pais','cc.descripcion as ciudad','f.descripcion as profesion',DB::raw('TIMESTAMPDIFF(YEAR,p.fecha_nac, CURDATE()) as edad'),'p.doc_id','u.estado_huesped_id','e.descripcion as estado_huesped')
+        ->select('u.id','u.reserva_id',DB::raw('(CASE WHEN u.estado_huesped_id=2  THEN DATE_FORMAT(u.fecha_salida,"%Y%m%d")  ELSE  (CASE WHEN DATE_FORMAT("'.$fecha_actual.'","%Y%m%d") BETWEEN DATE_FORMAT(r.fecha_ini,"%Y%m%d") AND DATE_FORMAT(r.fecha_fin,"%Y%m%d") THEN DATE_FORMAT("'.$fecha_actual.'","%Y%m%d") ELSE DATE_FORMAT( u.fecha_ingreso,"%Y%m%d") END) END) AS fecha'),DB::raw('DATE_FORMAT(u.fecha_ingreso,"%d/%m/%Y") as fecha_ingreso'),DB::raw('DATE_FORMAT(u.fecha_salida,"%d/%m/%Y") as fecha_salida'),DB::raw('CONCAT(IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")," ",IFNULL(p.nombre,"")) AS huesped'),'h.num_habitacion','cp.descripcion as pais','cc.descripcion as ciudad','f.descripcion as profesion',DB::raw('TIMESTAMPDIFF(YEAR,p.fecha_nac, CURDATE()) as edad'),'p.doc_id','u.estado_huesped_id','e.descripcion as estado_huesped')
         ->where('h.agencia_id','=',Auth::user()->agencia_id)
         ->where('u.estado','=','1')
         ->where('r.estado','=','1')

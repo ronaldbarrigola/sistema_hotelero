@@ -219,6 +219,7 @@ class TransaccionRepository{
             $descuento_porcentaje=$request['descuento_porcentaje'];
             $descuento=$request['descuento'];
             $monto=$request['monto'];
+            $anticipo=$request['reserva_anticipo'];
 
             $cantidad=($cantidad!=null)?$cantidad:0;
             $precio_unidad=($precio_unidad!=null)?$precio_unidad:0;
@@ -235,6 +236,10 @@ class TransaccionRepository{
             $transaccion->usuario_modif_id=Auth::user()->id;
             $transaccion->fecha_modificacion=Carbon::now('America/La_Paz')->toDateTimeString();
             $transaccion->update();
+
+            // $request->request->add(['foreign_transaccion_id'=> $transaccion->id]);
+            // $request->request->add(['anticipo_monto'=>$anticipo]);
+            // $this->transaccionPagoRep->insertarAnticipoDesdeRequest($request); //insertarAnticipoDesdeRequest tiene la opcion para modificar
 
             $transaccion->transaccionDetalle()->delete();
             $request->request->add(['transaccion_id'=> $transaccion->id]);
