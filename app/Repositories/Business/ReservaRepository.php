@@ -309,7 +309,6 @@ class ReservaRepository{
 
                 $transaccion=$reserva->transacciones->where("transaccion_base",1)->first();//Obtiene reserva base de la tabla cargo
 
-                $request->request->add(['id'=>$transaccion->id]);
                 $request->request->add(['hotel_producto_id'=>$hotel_producto->id]);
                 $request->request->add(['cantidad'=>$cantidad]);
                 $request->request->add(['precio_unidad'=>$precio_unidad]);
@@ -319,6 +318,7 @@ class ReservaRepository{
 
                 $transaccion=$reserva->transacciones()->where("transaccion_base",1)->where("estado",1)->first(); //En caso de que la transaccion principal haya sido eliminado, crea un nueva transaccion
                 if(!is_null($transaccion)){
+                    $request->request->add(['id'=>$transaccion->id]);
                     $this->transaccionRep->modificarDesdeRequest($request);
                 } else {
                     $descripcion=$reserva->servicio->descripcion;//obtiene datos mediante la relacion 1:N

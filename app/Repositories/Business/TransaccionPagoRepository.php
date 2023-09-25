@@ -21,64 +21,6 @@ class TransaccionPagoRepository{
         return TransaccionPago::find($id);
     }
 
-    public function obtenerAnticipoPorTransaccionId($id){
-        $transaccionPago=TransaccionPago::where("transaccion_id",$id)->where("tipo_transaccion_id","A")->where("estado",1)->first();
-        return $transaccionPago;
-    }
-
-    public function insertarAnticipoDesdeRequest(Request $request){
-        $transaccionPago=null;
-        try{
-            DB::beginTransaction();
-
-            $transaccion_id=$request->get('foreign_transaccion_id');
-            $monto=$request['anticipo_monto'];
-
-            $transaccionPago=$this->obtenerAnticipoPorTransaccionId($transaccion_id);
-
-            if(is_null($transaccionPago)){
-                $pago_id=0;
-                $pago=$this->pagoRep->insertarDesdeRequest($request);
-                if(!is_null($pago)){
-                    $pago_id= $pago->id;
-                }
-
-                $transaccionPago=new TransaccionPago();
-                $transaccionPago->pago_id=$pago_id;
-                $transaccionPago->transaccion_id=$transaccion_id;
-                $transaccionPago->monto=$monto;
-                $transaccionPago->detalle="ANTICIPO";
-                $transaccionPago->tipo_transaccion_id="A";//P:PAGO A:ANTICIPO
-                $transaccionPago->usuario_alta_id=Auth::user()->id;
-                $transaccionPago->usuario_modif_id=Auth::user()->id;
-                $transaccionPago->fecha=Carbon::now('America/La_Paz')->toDateTimeString();
-                $transaccionPago->fecha_creacion=Carbon::now('America/La_Paz')->toDateTimeString();
-                $transaccionPago->fecha_modificacion=Carbon::now('America/La_Paz')->toDateTimeString();
-                $transaccionPago->estado=1;
-                $transaccionPago->save();
-
-                //Insertar Importe
-                $request->request->add(['pago_id'=>$pago_id]);
-                $request->request->add(['monto'=>$monto]);// Solo para pagos que no son multiples
-                $this->importeRep->insertarDesdeRequest($request);
-            } else {
-                $transaccionPago->monto=$monto;
-                $transaccionPago->usuario_modif_id=Auth::user()->id;
-                $transaccionPago->fecha_modificacion=Carbon::now('America/La_Paz')->toDateTimeString();
-                $transaccionPago->update();
-
-                //Falta modificar importe
-            }
-
-
-            DB::commit();
-        }catch(\Exception $e){
-            DB::rollback();
-        }
-
-        return $transaccionPago;
-    }
-
     public function insertarDesdeRequest(Request $request){
         $transaccionPago=null;
         try{
@@ -128,10 +70,6 @@ class TransaccionPagoRepository{
         }
 
         return $transaccionPago;
-    }
-
-    public function modificarAnticipoDesdeRequest(Request $request){
-       //Por implementar
     }
 
     public function eliminar($id){

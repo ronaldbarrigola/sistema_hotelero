@@ -19,6 +19,10 @@ class ImporteRepository{
         return  $importes;
     }
 
+    public function obtenerImportePorPagoId($id){
+        return Importe::where("pago_id",$id)->where("estado",1)->first();
+    }
+
     public function obtenerImportePorId($id){
         return Importe::find($id);
     }
@@ -26,7 +30,7 @@ class ImporteRepository{
     public function insertarDesdeRequest(Request $request){
         $importe=null;
         $pago_id = $request->get('pago_id');
-        $forma_pago_id=($request->get('forma_pago_id')!=null)?$request->get('forma_pago_id'):0;
+        $forma_pago_id=($request->get('forma_pago_id')!=null)?$request->get('forma_pago_id'):"E";
 
         if($forma_pago_id=="PM"){//Insercion multiple
             $vec_forma_pago_id=$request['fp_forma_pago_id'];
@@ -94,14 +98,24 @@ class ImporteRepository{
 
             $index++;
         }
+    }
 
+    public function modificarImportePorPagoId(Request $request){
+        $pago_id = $request->get('pago_id');
+        $monto = $request->get('monto');
+        $forma_pago_id=($request->get('forma_pago_id')!=null)?$request->get('forma_pago_id'):"E";
+        $importe=$this->obtenerImportePorPagoId($pago_id);
+        if($importe!=null){
+            $importe->forma_pago_id=$forma_pago_id;
+            $importe->monto=$monto;
+            $importe->usuario_modif_id=Auth::user()->id;
+            $importe->fecha_modificacion=Carbon::now('America/La_Paz')->toDateTimeString();
+            $importe->update();
+        }
     }
 
     public function eliminar($id){
         $importe=$this->obtenerImportePorId($id);
-        if ( is_null($importe) ){
-            App::abort(404);
-        }
         $importe->delete();
         return $importe;
     }

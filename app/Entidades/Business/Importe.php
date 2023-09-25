@@ -28,9 +28,9 @@ class Importe extends Model
        $this->save();
     }
 
-    //Relacion 1 a muchos
-    public function transaccionPago()
+    //Relacion uno a muchos (Inversa)
+    public function pago()
     {
-       return $this->hasMany(TransaccionPago::class,'pago_id','id');
+       return $this->belongsTo(Pago::class,'pago_id','id');
     }
 }

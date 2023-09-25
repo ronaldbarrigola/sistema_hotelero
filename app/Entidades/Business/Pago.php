@@ -29,8 +29,12 @@ class Pago extends Model
 
     public function delete() //Eliminacion logica
     {
-        $this->transaccionPago()->each(function ($transaccionPago) {//Eliminacion logica en cascada
-            $transaccionPago->delete();
+        $this->transaccionPago()->each(function ($row) {//Eliminacion logica en cascada
+            $row->delete();
+        });
+
+        $this->importe()->each(function ($row) {//Eliminacion logica en cascada
+            $row->delete();
         });
 
         $this->estado = false;
@@ -41,5 +45,11 @@ class Pago extends Model
     public function transaccionPago()
     {
        return $this->hasMany(TransaccionPago::class,'pago_id','id');
+    }
+
+    //Relacion 1 a muchos
+    public function importe()
+    {
+       return $this->hasMany(Importe::class,'pago_id','id');
     }
 }

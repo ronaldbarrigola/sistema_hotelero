@@ -22,6 +22,7 @@
                             <th>Profesion</th>
                             <th>Edad</th>
                             <th>Nro. Documento</th>
+                            <th>Movimiento</th>
                             <th>Estado</th>
                         </tr>
                     </thead>
@@ -49,6 +50,7 @@
                             {data:'profesion'},
                             {data:'edad'},
                             {data:'doc_id'},
+                            {data:'movimiento'},
                             {data:'estado_huesped'},
                         ];
 

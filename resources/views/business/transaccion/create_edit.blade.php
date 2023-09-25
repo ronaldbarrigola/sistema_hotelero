@@ -28,11 +28,9 @@
                     </div>
 
                     <br>
-                    <div class="row">
-                        <div class="col-md-4 offset-md-4 d-flex justify-content-between">
-                            <button class="btn btn-success" id="btnGuardarTransaccion" type="submit">Guardar</button>
-                            <button type="button" class="btn btn-primary" data-dismiss="modal">Cancelar</button>
-                        </div>
+                    <div class="d-flex justify-content-around">
+                        <button class="btn btn-success" id="btnGuardarTransaccion" type="submit">Guardar</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Cancelar</button>
                     </div>
                 </form>
             </div>

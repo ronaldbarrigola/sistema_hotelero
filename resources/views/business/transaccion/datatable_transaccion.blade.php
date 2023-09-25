@@ -63,6 +63,7 @@
 
 @include('business/transaccion/create_edit')
 @include('business/transaccion_pago/create_edit')
+@include('business/transaccion_anticipo/create_edit')
 @push('scripts')
     <script>
         var datatable_transaccion="";
@@ -78,23 +79,59 @@
                             {data:'fecha'},
                             {data:'producto'},
                             {data:'detalle'},
-                            {data:'cantidad',className: "text-center"},
-                            {data:'precio_unidad'},
-                            {data:'total'},
-                            {data:'anticipo'},
+                            {data:'cantidad',
+                                orderable:false,
+                                className: "text-center",
+                                render: function(data){
+                                    return '<input type="hidden" name="tr_cantidad[]" value="'+data+'">' + data;
+                                }
+                            },
+                            {data:'precio_unidad',
+                                orderable:false,
+                                render: function(data){
+                                    return '<input type="hidden" name="tr_precio_unidad[]" value="'+data+'">' + data;
+                                }
+                            },
+                            {data:'total',
+                                orderable:false,
+                                render: function(data){
+                                    return '<input type="hidden" name="tr_total[]" value="'+data+'">' + data;
+                                }
+                            },
+                            {data:'anticipo',
+                                orderable:false,
+                                render: function(data){
+                                    return '<input type="hidden" name="tr_anticipo[]" value="'+data+'">' + data;
+                                }
+                            },
                             {data:'descuento_porcentaje'},
-                            {data:'descuento'},
-                            {data:'cargo'},
+                            {data:'descuento',
+                                orderable:false,
+                                render: function(data){
+                                    return '<input type="hidden" name="tr_descuento[]" value="'+data+'">' + data;
+                                }
+                            },
+                            {data:'cargo',
+                                orderable:false,
+                                render: function(data){
+                                    return '<input type="hidden" name="tr_cargo[]" value="'+data+'">' + data;
+                                }
+                            },
                             {data:'pago'},
-                            {data:'saldo'},
+                            {data:'saldo',
+                                orderable:false,
+                                render: function(data){
+                                    return '<input type="hidden" name="tr_saldo[]" value="'+data+'">' + data;
+                                }
+                            },
                             {data:'id',
                                 className: "text-center",
                                 orderable:false,
                                 render: function ( data, type, row ){
                                     if(row.saldo > 0){
-                                        return '<input type="hidden" name="tr_transaccion_id[]" value="'+row.id+'"><input type="hidden" name="tr_cantidad[]" value="'+row.cantidad+'"><input type="hidden" name="tr_precio_unidad[]" value="'+row.precio_unidad+'"><input type="hidden" name="tr_producto[]" value="'+row.producto+'"><input type="hidden" name="tr_descuento[]" value="'+row.descuento+'"><input type="hidden" name="tr_monto[]" value="'+row.saldo+'"><input type="checkbox" id="'+ data +'" onchange="selectCheckboxPago();" class="form-control" style="transform:scale(0.6);">';
+                                        return '<input type="hidden" name="tr_transaccion_id[]" value="'+row.id+'"><input type="hidden" name="tr_producto[]" value="'+row.producto+'"><input type="checkbox" id="'+ data +'" onchange="selectCheckboxPago();" class="form-control" style="transform:scale(0.6);">';
                                     } else {
-                                        return '<input type="hidden" name="tr_transaccion_id[]" value="0"><input type="hidden" name="tr_cantidad[]" value="0"><input type="hidden" name="tr_precio_unidad[]" value="0"><input type="hidden" name="tr_producto[]" value=""><input type="hidden" name="tr_descuento[]" value="0"><input type="hidden" name="tr_monto[]" value="0"><strong>PAGADO</strong>';
+                                        return '<input type="hidden" name="tr_transaccion_id[]" value="0"><input type="hidden" name="tr_producto[]" value=""><strong>PAGADO</strong>';
                                     }
                                 }
                             },
@@ -103,7 +140,7 @@
                                 orderable:false,
                                 render: function ( data, type, row ){
                                     if(row.saldo > 0){
-                                        return '<button id="'+data+ '" class="btn btn-success" onclick="createTransaccionAnticipo(this);">Anticipo</button>';
+                                        return '<button id="'+data+ '" class="btn btn-success" onclick="createAnticipo(this);">Anticipo</button>';
                                     } else {
                                         return '<button id="'+data+ '" class="btn btn-success" disabled>Anticipo</button>';
                                     }
@@ -269,10 +306,10 @@
             $("#monto_pago").val("");
             $("#tbl_transaccion input[type=checkbox]:checked").each(function () {
                 var fila=$(this).closest("tr");
-                var vec_monto=$(fila).find("input[name='tr_monto[]']");
-                var input_monto=vec_monto[0];
-                var monto=$(input_monto).val();
-                total=total+parseFloat(monto);
+                var vec_saldo=$(fila).find("input[name='tr_saldo[]']");
+                var input_saldo=vec_saldo[0];
+                var saldo=$(input_saldo).val();
+                total=total+parseFloat(saldo);
             });
             $("#monto_pago").val(parseFloat(total).toFixed(2));
         }
@@ -318,11 +355,11 @@
                 descuento=(descuento!=null&&descuento!=""&&descuento>0)?descuento:0;
 
                //Monto
-                var vec_monto=$(fila).find("input[name='tr_monto[]']");
-                var input_monto=vec_monto[0];
-                var monto=$(input_monto).val();
-                monto=(monto!=null&&monto!=""&&monto>0)?monto:0;
-                cargarFilaTransaccionPago(0,transaccion_id,cantidad,producto,precio_unidad,descuento,monto);
+                var vec_saldo=$(fila).find("input[name='tr_saldo[]']");
+                var input_saldo=vec_saldo[0];
+                var saldo=$(input_saldo).val();
+                saldo=(saldo!=null&&saldo!=""&&saldo>0)?saldo:0;
+                cargarFilaTransaccionPago(0,transaccion_id,cantidad,producto,precio_unidad,descuento,saldo);
             });
             createTransaccionPago();
         }

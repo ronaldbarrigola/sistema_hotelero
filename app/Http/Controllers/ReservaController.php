@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Auth;
 
+use App\Entidades\Business\TransaccionPago;
 use App\Repositories\Business\EstadoReservaRepository;
 use App\Repositories\Business\HabitacionRepository;
 use App\Repositories\Business\MotivoRepository;
@@ -12,9 +13,7 @@ use App\Repositories\Business\PaqueteRepository;
 use App\Repositories\Business\ServicioRepository;
 use App\Repositories\Business\ReservaRepository;
 use App\Repositories\Business\TransaccionRepository;
-use App\Repositories\Business\TransaccionPagoRepository;
-
-
+use App\Repositories\Business\TransaccionAnticipoRepository;
 //Para cliente
 use App\Repositories\Business\ClienteCiudadRepository;
 use App\Repositories\Business\ClienteRepository;
@@ -35,10 +34,10 @@ class ReservaController extends Controller
     protected $paisRep;
     protected $ciudadRep;
     protected $transaccionRep;
-    protected $transaccionPagoRep;
+    protected $transaccionAnticipoRep;
 
     //===constructor=============================================================================================
-    public function __construct(ClienteRepository $clienteRep,ReservaRepository $reservaRep,EstadoReservaRepository $estadoReservaRep,HabitacionRepository $habitacionRep,MotivoRepository $motivoRep,PaqueteRepository $paqueteRep,ServicioRepository $servicioRep,PaisRepository $paisRep,ClienteCiudadRepository $ciudadRep,TransaccionRepository $transaccionRep,TransaccionPagoRepository $transaccionPagoRep){
+    public function __construct(ClienteRepository $clienteRep,ReservaRepository $reservaRep,EstadoReservaRepository $estadoReservaRep,HabitacionRepository $habitacionRep,MotivoRepository $motivoRep,PaqueteRepository $paqueteRep,ServicioRepository $servicioRep,PaisRepository $paisRep,ClienteCiudadRepository $ciudadRep,TransaccionRepository $transaccionRep,TransaccionAnticipoRepository $transaccionAnticipoRep){
         $this->middleware('auth');
         $this->middleware('guest');
         $this->clienteRep=$clienteRep;
@@ -51,7 +50,7 @@ class ReservaController extends Controller
         $this->paisRep=$paisRep;
         $this->ciudadRep=$ciudadRep;
         $this->transaccionRep=$transaccionRep;
-        $this->transaccionPagoRep=$transaccionPagoRep;
+        $this->transaccionAnticipoRep=$transaccionAnticipoRep;
     }
 
      //===========================================================================================================
@@ -101,7 +100,10 @@ class ReservaController extends Controller
         $id=$request['reserva_id'];
         $reserva=$this->reservaRep->obtenerReservaPorId($id);
         $transaccion=$this->reservaRep->transaccionPorReservaId($id);
-        $transaccionPago=$this->transaccionPagoRep->obtenerAnticipoPorTransaccionId($transaccion->id);
+        $transaccionPago=$this->transaccionAnticipoRep->obtenerAnticipoPorTransaccionId($transaccion->id);
+        if(is_null($transaccionPago)){
+           $transaccionPago=new TransaccionPago();
+        }
         $clientes=$this->clienteRep->obtenerClientes();
         $estadoReservas=$this->estadoReservaRep->obtenerEstadoReservas();
         $habitaciones=$this->habitacionRep->obtenerHabitaciones();

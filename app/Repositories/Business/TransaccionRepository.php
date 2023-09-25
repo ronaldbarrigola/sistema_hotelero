@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Entidades\Business\Transaccion;
 use App\Repositories\Business\CargoRepository;
-use App\Repositories\Business\TransaccionPagoRepository;
+use App\Repositories\Business\TransaccionAnticipoRepository;
 use App\Repositories\Business\TransaccionDetalleRepository;
 use Carbon\Carbon;
 use DB;
@@ -13,13 +13,13 @@ use DB;
 class TransaccionRepository{
 
     protected $cargoRep;
-    protected $transaccionPagoRep;
+    protected $transaccionAnticipoRep;
     protected $transaccionDetalleRep;
 
-    public function __construct(CargoRepository $cargoRep,TransaccionDetalleRepository $transaccionDetalleRep,TransaccionPagoRepository $transaccionPagoRep){
+    public function __construct(CargoRepository $cargoRep,TransaccionDetalleRepository $transaccionDetalleRep,TransaccionAnticipoRepository $transaccionAnticipoRep){
         $this->cargoRep=$cargoRep;
         $this->transaccionDetalleRep=$transaccionDetalleRep;
-        $this->transaccionPagoRep=$transaccionPagoRep;
+        $this->transaccionAnticipoRep=$transaccionAnticipoRep;
     }
 
     public function obtenerTransacciones($reserva_id){
@@ -123,10 +123,9 @@ class TransaccionRepository{
             $transaccion->save();
 
             if($anticipo>0){
-                $request->request->add(['foreign_transaccion_id'=> $transaccion->id]);
-                $request->request->add(['anticipo_monto'=>$anticipo]);
-                $request->request->add(['forma_pago_id'=>'E']);//E:Efectivo
-                $this->transaccionPagoRep->insertarAnticipoDesdeRequest($request);
+                $request->request->add(['transaccion_id'=> $transaccion->id]);
+                $request->request->add(['anticipo'=>$anticipo]);
+                $this->transaccionAnticipoRep->insertarDesdeRequest($request);
             }
 
             $request->request->add(['transaccion_id'=> $transaccion->id]);
@@ -237,12 +236,12 @@ class TransaccionRepository{
             $transaccion->fecha_modificacion=Carbon::now('America/La_Paz')->toDateTimeString();
             $transaccion->update();
 
-            // $request->request->add(['foreign_transaccion_id'=> $transaccion->id]);
-            // $request->request->add(['anticipo_monto'=>$anticipo]);
-            // $this->transaccionPagoRep->insertarAnticipoDesdeRequest($request); //insertarAnticipoDesdeRequest tiene la opcion para modificar
+            //Insertar modificar Anticipo
+            $request->request->add(['transaccion_id'=> $transaccion->id]);
+            $request->request->add(['anticipo'=>$anticipo]);
+            $this->transaccionAnticipoRep->insertarDesdeRequest($request);
 
             $transaccion->transaccionDetalle()->delete();
-            $request->request->add(['transaccion_id'=> $transaccion->id]);
             $this->transaccionDetalleRep->insertarDesdeRequest($request);
             DB::commit();
         }catch(\Exception $e){

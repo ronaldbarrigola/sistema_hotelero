@@ -34,6 +34,7 @@ class PagoRepository{
             $celular=$request['pago_celular'];
             $email=$request['pago_email'];
             $detalle=$request['pago_detalle'];
+            $forma_pago_id=($request->get('forma_pago_id')!=null)?$request->get('forma_pago_id'):"E";
 
             //Validaciones
             $cliente_id=($cliente_id!=null)?$cliente_id:0;
@@ -45,6 +46,7 @@ class PagoRepository{
 
             $pago=new Pago();
             $pago->cliente_id=$cliente_id;
+            $pago->forma_pago_id=$forma_pago_id;
             $pago->nit=$nit;
             $pago->nombre=$nombre;
             $pago->celular=$celular;

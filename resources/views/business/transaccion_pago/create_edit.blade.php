@@ -19,15 +19,8 @@
                     <input type="hidden" name="transaccion_pago_id" id="transaccion_pago_id" value="">
                     <input type="hidden" name="tipo_pago" id="tipo_pago" value="">
 
-                    <div class="panel_pago">
-                        @include('business/transaccion_pago/campos_pago')
-                        @include('business/transaccion_pago/detalle_pago')
-                    </div>
-
-                    <div class="panel_anticipo" style="display:none">
-                        @include('business/transaccion_pago/campos_anticipo')
-                    </div>
-
+                    @include('business/transaccion_pago/campos_pago')
+                    @include('business/transaccion_pago/detalle_pago')
                     @include('business/formapago/detalle_forma_pago')
                     <br>
                     <div class="row">
@@ -52,11 +45,7 @@
         $(document).ready(function() {
 
             $('#modalViewTransaccionPago').on('shown.bs.modal', function() {//Para enfocar input de un formulario modal
-                if ($('.panel_anticipo').is(':visible')) {
-                    $("#anticipo_monto").focus();
-                } else {
-                    $("#pago_cliente_id").focus();
-                }
+                $("#pago_cliente_id").focus();
             })
 
             $(document).on("change", "#pago_cliente_id", function(){
@@ -145,8 +134,6 @@
             $("#editTransaccionPago").val("");
             $("#tipo_pago").val("PAGO");
             $("#title_modal_view_transaccion_pago").text("PAGO");
-            $('.panel_anticipo').hide();
-            $('.panel_pago').show();
             var reserva_id=$("#foreign_reserva_id").val();
             requiredPago(true);
             requiredAnticipo(false);
@@ -172,53 +159,7 @@
 
                 }
             }); //End Ajax
-        }
-
-        function createTransaccionAnticipo($this){
-            var transaccion_id=$this.id;
-            $("#editTransaccionPago").val("");
-            $("#foreign_transaccion_id").val(transaccion_id);
-
-            requiredPago(false);
-            requiredAnticipo(true);
-            limpiarDatoTransaccionPago();//Se ecuentra en el modulo transaccion_pago
-            limpiarFormaPago();//Se ecuentra en el modulo formapago
-
-            var fila=$($this).closest("tr");
-            var vec_monto=$(fila).find("input[name='tr_monto[]']");
-            var input_monto=vec_monto[0];
-            var monto=$(input_monto).val();
-            $("#anticipo_cargo").val(monto);
-            $("#anticipo_saldo").val(monto);
-
-            $("#tipo_pago").val("ANTICIPO");
-            $("#title_modal_view_transaccion_pago").text("ANTICIPO");
-            $('.panel_anticipo').show();
-            $('.panel_pago').hide();
-
-            $.ajax({
-                async: false, //Evitar la ejecucion  Asincrona
-                type: "GET",
-                url: "{{route('createtransaccionpago')}}",
-                data:{'_token': '{{ csrf_token() }}'},
-                dataType: 'json',
-                beforeSend: function () {
-
-                },
-                success: function(result){
-                    loadDataTransaccionPagoAjax(result)
-                    $.each(result.formaPagos, function(i, v) {
-                        if(v.id!="PM"){//No debe cargar la opcion pago multiple en la tabla tbl_forma_pago
-                           cargarFilaFormaPago(0,v.id,v.descripcion,"","") //Se encuentra en el modulo formapago
-                        }
-                    });
-                    $('#modalViewTransaccionPago').modal('show');
-                },//End success
-                complete:function(result, textStatus ){
-
-                }
-            }); //End Ajax
-        }
+       }
 
        function editTransaccionPago($id){
             var transaccion_pago_id=$id;
@@ -288,10 +229,6 @@
             $("#pago_detalle").val("");
             $("#tbl_detalle_transaccion_pago tbody tr").find('td').remove();
             $("#total_pago").text(0);
-
-            //Datos anticipo
-            $("#anticipo_monto").val("");
-            $("#anticipo_detalle").val("");
         }
 
   </script>

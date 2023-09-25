@@ -113,9 +113,25 @@ class ReporteRepository{
         $fecha_ini=($fecha_ini!=null)?Carbon::createFromFormat('Y-m-d',$fecha_ini)->format('Ymd'):null;
         $fecha_fin=($fecha_fin!=null)?Carbon::createFromFormat('Y-m-d',$fecha_fin)->format('Ymd'):null;
 
-        $fecha_actual=Carbon::now('America/La_Paz')->toDateTimeString();
+        // $huespedes= DB::table('res_huesped as u')
+        // ->join('bas_persona as p','p.id','=','u.cliente_id')
+        // ->join('cli_cliente as c','c.id','=','u.cliente_id')
+        // ->leftjoin('cli_profesion as f','f.id','=','c.profesion_id')
+        // ->join('res_reserva as r','r.id','=','u.reserva_id')
+        // ->leftjoin('res_estado_huesped as e','e.id','=','u.estado_huesped_id')
+        // ->join('gob_habitacion as h','h.id','=','r.habitacion_id')
+        // ->leftjoin('cli_pais as cp','cp.id','=','r.procedencia_pais_id')
+        // ->leftjoin('cli_ciudad as cc','cc.id','=','r.procedencia_ciudad_id')
+        // ->select('u.id','u.reserva_id',DB::raw('(CASE WHEN u.estado_huesped_id=2 THEN DATE_FORMAT(u.fecha_salida,"%Y%m%d") ELSE (CASE WHEN u.estado_huesped_id=1 THEN (CASE WHEN "'.$fecha_fin.'"<=DATE_FORMAT(u.fecha_ingreso,"%Y%m%d") THEN DATE_FORMAT(u.fecha_ingreso,"%Y%m%d") ELSE (CASE WHEN "'.$fecha_fin.'" BETWEEN DATE_FORMAT(r.fecha_ini,"%Y%m%d") AND DATE_FORMAT(r.fecha_fin,"%Y%m%d") THEN "'.$fecha_fin.'" ELSE NULL END) END) ELSE NULL END) END) AS fecha'),DB::raw('(CASE WHEN u.estado_huesped_id=2 THEN "SALIDA" ELSE (CASE WHEN u.estado_huesped_id=1 THEN (CASE WHEN "'.$fecha_fin.'"<=DATE_FORMAT(u.fecha_ingreso,"%Y%m%d") THEN "INGRESO" ELSE (CASE WHEN "'.$fecha_fin.'" BETWEEN DATE_FORMAT(r.fecha_ini,"%Y%m%d") AND DATE_FORMAT(r.fecha_fin,"%Y%m%d") THEN "PERMANENCIA" ELSE "" END) END) ELSE "" END) END) AS movimiento'),DB::raw('DATE_FORMAT(u.fecha_ingreso,"%d/%m/%Y") as fecha_ingreso'),DB::raw('DATE_FORMAT(u.fecha_salida,"%d/%m/%Y") as fecha_salida'),DB::raw('CONCAT(IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")," ",IFNULL(p.nombre,"")) AS huesped'),'h.num_habitacion','cp.descripcion as pais','cc.descripcion as ciudad','f.descripcion as profesion',DB::raw('TIMESTAMPDIFF(YEAR,p.fecha_nac, CURDATE()) as edad'),'p.doc_id','u.estado_huesped_id','e.descripcion as estado_huesped')
+        // ->where('h.agencia_id','=',Auth::user()->agencia_id)
+        // ->where('u.estado','=','1')
+        // ->where('r.estado','=','1')
+        // ->where('p.estado','=','1')
+        // ->where('c.estado','=','1')
+        // ->orderBy('u.reserva_id','desc')
+        // ->havingRaw('fecha BETWEEN ? AND ?', [$fecha_ini, $fecha_fin]);
 
-        $huespedes= DB::table('res_huesped as u')
+        $huespedes_salida= DB::table('res_huesped as u')
         ->join('bas_persona as p','p.id','=','u.cliente_id')
         ->join('cli_cliente as c','c.id','=','u.cliente_id')
         ->leftjoin('cli_profesion as f','f.id','=','c.profesion_id')
@@ -124,24 +140,81 @@ class ReporteRepository{
         ->join('gob_habitacion as h','h.id','=','r.habitacion_id')
         ->leftjoin('cli_pais as cp','cp.id','=','r.procedencia_pais_id')
         ->leftjoin('cli_ciudad as cc','cc.id','=','r.procedencia_ciudad_id')
-        ->select('u.id','u.reserva_id',DB::raw('(CASE WHEN u.estado_huesped_id=2  THEN DATE_FORMAT(u.fecha_salida,"%Y%m%d")  ELSE  (CASE WHEN DATE_FORMAT("'.$fecha_actual.'","%Y%m%d") BETWEEN DATE_FORMAT(r.fecha_ini,"%Y%m%d") AND DATE_FORMAT(r.fecha_fin,"%Y%m%d") THEN DATE_FORMAT("'.$fecha_actual.'","%Y%m%d") ELSE DATE_FORMAT( u.fecha_ingreso,"%Y%m%d") END) END) AS fecha'),DB::raw('DATE_FORMAT(u.fecha_ingreso,"%d/%m/%Y") as fecha_ingreso'),DB::raw('DATE_FORMAT(u.fecha_salida,"%d/%m/%Y") as fecha_salida'),DB::raw('CONCAT(IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")," ",IFNULL(p.nombre,"")) AS huesped'),'h.num_habitacion','cp.descripcion as pais','cc.descripcion as ciudad','f.descripcion as profesion',DB::raw('TIMESTAMPDIFF(YEAR,p.fecha_nac, CURDATE()) as edad'),'p.doc_id','u.estado_huesped_id','e.descripcion as estado_huesped')
+        ->select('u.id','u.reserva_id',DB::raw('DATE_FORMAT(u.fecha_ingreso,"%d/%m/%Y") as fecha_ingreso'),DB::raw('DATE_FORMAT(u.fecha_salida,"%d/%m/%Y") as fecha_salida'),DB::raw('CONCAT(IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")," ",IFNULL(p.nombre,"")) AS huesped'),'h.num_habitacion','cp.descripcion as pais','cc.descripcion as ciudad','f.descripcion as profesion',DB::raw('TIMESTAMPDIFF(YEAR,p.fecha_nac, CURDATE()) as edad'),'p.doc_id','u.estado_huesped_id','e.descripcion as estado_huesped',DB::raw('"SALIDA" as movimiento'))
         ->where('h.agencia_id','=',Auth::user()->agencia_id)
         ->where('u.estado','=','1')
         ->where('r.estado','=','1')
         ->where('p.estado','=','1')
         ->where('c.estado','=','1')
-        ->orderBy('u.reserva_id','desc')
-        ->havingRaw('fecha BETWEEN ? AND ?', [$fecha_ini, $fecha_fin]);
-
+        ->where('u.estado_huesped_id','=',2)
+        ->whereRaw('DATE_FORMAT(u.fecha_salida,"%Y%m%d")>=?', [$fecha_fin])
+        ->whereRaw('DATE_FORMAT(u.fecha_salida,"%Y%m%d") BETWEEN ? AND ?', [$fecha_ini,$fecha_fin]);
         if($habitacion_id!=null){
-            $huespedes->where('r.habitacion_id','=',$habitacion_id);
+            $huespedes_salida->where('r.habitacion_id','=',$habitacion_id);
         }
-
         if($estado_huesped_id!=null){
-            $huespedes->where('u.estado_huesped_id','=',$estado_huesped_id);
+            $huespedes_salida->where('u.estado_huesped_id','=',$estado_huesped_id);
         }
+        $huespedes_salida=$huespedes_salida->get();
 
-        $huespedes=$huespedes->get();
+
+        $excluir_salida = $huespedes_salida->pluck('id')->toArray();
+
+        $huespedes_ingreso= DB::table('res_huesped as u')
+        ->join('bas_persona as p','p.id','=','u.cliente_id')
+        ->join('cli_cliente as c','c.id','=','u.cliente_id')
+        ->leftjoin('cli_profesion as f','f.id','=','c.profesion_id')
+        ->join('res_reserva as r','r.id','=','u.reserva_id')
+        ->leftjoin('res_estado_huesped as e','e.id','=','u.estado_huesped_id')
+        ->join('gob_habitacion as h','h.id','=','r.habitacion_id')
+        ->leftjoin('cli_pais as cp','cp.id','=','r.procedencia_pais_id')
+        ->leftjoin('cli_ciudad as cc','cc.id','=','r.procedencia_ciudad_id')
+        ->select('u.id','u.reserva_id',DB::raw('DATE_FORMAT(u.fecha_ingreso,"%d/%m/%Y") as fecha_ingreso'),DB::raw('DATE_FORMAT(u.fecha_salida,"%d/%m/%Y") as fecha_salida'),DB::raw('CONCAT(IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")," ",IFNULL(p.nombre,"")) AS huesped'),'h.num_habitacion','cp.descripcion as pais','cc.descripcion as ciudad','f.descripcion as profesion',DB::raw('TIMESTAMPDIFF(YEAR,p.fecha_nac, CURDATE()) as edad'),'p.doc_id','u.estado_huesped_id','e.descripcion as estado_huesped',DB::raw('"INGRESO" as movimiento'))
+        ->where('h.agencia_id','=',Auth::user()->agencia_id)
+        ->whereNotIn('u.id', $excluir_salida)
+        ->where('u.estado','=','1')
+        ->where('r.estado','=','1')
+        ->where('p.estado','=','1')
+        ->where('c.estado','=','1')
+        ->whereRaw('DATE_FORMAT(u.fecha_ingreso,"%Y%m%d")<=?', [$fecha_fin])
+        ->whereRaw('DATE_FORMAT(u.fecha_ingreso,"%Y%m%d") BETWEEN ? AND ?', [$fecha_ini,$fecha_fin]);
+        if($habitacion_id!=null){
+            $huespedes_ingreso->where('r.habitacion_id','=',$habitacion_id);
+        }
+        if($estado_huesped_id!=null){
+            $huespedes_ingreso->where('u.estado_huesped_id','=',$estado_huesped_id);
+        }
+        $huespedes_ingreso=$huespedes_ingreso->get();
+
+        $excluir_ingreso = $huespedes_ingreso->pluck('id')->toArray();
+
+        $huespedes_permanencia= DB::table('res_huesped as u')
+        ->join('bas_persona as p','p.id','=','u.cliente_id')
+        ->join('cli_cliente as c','c.id','=','u.cliente_id')
+        ->leftjoin('cli_profesion as f','f.id','=','c.profesion_id')
+        ->join('res_reserva as r','r.id','=','u.reserva_id')
+        ->leftjoin('res_estado_huesped as e','e.id','=','u.estado_huesped_id')
+        ->join('gob_habitacion as h','h.id','=','r.habitacion_id')
+        ->leftjoin('cli_pais as cp','cp.id','=','r.procedencia_pais_id')
+        ->leftjoin('cli_ciudad as cc','cc.id','=','r.procedencia_ciudad_id')
+        ->select('u.id','u.reserva_id',DB::raw('DATE_FORMAT(u.fecha_ingreso,"%d/%m/%Y") as fecha_ingreso'),DB::raw('DATE_FORMAT(u.fecha_salida,"%d/%m/%Y") as fecha_salida'),DB::raw('CONCAT(IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")," ",IFNULL(p.nombre,"")) AS huesped'),'h.num_habitacion','cp.descripcion as pais','cc.descripcion as ciudad','f.descripcion as profesion',DB::raw('TIMESTAMPDIFF(YEAR,p.fecha_nac, CURDATE()) as edad'),'p.doc_id','u.estado_huesped_id','e.descripcion as estado_huesped',DB::raw('"PERMANENCIA" as movimiento'))
+        ->where('h.agencia_id','=',Auth::user()->agencia_id)
+        ->whereNotIn('u.id', $excluir_ingreso)
+        ->whereNotIn('u.id', $excluir_salida)
+        ->where('u.estado','=','1')
+        ->where('r.estado','=','1')
+        ->where('p.estado','=','1')
+        ->where('c.estado','=','1')
+        ->whereRaw('? BETWEEN DATE_FORMAT(r.fecha_ini,"%Y%m%d") AND DATE_FORMAT(r.fecha_fin,"%Y%m%d")',[$fecha_fin]);
+        if($habitacion_id!=null){
+            $huespedes_permanencia->where('r.habitacion_id','=',$habitacion_id);
+        }
+        if($estado_huesped_id!=null){
+            $huespedes_permanencia->where('u.estado_huesped_id','=',$estado_huesped_id);
+        }
+        $huespedes_permanencia=$huespedes_permanencia->get();
+
+        $huespedes = $huespedes_salida->merge($huespedes_ingreso)->merge($huespedes_permanencia);
         return $huespedes;
     }
 
@@ -152,8 +225,6 @@ class ReporteRepository{
 
     public function exportarReporteHuespedes($formato,$habitacion_id,$estado_huesped_id,$fecha_ini,$fecha_fin){
          $huespedes=$this->obtenerHuespedes($habitacion_id,$estado_huesped_id,$fecha_ini,$fecha_fin);
-        //  $fecha_ini=($fecha_ini!=null)?Carbon::createFromFormat('Y-m-d',$fecha_ini)->format('d/m/Y'):null;
-        //  $fecha_fin=($fecha_fin!=null)?Carbon::createFromFormat('Y-m-d',$fecha_fin)->format('d/m/Y'):null;
          if($formato=="excel"){
              $this->exportarHuespedesExcel->exportar($huespedes);
          } else {

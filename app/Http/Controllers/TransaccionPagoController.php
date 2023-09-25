@@ -23,14 +23,6 @@ class TransaccionPagoController extends Controller
         $this->huespedRep=$huespedRep;
     }
 
-     public function index(Request $request){
-        if($request->ajax()){
-           // return $this->transaccionPagoRep->obtenerTransaccionesDataTables($reserva_id);
-        }else{
-           // return view('business.transaccion.index');
-        }
-    }
-
     public function create(Request $request){
         $reserva_id=($request["reserva_id"]!=null)?$request["reserva_id"]:0;
         $formaPagos=$this->formaPagoRep->obtenerFormaPagos();
@@ -39,18 +31,11 @@ class TransaccionPagoController extends Controller
     }
 
     public function store(Request $request){
-        $tipo_pago = $request->get('tipo_pago');
         $transaccion=null;
-        if($tipo_pago=="ANTICIPO") {
-            $transaccionPago=$this->transaccionPagoRep->insertarAnticipoDesdeRequest($request);
-        } else {
-            $transaccionPago=$this->transaccionPagoRep->insertarDesdeRequest($request);
-        }
-
+        $transaccionPago=$this->transaccionPagoRep->insertarDesdeRequest($request);
         if($transaccionPago!=null){
             $transaccion=$transaccionPago->transaccion; //Cargar entidad relacion 1 a N inversa
         }
-
         return response()->json(array ('transaccion'=>$transaccion,'transaccionPago'=>$transaccionPago));
     }
 

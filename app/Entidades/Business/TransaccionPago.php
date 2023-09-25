@@ -36,11 +36,10 @@ class TransaccionPago extends Model
       return $this->belongsTo(Transaccion::class,'transaccion_id','id');
     }
 
-   //Relacion uno a muchos (Inversa)
-    public function transaccionPago()
+    //Relacion uno a muchos (Inversa)
+    public function pago()
     {
        return $this->belongsTo(Pago::class,'pago_id','id');
     }
-
 
 }

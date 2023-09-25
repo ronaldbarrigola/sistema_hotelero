@@ -75,7 +75,7 @@ class ExportarHuespedesPdf
 
         //Datos de INGRESO de huespedes
         $tbody="<tbody>";
-        $huespedes_ingreso=$huespedes->where('estado_huesped_id','=',1);
+        $huespedes_ingreso=$huespedes->where('movimiento','=','INGRESO');
 
         foreach($huespedes_ingreso as $row)
         {
@@ -94,18 +94,18 @@ class ExportarHuespedesPdf
        $html= '<table border="1" cellspacing="0" style="text-align:center;">'.$header.$tbody.'</table>';
        $pdf::writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
 
-       //Datos de SALIDA de huespedes
+       //Datos de PERMANENCIA de huespedes
        $pdf::ln(2);
        $pdf::SetFont('Helvetica','B',10);
-       $pdf::Cell(0,2,'SALIDA',0,1,'C');
+       $pdf::Cell(0,2,'PERMANENCIA',0,1,'C');
        $pdf::SetFont('Helvetica','',8);
        $tbody="<tbody>";
-       $huespedes_salida=$huespedes->where('estado_huesped_id','=',2);
+       $huespedes_permanencia=$huespedes->where('movimiento','=',"PERMANENCIA");
 
-       foreach($huespedes_salida as $row)
+       foreach($huespedes_permanencia as $row)
        {
            $tbody=$tbody.'<tr>
-               <td align="center">'.$row->fecha_salida.'</td>
+               <td align="center">'.$row->fecha_ingreso.'</td>
                <td align="left">'.$row->huesped.'</td>
                <td align="center">'.$row->num_habitacion.'</td>
                <td align="left">'.$row->pais.'</td>
@@ -119,8 +119,32 @@ class ExportarHuespedesPdf
       $html= '<table border="1" cellspacing="0" style="text-align:center;">'.$header.$tbody.'</table>';
       $pdf::writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
 
+      //Datos de SALIDA de huespedes
+      $pdf::ln(2);
+      $pdf::SetFont('Helvetica','B',10);
+      $pdf::Cell(0,2,'SALIDA',0,1,'C');
+      $pdf::SetFont('Helvetica','',8);
+      $tbody="<tbody>";
+      $huespedes_salida=$huespedes->where('movimiento','=','SALIDA');
 
-      $pdf::Output('Huesped.pdf', 'D');
+      foreach($huespedes_salida as $row)
+      {
+          $tbody=$tbody.'<tr>
+              <td align="center">'.$row->fecha_salida.'</td>
+              <td align="left">'.$row->huesped.'</td>
+              <td align="center">'.$row->num_habitacion.'</td>
+              <td align="left">'.$row->pais.'</td>
+              <td align="left">'.$row->ciudad.'</td>
+              <td align="left">'.$row->profesion.'</td>
+              <td align="center">'.$row->edad.'</td>
+              <td align="left">'.$row->doc_id.'</td>
+           </tr>';
+      }
+     $tbody=$tbody.'</tbody>';
+     $html= '<table border="1" cellspacing="0" style="text-align:center;">'.$header.$tbody.'</table>';
+     $pdf::writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
+
+     $pdf::Output('Huesped.pdf', 'D');
 
       //I: envía el fichero al navegador de forma que se usa la extensión (plug in) si está disponible.
       //D: envía el fichero al navegador y fuerza la descarga del fichero con el nombre especificado por name.
