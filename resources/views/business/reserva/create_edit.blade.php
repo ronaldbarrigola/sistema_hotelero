@@ -40,6 +40,8 @@
     </div>
 </div> <!--End Modal-->
 
+@include('business/comprobante/reserva')
+
 @push('scripts')
   <script>
         $(document).ready(function() {
@@ -186,6 +188,12 @@
                     $("#reserva_monto").val(result.transaccion.monto);
                     $("#reserva_anticipo").val(result.transaccion_pago.monto);//Monto que corresponde a anticipo
 
+                    //saldo
+                    $monto=(result.transaccion.monto!=null)?result.transaccion.monto:0;
+                    $anticipo=(result.transaccion_pago.monto!=null)?result.transaccion_pago.monto:0;
+                    $saldo=$monto-$anticipo;
+                    $("#reserva_saldo").val($saldo);
+
                     $("#detalle").val(result.reserva.detalle);
                     $("#procedencia_ciudad_id").find('option').remove();
                     $.each(result.ciudades , function(i, v) {
@@ -252,6 +260,7 @@
                 },
                 success: function(result){
                     limpiarDatoReserva();
+                    var reserva_id=result.reserva.id;
                     try {
                         datatable_reserva.ajax.reload();//recargar registro datatables.
                     }
@@ -261,9 +270,11 @@
 
                     //Actualizar datos de Item en TimeLines
                     try {
-                        var reserva_id=result.reserva.id;
                         updateItemForId(reserva_id);
                     } catch(err){}
+
+                    //View Comprobante de reserva
+                    comprobanteReserva(reserva_id);
                 },//End success
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
 
@@ -469,6 +480,7 @@
             $('#reserva_descuento').val("");
             $('#reserva_monto').val("");
             $('#reserva_anticipo').val("");
+            $('#reserva_saldo').val("");
             $('#detalle').val("");
         }
 

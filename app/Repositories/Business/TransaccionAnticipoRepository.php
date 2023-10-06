@@ -73,7 +73,6 @@ class TransaccionAnticipoRepository{
                 //Modificar Importe
                 $request->request->add(['monto'=>$monto]);// Solo para pagos que no son multiples
                 $this->importeRep->modificarImportePorPagoId($request);
-
             }
 
             DB::commit();

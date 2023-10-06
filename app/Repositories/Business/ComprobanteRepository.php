@@ -2,13 +2,10 @@
 
 namespace App\Repositories\Business;
 
-use Illuminate\Http\Request;
 use App\Repositories\Base\AgenciaRepository;
 use App\Repositories\Business\NumerosEnLetras;
 use Elibyy\TCPDF\Facades\TCPDF;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
-use Carbon\Carbon;
-use DB;
+use Illuminate\Support\Facades\Auth;
 
 class ComprobanteRepository{
 
@@ -25,6 +22,9 @@ class ComprobanteRepository{
 
         //https://tcpdf.org Manual tcpdf
 
+        $agencia_id=Auth::user()->agencia_id;
+        $agencia=$this->agenciaRep->obtenerAgenciaPorId($agencia_id);
+
         $pdf = new TCPDF();
 
         //Establecer numeros de pagina, se repiten en todas la paginas
@@ -37,96 +37,136 @@ class ComprobanteRepository{
 
         $pdf::AddPage('P','cm','Letter', true, 'UTF-8', false);   //p: vertical  L:horizontal
 
-         //Imagen Logo
-         $pdf::Image('imagenes/logo_empresa.png',15,5,40,40,'PNG'); //(X,Y,Ancho,Alto)
+        //Imagen Logo
+        $pdf::Image('imagenes/logo_empresa.png',10,5,50,25,'PNG'); //$pdf::Image('imagen',X,Y,Ancho,Alto,'PNG')
 
-       // Agregamos los datos de la empresa
+        // Agregamos los datos de la empresa
         $posY=0;
         $pdf::SetFont('Helvetica','B',15);
         $pdf::SetXY(80,$posY+10);
         $pdf::Cell(60,6,"HOTEL WENDYMAR",0,1,'C');
         $pdf::SetFont('Helvetica','',10);
         $pdf::SetXY(80,$posY+15);
-        $pdf::Cell(60,6,"Direccion ..",0,1,'C');
+        $pdf::Cell(60,6,"Direccion :".$agencia->direccion,0,1,'C');
         $pdf::SetXY(80,$posY+20);
-        $pdf::Cell(60,6,"(Zona ) - Telf. 00000000",0,1,'C');
+        $pdf::Cell(60,6,"Telefono :".$agencia->fono,0,1,'C');
         $pdf::SetXY(80,$posY+25);
-        $pdf::Cell(60,6,"LA PAZ - BOLIVIA",0,1,'C');
+        $pdf::Cell(60,6,"COPACABANA - BOLIVIA",0,1,'C');
 
-         // Numero de pago
-         $pdf::SetFont('Helvetica','B',12);
-         $pdf::SetXY(170,$posY+15);
-         $pdf::Cell(4,6,"Nro. ");
-         $pdf::SetFont('Helvetica','',12);
-         $pdf::SetXY(180,$posY+15);
-         $pdf::Cell(20,6,$reserva->id,0,1,'L');
+        //Numero de reserva
+        $pdf::SetFont('Helvetica','B',12);
+        $pdf::SetXY(170,$posY+15);
+        $pdf::Cell(4,6,"Nro. ");
+        $pdf::SetFont('Helvetica','',12);
+        $pdf::SetXY(180,$posY+15);
+        $pdf::Cell(20,6,$reserva->id,0,1,'L');
 
         //Datos de fecha
         $pdf::SetFont('Helvetica','B',12);
-        $pdf::SetXY(9,$posY+50);
+        $pdf::SetXY(9,$posY+35);
         $pdf::Cell(5,6,"Fecha :");
         $pdf::SetFont('Helvetica','',12);
-        $pdf::SetXY(35,$posY+50);
+        $pdf::SetXY(35,$posY+35);
         $pdf::Cell(5,6,$reserva->fecha);
 
         //Datos del cliente
         $pdf::SetFont('Helvetica','B',12);
-        $pdf::SetXY(9,$posY+55);
+        $pdf::SetXY(9,$posY+40);
         $pdf::Cell(5,6,"Cliente :");
         $pdf::SetFont('Helvetica','',12);
-        $pdf::SetXY(35,$posY+55);
+        $pdf::SetXY(35,$posY+40);
         $pdf::Cell(5,6,$reserva->cliente);
 
-        //Datos del cliente
+        //Datos del servicio
         $pdf::SetFont('Helvetica','B',12);
-        $pdf::SetXY(9,$posY+55);
+        $pdf::SetXY(9,$posY+45);
         $pdf::Cell(5,6,"Servicio :");
         $pdf::SetFont('Helvetica','',12);
-        $pdf::SetXY(35,$posY+60);
+        $pdf::SetXY(35,$posY+45);
         $pdf::Cell(5,6,$reserva->servicio);
 
-         //Titulo del comprobante
-         $pdf::ln(10);
-         $pdf::SetFont('Helvetica','B',16);
-         $pdf::Cell(0,4,"DETALLE DE RESERVA",0,1,'C');
+        //Datos Nro de habitacion
+        $pdf::SetFont('Helvetica','B',12);
+        $pdf::SetXY(9,$posY+50);
+        $pdf::Cell(5,6,"Nro. Hab. :");
+        $pdf::SetFont('Helvetica','',12);
+        $pdf::SetXY(35,$posY+50);
+        $pdf::Cell(5,6,$reserva->num_habitacion);
+
+        //Datos de habitacion
+        $pdf::SetFont('Helvetica','B',12);
+        $pdf::SetXY(9,$posY+55);
+        $pdf::Cell(5,6,"Tipo Hab. :");
+        $pdf::SetFont('Helvetica','',12);
+        $pdf::SetXY(35,$posY+55);
+        $pdf::Cell(5,6,$reserva->tipo_habitacion);
+
+        //Titulo del comprobante
+        $pdf::ln(6);
+        $pdf::SetFont('Helvetica','B',14);
+        $pdf::Cell(0,4,"DETALLE DE RESERVA",0,1,'C');
 
         /// Apartir de aqui empezamos con la tabla de productos
-        $pdf::ln(15);
-
+        $pdf::ln(2);
+        $pdf::SetFont('Helvetica','',12);
         $tbody="";
         $total=0;
+        $cantidad_total=0;
+        $descuento=($reserva->descuento!=null)?$reserva->descuento:0;
+        $anticipo=($reserva->anticipo!=null)?$reserva->anticipo:0;
         foreach($detalle as $row)
         {
             $tbody=$tbody.'<tr>
-                <td align="center" width="8%">1</td>
-                <td align="left" width="37%">'.$row->fecha_ini.'</td>
-                <td align="left" width="18%">'.$row->fecha_fin.'</td>
-                <td align="center" width="12%">'.number_format($row->monto,2,".",",").'</td>
+                <td align="center">'.$row->fecha_ini.'</td>
+                <td align="center">'.$row->fecha_fin.'</td>
+                <td align="center">1</td>
+                <td align="center">'.number_format($row->monto,2,".",",").'</td>
             </tr>';
-
             $total=$total+$row->monto;
+            $cantidad_total=$cantidad_total+1;
         }
+
+        $pago=$total-($descuento+$anticipo);
 
         $html= '<table border="1" cellspacing="0" style="text-align:center;">
 
                     <thead><tr bgcolor="#58D68D">
-                        <th width="8%"><strong>Cant</strong></th>
-                        <th width="15%"><strong>Fecha Ingreso</strong></th>
-                        <th width="37%"><strong>Fecha Salida</strong></th>
-                        <th width="12%"><strong>Monto</strong></th>
+                        <th><strong>Desde</strong></th>
+                        <th><strong>Hasta</strong></th>
+                        <th><strong>Cantidad</strong></th>
+                        <th><strong>Monto</strong></th>
                     </tr></thead>
 
                 <tbody>'.$tbody.'</tbody>
                 <tfoot>
                    <tr>
-                      <th colspan="5" style="text-align:right;">TOTAL :'.$this->numerosEnLetras->convertir($total,'Bolivianos',true).'</th>
+                      <th colspan="2">TOTAL</th>
+                      <th>'.$cantidad_total.'</th>
                       <th>'.number_format($total,2,".",",").'</th>
                    </tr>
                 </tfoot>
                 </table>';
-
         $pdf::writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
-        $pdf::Output(public_path('pdf/comprobante/reserva/'.$compra->compra_id.'.pdf'), 'F');
+
+        $pdf::ln(5);
+        $html_footer='<table border="0">
+            <tr>
+                <td colspan="3" style="text-align:right;">Descuento</td>
+                <td style="text-align:center;">'.number_format($reserva->descuento,2,".",",").'</td>
+            </tr>
+            <tr>
+                <td colspan="3" style="text-align:right;">Anticipo</td>
+                <td style="text-align:center;">'.number_format($reserva->anticipo,2,".",",").'</td>
+            </tr>
+            <hr>
+            <tr>
+                <td colspan="3" style="text-align:right;">TOTAL A PAGAR :'.$this->numerosEnLetras->convertir($pago,'Bolivianos',true).'</td>
+                <td style="text-align:center;">'.number_format($pago,2,".",",").'</td>
+            </tr>
+        </table>';
+        $pdf::writeHTMLCell(0, 0, '', '', $html_footer, 0, 1, 0, true, '', true);
+
+        $pdf::Output(public_path('pdf/comprobante/reserva/'.$reserva->id.'.pdf'), 'F');
     }
 
 }//fin clase

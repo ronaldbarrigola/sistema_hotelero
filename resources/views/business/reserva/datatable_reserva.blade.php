@@ -2,6 +2,7 @@
     <div class="col">
         <table id="tbl_reserva" class="table table-striped table-bordered table-sm table-hover" style="width:100%">
             <thead>
+                <th>Comp.</th>
                 <th>Nro. Reserva</th>
                 <th>Fecha Registro</th>
                 <th>Cliente</th>
@@ -26,13 +27,19 @@
 @include('business/reserva/create_edit')
 @include('business/cliente/create_edit')
 
-
 @push('scripts')
     <script>
         var datatable_reserva="";
         $(document).ready( function () {
             // ══════════════════════ Cargando columnas para datatables  ══════════════════════
             var columnas=[
+                            {data:'id',
+                                orderable:false,
+                                render: function(data){
+                                    return '<button id="'+data+'" class="btn btn-danger" onclick="comprobanteReserva(id);">Pdf</button>';
+                                },
+                                className: "text-center"
+                            },
                             {data:'id'},
                             {data:'fecha'},
                             {data:'cliente'},

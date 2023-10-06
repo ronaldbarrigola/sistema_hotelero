@@ -9,6 +9,7 @@ use App\Repositories\Base\PersonaRepository;
 use App\Repositories\Business\TransaccionRepository;
 use App\Repositories\Business\HotelProductoRepository;
 use App\Repositories\Business\HuespedRepository;
+use App\Repositories\Business\ComprobanteRepository;
 use Carbon\Carbon;
 use DB;
 
@@ -18,13 +19,15 @@ class ReservaRepository{
     protected $hotelProductoRep;
     protected $huespedRep;
     protected $personaRep;
+    protected $comprobanteRep;
 
     //===constructor=============================================================================================
-    public function __construct(TransaccionRepository $transaccionRep,HotelProductoRepository $hotelProductoRep,PersonaRepository $personaRep,HuespedRepository $huespedRep){
+    public function __construct(TransaccionRepository $transaccionRep,HotelProductoRepository $hotelProductoRep,PersonaRepository $personaRep,HuespedRepository $huespedRep,ComprobanteRepository $comprobanteRep){
         $this->transaccionRep=$transaccionRep;
         $this->hotelProductoRep=$hotelProductoRep;
         $this->huespedRep=$huespedRep;
         $this->personaRep=$personaRep;
+        $this->comprobanteRep=$comprobanteRep;
     }
 
     public function obtenerReservas(){
@@ -121,6 +124,30 @@ class ReservaRepository{
         }
 
         return $reserva;
+    }
+
+    public function obtenerInformacionReservaPorId($reserva_id){
+        $reserva= DB::table('res_reserva as r')
+        ->join('res_servicio as s','s.id','=','r.servicio_id')
+        ->join('bas_persona as p','p.id','=','r.cliente_id')
+        ->leftjoin('gob_habitacion as h','h.id','=','r.habitacion_id')
+        ->leftjoin('gob_tipo_habitacion as t','t.id','=','h.tipo_habitacion_id')
+        ->select('r.id',DB::raw('DATE_FORMAT(r.fecha,"%d/%m/%Y") as fecha'),DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) AS cliente'),'h.num_habitacion','t.descripcion as tipo_habitacion',DB::raw('DATE_FORMAT(r.fecha_ini,"%Y-%m-%d %H:%i:%s") as fecha_ini'),DB::raw('DATE_FORMAT(r.fecha_fin,"%Y-%m-%d %H:%i:%s") as fecha_fin'),'s.descripcion as servicio',DB::raw('(SELECT IFNULL(sum(p.monto),0) FROM con_transaccion t inner join con_transaccion_pago p on t.id=p.transaccion_id  WHERE t.reserva_id=r.id AND p.tipo_transaccion_id="A" AND t.estado=1 AND p.estado=1) as anticipo'),DB::raw('(SELECT IFNULL(sum(tr.descuento),0) FROM con_transaccion tr WHERE tr.transaccion_base="1" AND tr.reserva_id=r.id AND tr.estado=1) as descuento'))
+        ->where('r.id','=',$reserva_id)
+        ->where('r.estado','=','1')
+        ->where('p.estado','=','1')
+        ->where('s.estado','=','1')
+        ->first();
+        return $reserva;
+    }
+
+    public function obtenerInformacionTransaccionDetallePorId($transaccion_id){
+        $transaccion_detalle=DB::table('con_transaccion_detalle as td')
+        ->select('td.id',DB::raw('DATE_FORMAT(td.fecha,"%d/%m/%Y") as fecha'),DB::raw('DATE_FORMAT(td.fecha_ini,"%d/%m/%Y") as fecha_ini'),DB::raw('DATE_FORMAT(td.fecha_fin,"%d/%m/%Y") as fecha_fin'),'td.monto')
+        ->where('td.transaccion_id','=',$transaccion_id)
+        ->where('td.estado','=','1')
+        ->get();
+        return $transaccion_detalle;
     }
 
     public function obtenerReservaPorId($id){
@@ -222,6 +249,14 @@ class ReservaRepository{
        return $response;
     }
 
+    public function generarComprobante($reserva_id,$transaccion_id){
+        $informacionReserva=$this->obtenerInformacionReservaPorId($reserva_id);
+        $informacionDetalle=$this->obtenerInformacionTransaccionDetallePorId($transaccion_id);
+        if($informacionReserva!=null&&$informacionDetalle!=null){
+            $this->comprobanteRep->comprobante_reserva($informacionReserva,$informacionDetalle);
+        }
+    }
+
 
     public function insertarDesdeRequest(Request $request){
         $reserva=null;
@@ -255,7 +290,7 @@ class ReservaRepository{
             $request->request->add(['foreign_reserva_id'=>$reserva->id]);
             $request->request->add(['hotel_producto_id'=>$hotel_producto->id]);
 
-            $this->transaccionRep->insertarDesdeReserva($request);
+            $transaccion=$this->transaccionRep->insertarDesdeReserva($request);
 
             $persona=$this->personaRep->obtenerPersonaPorId($reserva->cliente_id); //El id cliente es lo mismo que id persona
             if(!is_null($persona)){
@@ -264,6 +299,8 @@ class ReservaRepository{
                     $this->huespedRep->insertarHuesped($reserva->id,$reserva->cliente_id);
                 }
             }
+
+            $this->generarComprobante($reserva->id,$transaccion->id);
 
             DB::commit();
         }catch(\Exception $e){
@@ -329,6 +366,8 @@ class ReservaRepository{
                 }
 
             }
+
+            $this->generarComprobante($reserva->id,$transaccion->id);
 
             DB::commit();
         }catch(\Exception $e){

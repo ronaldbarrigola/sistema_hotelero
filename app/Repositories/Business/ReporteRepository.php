@@ -113,23 +113,13 @@ class ReporteRepository{
         $fecha_ini=($fecha_ini!=null)?Carbon::createFromFormat('Y-m-d',$fecha_ini)->format('Ymd'):null;
         $fecha_fin=($fecha_fin!=null)?Carbon::createFromFormat('Y-m-d',$fecha_fin)->format('Ymd'):null;
 
-        // $huespedes= DB::table('res_huesped as u')
-        // ->join('bas_persona as p','p.id','=','u.cliente_id')
-        // ->join('cli_cliente as c','c.id','=','u.cliente_id')
-        // ->leftjoin('cli_profesion as f','f.id','=','c.profesion_id')
-        // ->join('res_reserva as r','r.id','=','u.reserva_id')
-        // ->leftjoin('res_estado_huesped as e','e.id','=','u.estado_huesped_id')
-        // ->join('gob_habitacion as h','h.id','=','r.habitacion_id')
-        // ->leftjoin('cli_pais as cp','cp.id','=','r.procedencia_pais_id')
-        // ->leftjoin('cli_ciudad as cc','cc.id','=','r.procedencia_ciudad_id')
-        // ->select('u.id','u.reserva_id',DB::raw('(CASE WHEN u.estado_huesped_id=2 THEN DATE_FORMAT(u.fecha_salida,"%Y%m%d") ELSE (CASE WHEN u.estado_huesped_id=1 THEN (CASE WHEN "'.$fecha_fin.'"<=DATE_FORMAT(u.fecha_ingreso,"%Y%m%d") THEN DATE_FORMAT(u.fecha_ingreso,"%Y%m%d") ELSE (CASE WHEN "'.$fecha_fin.'" BETWEEN DATE_FORMAT(r.fecha_ini,"%Y%m%d") AND DATE_FORMAT(r.fecha_fin,"%Y%m%d") THEN "'.$fecha_fin.'" ELSE NULL END) END) ELSE NULL END) END) AS fecha'),DB::raw('(CASE WHEN u.estado_huesped_id=2 THEN "SALIDA" ELSE (CASE WHEN u.estado_huesped_id=1 THEN (CASE WHEN "'.$fecha_fin.'"<=DATE_FORMAT(u.fecha_ingreso,"%Y%m%d") THEN "INGRESO" ELSE (CASE WHEN "'.$fecha_fin.'" BETWEEN DATE_FORMAT(r.fecha_ini,"%Y%m%d") AND DATE_FORMAT(r.fecha_fin,"%Y%m%d") THEN "PERMANENCIA" ELSE "" END) END) ELSE "" END) END) AS movimiento'),DB::raw('DATE_FORMAT(u.fecha_ingreso,"%d/%m/%Y") as fecha_ingreso'),DB::raw('DATE_FORMAT(u.fecha_salida,"%d/%m/%Y") as fecha_salida'),DB::raw('CONCAT(IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")," ",IFNULL(p.nombre,"")) AS huesped'),'h.num_habitacion','cp.descripcion as pais','cc.descripcion as ciudad','f.descripcion as profesion',DB::raw('TIMESTAMPDIFF(YEAR,p.fecha_nac, CURDATE()) as edad'),'p.doc_id','u.estado_huesped_id','e.descripcion as estado_huesped')
-        // ->where('h.agencia_id','=',Auth::user()->agencia_id)
-        // ->where('u.estado','=','1')
-        // ->where('r.estado','=','1')
-        // ->where('p.estado','=','1')
-        // ->where('c.estado','=','1')
-        // ->orderBy('u.reserva_id','desc')
-        // ->havingRaw('fecha BETWEEN ? AND ?', [$fecha_ini, $fecha_fin]);
+        $fecha_actual=Carbon::now('America/La_Paz')->format('Ymd');
+        $fechaActualDto = Carbon::parse($fecha_actual);
+        $fechaFinDto = Carbon::parse($fecha_fin);
+
+        if ($fechaFinDto->greaterThan($fechaActualDto)) { //La fecha 2 es mayor que la fecha 1
+            $fecha_fin=$fecha_actual;
+        }
 
         $huespedes_salida= DB::table('res_huesped as u')
         ->join('bas_persona as p','p.id','=','u.cliente_id')
@@ -140,7 +130,7 @@ class ReporteRepository{
         ->join('gob_habitacion as h','h.id','=','r.habitacion_id')
         ->leftjoin('cli_pais as cp','cp.id','=','r.procedencia_pais_id')
         ->leftjoin('cli_ciudad as cc','cc.id','=','r.procedencia_ciudad_id')
-        ->select('u.id','u.reserva_id',DB::raw('DATE_FORMAT(u.fecha_ingreso,"%d/%m/%Y") as fecha_ingreso'),DB::raw('DATE_FORMAT(u.fecha_salida,"%d/%m/%Y") as fecha_salida'),DB::raw('CONCAT(IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")," ",IFNULL(p.nombre,"")) AS huesped'),'h.num_habitacion','cp.descripcion as pais','cc.descripcion as ciudad','f.descripcion as profesion',DB::raw('TIMESTAMPDIFF(YEAR,p.fecha_nac, CURDATE()) as edad'),'p.doc_id','u.estado_huesped_id','e.descripcion as estado_huesped',DB::raw('"SALIDA" as movimiento'))
+        ->select('u.id','u.reserva_id',DB::raw('DATE_FORMAT(r.fecha_ini,"%Y%m%d") as fecha_ini'),DB::raw('DATE_FORMAT(r.fecha_fin,"%Y%m%d") as fecha_fin'),DB::raw('DATE_FORMAT(u.fecha_ingreso,"%d/%m/%Y") as fecha_ingreso'),DB::raw('DATE_FORMAT(u.fecha_salida,"%d/%m/%Y") as fecha_salida'),DB::raw('CONCAT(IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")," ",IFNULL(p.nombre,"")) AS huesped'),'h.num_habitacion','cp.descripcion as pais','cc.descripcion as ciudad','f.descripcion as profesion',DB::raw('TIMESTAMPDIFF(YEAR,p.fecha_nac, CURDATE()) as edad'),'p.doc_id','u.estado_huesped_id','e.descripcion as estado_huesped',DB::raw('"SALIDA" as movimiento'))
         ->where('h.agencia_id','=',Auth::user()->agencia_id)
         ->where('u.estado','=','1')
         ->where('r.estado','=','1')
@@ -169,7 +159,7 @@ class ReporteRepository{
         ->join('gob_habitacion as h','h.id','=','r.habitacion_id')
         ->leftjoin('cli_pais as cp','cp.id','=','r.procedencia_pais_id')
         ->leftjoin('cli_ciudad as cc','cc.id','=','r.procedencia_ciudad_id')
-        ->select('u.id','u.reserva_id',DB::raw('DATE_FORMAT(u.fecha_ingreso,"%d/%m/%Y") as fecha_ingreso'),DB::raw('DATE_FORMAT(u.fecha_salida,"%d/%m/%Y") as fecha_salida'),DB::raw('CONCAT(IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")," ",IFNULL(p.nombre,"")) AS huesped'),'h.num_habitacion','cp.descripcion as pais','cc.descripcion as ciudad','f.descripcion as profesion',DB::raw('TIMESTAMPDIFF(YEAR,p.fecha_nac, CURDATE()) as edad'),'p.doc_id','u.estado_huesped_id','e.descripcion as estado_huesped',DB::raw('"INGRESO" as movimiento'))
+        ->select('u.id','u.reserva_id',DB::raw('DATE_FORMAT(r.fecha_ini,"%Y%m%d") as fecha_ini'),DB::raw('DATE_FORMAT(r.fecha_fin,"%Y%m%d") as fecha_fin'),DB::raw('DATE_FORMAT(u.fecha_ingreso,"%d/%m/%Y") as fecha_ingreso'),DB::raw('DATE_FORMAT(u.fecha_salida,"%d/%m/%Y") as fecha_salida'),DB::raw('CONCAT(IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")," ",IFNULL(p.nombre,"")) AS huesped'),'h.num_habitacion','cp.descripcion as pais','cc.descripcion as ciudad','f.descripcion as profesion',DB::raw('TIMESTAMPDIFF(YEAR,p.fecha_nac, CURDATE()) as edad'),'p.doc_id','u.estado_huesped_id','e.descripcion as estado_huesped',DB::raw('"INGRESO" as movimiento'))
         ->where('h.agencia_id','=',Auth::user()->agencia_id)
         ->whereNotIn('u.id', $excluir_salida)
         ->where('u.estado','=','1')
@@ -197,7 +187,7 @@ class ReporteRepository{
         ->join('gob_habitacion as h','h.id','=','r.habitacion_id')
         ->leftjoin('cli_pais as cp','cp.id','=','r.procedencia_pais_id')
         ->leftjoin('cli_ciudad as cc','cc.id','=','r.procedencia_ciudad_id')
-        ->select('u.id','u.reserva_id',DB::raw('DATE_FORMAT(u.fecha_ingreso,"%d/%m/%Y") as fecha_ingreso'),DB::raw('DATE_FORMAT(u.fecha_salida,"%d/%m/%Y") as fecha_salida'),DB::raw('CONCAT(IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")," ",IFNULL(p.nombre,"")) AS huesped'),'h.num_habitacion','cp.descripcion as pais','cc.descripcion as ciudad','f.descripcion as profesion',DB::raw('TIMESTAMPDIFF(YEAR,p.fecha_nac, CURDATE()) as edad'),'p.doc_id','u.estado_huesped_id','e.descripcion as estado_huesped',DB::raw('"PERMANENCIA" as movimiento'))
+        ->select('u.id','u.reserva_id',DB::raw('DATE_FORMAT(r.fecha_ini,"%Y%m%d") as fecha_ini'),DB::raw('(CASE WHEN u.estado_huesped_id=2 THEN DATE_FORMAT(u.fecha_salida,"%Y%m%d") ELSE DATE_FORMAT(r.fecha_fin,"%Y%m%d") END) as fecha_fin'),DB::raw('DATE_FORMAT(u.fecha_ingreso,"%d/%m/%Y") as fecha_ingreso'),DB::raw('DATE_FORMAT(u.fecha_salida,"%d/%m/%Y") as fecha_salida'),DB::raw('CONCAT(IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")," ",IFNULL(p.nombre,"")) AS huesped'),'h.num_habitacion','cp.descripcion as pais','cc.descripcion as ciudad','f.descripcion as profesion',DB::raw('TIMESTAMPDIFF(YEAR,p.fecha_nac, CURDATE()) as edad'),'p.doc_id','u.estado_huesped_id','e.descripcion as estado_huesped',DB::raw('"PERMANENCIA" as movimiento'))
         ->where('h.agencia_id','=',Auth::user()->agencia_id)
         ->whereNotIn('u.id', $excluir_ingreso)
         ->whereNotIn('u.id', $excluir_salida)
@@ -205,7 +195,8 @@ class ReporteRepository{
         ->where('r.estado','=','1')
         ->where('p.estado','=','1')
         ->where('c.estado','=','1')
-        ->whereRaw('? BETWEEN DATE_FORMAT(r.fecha_ini,"%Y%m%d") AND DATE_FORMAT(r.fecha_fin,"%Y%m%d")',[$fecha_fin]);
+        //->whereRaw('? BETWEEN DATE_FORMAT(r.fecha_ini,"%Y%m%d") AND DATE_FORMAT(r.fecha_fin,"%Y%m%d")',[$fecha_fin]);
+        ->havingRaw('? BETWEEN DATE_FORMAT(fecha_ini,"%Y%m%d") AND fecha_fin',[$fecha_fin]);
         if($habitacion_id!=null){
             $huespedes_permanencia->where('r.habitacion_id','=',$habitacion_id);
         }

@@ -14,7 +14,7 @@ class HuespedRepository{
        ->join('res_estado_huesped as e','e.id','=','h.estado_huesped_id')
        ->join('bas_persona as p','p.id','=','h.cliente_id')
        ->join('bas_tipo_doc as d','d.id','=','p.tipo_doc_id')
-       ->select('h.id','h.cliente_id',DB::raw('IFNULL(p.doc_id,"") as doc_id'),'d.nombre as tipo_documento','p.nombre','p.paterno','p.materno',DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) as cliente'),'h.fecha_ingreso','h.fecha_salida','h.estado_huesped_id','e.descripcion as estado_huesped')
+       ->select('h.id','h.cliente_id',DB::raw('IFNULL(p.doc_id,"") as doc_id'),'d.nombre as tipo_documento','p.nombre','p.paterno','p.materno',DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) as cliente'),DB::raw('DATE_FORMAT(h.fecha_ingreso,"%d/%m/%Y %H:%i:%s") as fecha_ingreso'),DB::raw('DATE_FORMAT(h.fecha_salida,"%d/%m/%Y %H:%i:%s") as fecha_salida'),'h.estado_huesped_id','e.descripcion as estado_huesped')
        ->where('h.reserva_id','=',$reserva_id)
        ->where('p.estado','=','1')
        ->where('h.estado','=','1')

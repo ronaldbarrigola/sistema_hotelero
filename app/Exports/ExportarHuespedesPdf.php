@@ -17,10 +17,9 @@ class ExportarHuespedesPdf
     }
 
     function exportar($huespedes,$fecha_ini,$fecha_fin){
-        Carbon::setLocale(config('app.locale')); //config/app.php se configura 'locale' => 'es'
+        //Carbon::setLocale(config('app.locale')); //config/app.php se configura 'locale' => 'es'
         $titulo_fecha="";
         if(strcmp ($fecha_ini,$fecha_fin) == 0) {
-           //$fecha_ini=($fecha_ini!=null)?Carbon::parse($fecha_ini)->format('d \d\e F \d\e Y'):"inicio";
            $fecha_ini=($fecha_ini!=null)?Carbon::parse($fecha_ini)->format('d/m/Y'):"inicio";
            $titulo_fecha=$fecha_ini;
         } else {

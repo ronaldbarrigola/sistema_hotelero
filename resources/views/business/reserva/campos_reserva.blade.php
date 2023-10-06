@@ -152,11 +152,13 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text"><strong>%</strong></span>
                             <input type="number" name="reserva_descuento_porcentaje" id="reserva_descuento_porcentaje" min="0"  max="100" step="0.01"  class="form-control" placeholder="0">
+                            <span class="input-group-text"><strong>Bs.</strong></span>
+                            <input type="number" name="reserva_descuento"  id="reserva_descuento" min="0" step="0.01" class="form-control" placeholder="0">
                         </div>
                     </div>
                 </div>
 
-                <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+                {{-- <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
                         <label for="reserva_descuento" class="my-0"><strong>Descuento:</strong></label>
                         <div class="input-group-prepend">
@@ -164,7 +166,7 @@
                             <input type="number" name="reserva_descuento"  id="reserva_descuento" min="0" step="0.01" class="form-control" placeholder="0">
                         </div>
                     </div>
-                </div>
+                </div> --}}
 
                 <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
@@ -182,6 +184,16 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text"><strong>Bs.</strong></span>
                             <input type="number" name="reserva_anticipo"  id="reserva_anticipo" min="0" step="0.01" class="form-control" placeholder="0">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label for="reserva_saldo" class="my-0"><strong>Saldo:</strong></label>
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><strong>Bs.</strong></span>
+                            <input type="number" name="reserva_saldo" id="reserva_saldo" readonly class="form-control" placeholder="0">
                         </div>
                     </div>
                 </div>
@@ -221,6 +233,7 @@
 
               $(document).on("keyup", "#reserva_anticipo", function(){
                   validarAnticipo();
+                  calcularSaldo();
               });
 
           }); //Fin ready
@@ -314,8 +327,20 @@
             cantidad=(cantidad!=null&&cantidad!=""&&cantidad>0)?cantidad:0;
             precio_unidad=(precio_unidad!=null&&precio_unidad!=""&&precio_unidad>0)?precio_unidad:0;
             descuento=(descuento!=null&&descuento!=""&&descuento>0)?descuento:0;
-            cargo= cantidad*precio_unidad-descuento;
+            cargo=cantidad*precio_unidad-descuento;
             $("#reserva_monto").val(cargo.toFixed(2));
+
+            calcularSaldo();
+        }
+
+        function calcularSaldo(){
+            var saldo=0;
+            var cargo=$("#reserva_monto").val();
+            var anticipo=$("#reserva_anticipo").val();
+            cargo=(cargo!=null&&cargo!=""&&cargo>0)?cargo:0;
+            anticipo=(anticipo!=null&&anticipo!=""&&anticipo>0)?anticipo:0;
+            saldo=cargo-anticipo;
+            $("#reserva_saldo").val(saldo.toFixed(2));
         }
 
         function validarAnticipo(){
