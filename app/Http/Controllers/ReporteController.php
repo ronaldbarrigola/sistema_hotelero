@@ -90,4 +90,24 @@ class ReporteController extends Controller
     }
     //END: Reporte huespedes
 
+    //BEGIN: Reporte SIAT
+    public function obtenerReporteSiat(Request $request){
+        if($request->ajax()){
+            $fecha_ini=$request->get("fecha_ini");
+            $fecha_fin=$request->get("fecha_fin");
+            return $this->reporteRep->obtenerReporteSiatDataTables($fecha_ini,$fecha_fin);
+        }else{
+            return view('business.reporte.siat');
+        }
+    }
+
+    public function exportarReporteSiat(Request $request)
+    {
+        $formato=$request->get("formato");
+        $fecha_ini=$request->get("fecha_ini");
+        $fecha_fin=$request->get("fecha_fin");
+        $this->reporteRep->exportarReporteSiat($formato,$fecha_ini,$fecha_fin);
+    }
+    //END: Reporte huespedes
+
 }

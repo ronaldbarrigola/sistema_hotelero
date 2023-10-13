@@ -225,4 +225,47 @@ class ReporteRepository{
     }
     //END:Reporte de huespedes
 
+
+    //BEGIN:Reporte SIAT
+    public function obtenerReporteSiat($fecha_ini,$fecha_fin){
+        $fecha_ini=($fecha_ini!=null)?Carbon::createFromFormat('Y-m-d',$fecha_ini)->format('Ymd'):null;
+        $fecha_fin=($fecha_fin!=null)?Carbon::createFromFormat('Y-m-d',$fecha_fin)->format('Ymd'):null;
+
+        $huespedes= DB::table('res_huesped as u')
+        ->join('cli_cliente as cli','cli.id','=','u.cliente_id')
+        ->join('bas_persona as p','p.id','=','cli.id')
+        ->leftjoin('cli_pais as cp','cp.id','=','cli.pais_id')
+        ->join('con_cliente_datofactura as df','df.cliente_id','=','p.id')
+        ->join('con_datofactura as f','f.id','=','df.datofactura_id')
+        ->select('p.doc_id','cp.descripcion as nacionalidad',DB::raw('CONCAT(IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")," ",IFNULL(p.nombre,"")) AS huesped'),DB::raw('DATE_FORMAT(u.fecha_ingreso,"%d/%m/%Y") as fecha_ingreso'),DB::raw('DATE_FORMAT(u.fecha_salida,"%d/%m/%Y") as fecha_salida'),DB::raw('"0" as nro_factura'),DB::raw('"0" as nro_autorizacion'),DB::raw('"" as observacion'),DB::raw('"" as justificacion'),'f.nit')
+        ->where('u.estado','=','1')
+        ->where('cli.estado','=','1')
+        ->where('p.estado','=','1')
+        ->where('df.estado','=','1')
+        ->where('f.estado','=','1')
+        ->where('u.estado_huesped_id','=',2)
+        ->whereRaw('DATE_FORMAT(u.fecha_ingreso,"%Y%m%d") BETWEEN ? AND ?', [$fecha_ini,$fecha_fin])
+        ->orderBy('u.id','desc')
+        ->distinct()
+        ->get();
+
+        return $huespedes;
+    }
+
+    public function obtenerReporteSiatDataTables($fecha_ini,$fecha_fin){
+        $huespedes=$this->obtenerReporteSiat($fecha_ini,$fecha_fin);
+        return datatables()->of($huespedes)->toJson();
+    }
+
+    public function exportarReporteSiat($formato,$fecha_ini,$fecha_fin){
+         $huespedes=$this->obtenerReporteSiat($fecha_ini,$fecha_fin);
+         if($formato=="excel"){
+             $this->exportarHuespedesExcel->exportar($huespedes);
+         } else {
+             $huespedes = $huespedes->sortBy([['estado_huesped_id','asc'],['fecha_ingreso','asc']]);
+             $this->exportarHuespedesPdf->exportar($huespedes,$fecha_ini,$fecha_fin);
+         }
+    }
+    //END:Reporte SIAT
+
 }

@@ -119,6 +119,8 @@ Route::get('/business/reporte/reservas', [ReporteController::class,'obtenerReser
 Route::get('/business/reporte/exportar_reservas', [ReporteController::class,'exportarReporteReservas'])->name('exportar_reservas');
 Route::get('/business/reporte/huespedes', [ReporteController::class,'obtenerHuespedes'])->name('reportehuespedes');
 Route::get('/business/reporte/exportar_huespedes', [ReporteController::class,'exportarReporteHuespedes'])->name('exportar_huespedes');
+Route::get('/business/reporte/siat', [ReporteController::class,'obtenerReporteSiat'])->name('reporte_siat');
+Route::get('/business/reporte/exportar_siat', [ReporteController::class,'exportarReporteSiat'])->name('exportar_siat');
 
 //Rutas generales
 Route::resource('business/cliente', ClienteController::class);
