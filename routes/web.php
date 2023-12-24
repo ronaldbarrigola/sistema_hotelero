@@ -121,6 +121,8 @@ Route::get('/business/reporte/huespedes', [ReporteController::class,'obtenerHues
 Route::get('/business/reporte/exportar_huespedes', [ReporteController::class,'exportarReporteHuespedes'])->name('exportar_huespedes');
 Route::get('/business/reporte/siat', [ReporteController::class,'obtenerReporteSiat'])->name('reporte_siat');
 Route::get('/business/reporte/exportar_siat', [ReporteController::class,'exportarReporteSiat'])->name('exportar_siat');
+Route::get('/business/reporte/produccion', [ReporteController::class,'obtenerReporteProduccion'])->name('reporte_produccion');
+Route::get('/business/reporte/exportar_produccion', [ReporteController::class,'exportarReporteProduccion'])->name('exportar_produccion');
 
 //Rutas generales
 Route::resource('business/cliente', ClienteController::class);

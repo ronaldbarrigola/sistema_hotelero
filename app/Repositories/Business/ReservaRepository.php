@@ -289,6 +289,7 @@ class ReservaRepository{
 
             $request->request->add(['foreign_reserva_id'=>$reserva->id]);
             $request->request->add(['hotel_producto_id'=>$hotel_producto->id]);
+            $request->request->add(['pago_cliente_id'=>$reserva->cliente_id]); //En caso de que exista anticipo
 
             $transaccion=$this->transaccionRep->insertarDesdeReserva($request);
 

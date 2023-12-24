@@ -7,6 +7,9 @@ use App\Exports\ExportarReservasExcel;
 use App\Exports\ExportarReservasPdf;
 use App\Exports\ExportarHuespedesExcel;
 use App\Exports\ExportarHuespedesPdf;
+use App\Exports\ExportarProduccionExcel;
+use App\Exports\ExportarProduccionPdf;
+use App\Exports\ExportarSiatExcel;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use DB;
@@ -17,12 +20,18 @@ class ReporteRepository{
     protected $exportarReservasPdf;
     protected $exportarHuespedesExcel;
     protected $exportarHuespedesPdf;
+    protected $exportarProduccionExcel;
+    protected $exportarProduccionPdf;
+    protected $exportarSiatExcel;
 
-    public function __construct(ExportarReservasExcel $exportarReservasExcel,ExportarReservasPdf $exportarReservasPdf,ExportarHuespedesExcel $exportarHuespedesExcel,ExportarHuespedesPdf $exportarHuespedesPdf){
+    public function __construct(ExportarReservasExcel $exportarReservasExcel,ExportarReservasPdf $exportarReservasPdf,ExportarHuespedesExcel $exportarHuespedesExcel,ExportarHuespedesPdf $exportarHuespedesPdf,ExportarProduccionExcel $exportarProduccionExcel,ExportarProduccionPdf $exportarProduccionPdf,ExportarSiatExcel $exportarSiatExcel){
         $this->exportarReservasExcel=$exportarReservasExcel;
         $this->exportarReservasPdf=$exportarReservasPdf;
         $this->exportarHuespedesExcel=$exportarHuespedesExcel;
         $this->exportarHuespedesPdf=$exportarHuespedesPdf;
+        $this->exportarProduccionExcel=$exportarProduccionExcel;
+        $this->exportarProduccionPdf=$exportarProduccionPdf;
+        $this->exportarSiatExcel=$exportarSiatExcel;
     }
 
     //BEGIN:Reporte de reservas
@@ -225,13 +234,12 @@ class ReporteRepository{
     }
     //END:Reporte de huespedes
 
-
     //BEGIN:Reporte SIAT
     public function obtenerReporteSiat($fecha_ini,$fecha_fin){
         $fecha_ini=($fecha_ini!=null)?Carbon::createFromFormat('Y-m-d',$fecha_ini)->format('Ymd'):null;
         $fecha_fin=($fecha_fin!=null)?Carbon::createFromFormat('Y-m-d',$fecha_fin)->format('Ymd'):null;
 
-        $huespedes= DB::table('res_huesped as u')
+        $huespedes=DB::table('res_huesped as u')
         ->join('cli_cliente as cli','cli.id','=','u.cliente_id')
         ->join('bas_persona as p','p.id','=','cli.id')
         ->leftjoin('cli_pais as cp','cp.id','=','cli.pais_id')
@@ -257,15 +265,60 @@ class ReporteRepository{
         return datatables()->of($huespedes)->toJson();
     }
 
-    public function exportarReporteSiat($formato,$fecha_ini,$fecha_fin){
-         $huespedes=$this->obtenerReporteSiat($fecha_ini,$fecha_fin);
-         if($formato=="excel"){
-             $this->exportarHuespedesExcel->exportar($huespedes);
-         } else {
-             $huespedes = $huespedes->sortBy([['estado_huesped_id','asc'],['fecha_ingreso','asc']]);
-             $this->exportarHuespedesPdf->exportar($huespedes,$fecha_ini,$fecha_fin);
-         }
+    public function exportarReporteSiat($fecha_ini,$fecha_fin){
+        $huespedes=$this->obtenerReporteSiat($fecha_ini,$fecha_fin);
+        $this->exportarSiatExcel->exportar($huespedes);
     }
+    //END:Reporte SIAT
+
+    //BEGIN:Reporte Produccion
+    public function obtenerProduccion($habitacion_id,$producto_id,$fecha_ini,$fecha_fin){
+        $fecha_ini=($fecha_ini!=null)?Carbon::createFromFormat('Y-m-d',$fecha_ini)->format('Ymd'):null;
+        $fecha_fin=($fecha_fin!=null)?Carbon::createFromFormat('Y-m-d',$fecha_fin)->format('Ymd'):null;
+
+        $produccion=DB::table('res_reserva as r')
+        ->leftjoin('gob_habitacion as h','h.id','=','r.habitacion_id')
+        ->join('con_transaccion as tr','tr.reserva_id','=','r.id')
+        ->join('con_transaccion_pago as trp','trp.transaccion_id','=','tr.id')
+        ->leftjoin('con_tipo_transaccion as tt','tt.id','=','trp.tipo_transaccion_id')
+        ->join('con_pago as pg','pg.id','=','trp.pago_id')
+        ->leftjoin('cli_cliente as cli','cli.id','=','pg.cliente_id')
+        ->leftjoin('bas_persona as p','p.id','=','cli.id')
+        ->leftjoin('pro_hotel_producto as hp','hp.id','=','tr.hotel_producto_id')
+        ->leftjoin('pro_producto as pd','pd.id','=','hp.producto_id')
+        ->select(DB::raw('DATE_FORMAT(trp.fecha,"%d/%m/%Y") as fecha'),'r.id as reserva_id','h.num_habitacion','pd.descripcion as producto',DB::raw('CONCAT(IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")," ",IFNULL(p.nombre,"")) AS cliente'),'tt.descripcion as tipo_transaccion','trp.monto')
+        ->where('r.estado','=','1')
+        ->where('tr.estado','=','1')
+        ->where('trp.estado','=','1')
+        ->where('pg.estado','=','1')
+        ->whereRaw('DATE_FORMAT(trp.fecha,"%Y%m%d") BETWEEN ? AND ?', [$fecha_ini,$fecha_fin])
+        ->orderBy('trp.id','desc');
+
+        if($habitacion_id!=null){
+            $produccion->where('h.id','=',$habitacion_id);
+        }
+        if($producto_id!=null){
+            $produccion->where('pd.id','=',$producto_id);
+        }
+
+        $produccion=$produccion->get();
+        return $produccion;
+    }
+
+    public function obtenerReporteProduccionDataTables($habitacion_id,$producto_id,$fecha_ini,$fecha_fin){
+        $produccion=$this->obtenerProduccion($habitacion_id,$producto_id,$fecha_ini,$fecha_fin);
+        return datatables()->of($produccion)->toJson();
+    }
+
+    public function exportarReporteProduccion($formato,$habitacion_id,$producto_id,$fecha_ini,$fecha_fin){
+        $produccion=$this->obtenerProduccion($habitacion_id,$producto_id,$fecha_ini,$fecha_fin);
+        if($formato=="excel"){
+            $this->exportarProduccionExcel->exportar($produccion);
+        } else {
+            $this->exportarProduccionPdf->exportar($produccion,$fecha_ini,$fecha_fin);
+        }
+    }
+
     //END:Reporte SIAT
 
 }
