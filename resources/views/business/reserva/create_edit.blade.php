@@ -167,6 +167,8 @@
                     $("#paquete_id").selectpicker('refresh');
                     $("#servicio_id").selectpicker('val', result.reserva.servicio_id);
                     $("#servicio_id").selectpicker('refresh');
+                    $("#canal_reserva_id").selectpicker('val', result.reserva.canal_reserva_id);
+                    $("#canal_reserva_id").selectpicker('refresh');
                     if(result.reserva.servicio_id!=null&&result.reserva.servicio_id==2){ //1:HOSPEDAJE 2:DAY USE
                        $("#precio_unidad").removeAttr('readonly');
                     } else {
@@ -342,12 +344,12 @@
             });
             $("#habitacion_id").selectpicker('refresh');
 
-            $("#paquete_id").find('option').remove();
-            $("#paquete_id").append('<option  value="">--Seleccione--</option>');
-            $.each(result.paquetes, function(i, v) {
-                $("#paquete_id").append('<option  value="' + v.id + '" >' + v.descripcion + '</option>');
+            $("#canal_reserva_id").find('option').remove();
+            $("#canal_reserva_id").append('<option  value="">--Seleccione--</option>');
+            $.each(result.canal_reserva, function(i, v) {
+                $("#canal_reserva_id").append('<option  value="' + v.id + '" >' + v.nombre + '</option>');
             });
-            $("#paquete_id").selectpicker('refresh');
+            $("#canal_reserva_id").selectpicker('refresh');
 
             $("#procedencia_pais_id").find('option').remove();
             $("#procedencia_pais_id").append('<option  value="">--Seleccione--</option>');

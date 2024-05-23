@@ -37,6 +37,11 @@
             $(document).on("change", "#huesped_cliente_id", function(){
                 addHuesped();
             });
+
+            $(document).on("click", "#btnNuevoHuespedCliente", function(){ //El boton btnCreateCliente se encuentra en actionbar
+              createCliente();
+           });
+
             obtenerClientes();
         });//Fin ready
 

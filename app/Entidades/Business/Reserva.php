@@ -9,12 +9,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Reserva extends Model
 {
-
     protected $table="res_reserva";
     protected $primaryKey="id";
     public $timestamps=false;
-
-
 
     protected $fillable=[
         'fecha',
@@ -27,6 +24,7 @@ class Reserva extends Model
         'procedencia_ciudad_id',
         'grupo_id',
         'servicio_id',
+        'canal_reserva_id',
         'motivo_id',
         'usuario_alta_id',
         'usuario_modif_id',
@@ -64,6 +62,12 @@ class Reserva extends Model
     public function servicio()
     {
         return $this->belongsTo(Servicio::class,'servicio_id','id');
+    }
+
+    //Relacion 1 a muchos (Inversa)
+    public function canal_reserva()
+    {
+        return $this->belongsTo(CanalReserva::class,'canal_reserva_id','id');
     }
 
     //Relacion 1 a muchos (Inversa)

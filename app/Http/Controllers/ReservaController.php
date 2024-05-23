@@ -12,6 +12,7 @@ use App\Repositories\Business\MotivoRepository;
 use App\Repositories\Business\PaqueteRepository;
 use App\Repositories\Business\ServicioRepository;
 use App\Repositories\Business\ReservaRepository;
+use App\Repositories\Business\CanalReservaRepository;
 use App\Repositories\Business\TransaccionRepository;
 use App\Repositories\Business\TransaccionAnticipoRepository;
 //Para cliente
@@ -31,13 +32,14 @@ class ReservaController extends Controller
     protected $paqueteRep;
     protected $servicioRep;
     protected $reservaRep;
+    protected $canalReservaRep;
     protected $paisRep;
     protected $ciudadRep;
     protected $transaccionRep;
     protected $transaccionAnticipoRep;
 
     //===constructor=============================================================================================
-    public function __construct(ClienteRepository $clienteRep,ReservaRepository $reservaRep,EstadoReservaRepository $estadoReservaRep,HabitacionRepository $habitacionRep,MotivoRepository $motivoRep,PaqueteRepository $paqueteRep,ServicioRepository $servicioRep,PaisRepository $paisRep,ClienteCiudadRepository $ciudadRep,TransaccionRepository $transaccionRep,TransaccionAnticipoRepository $transaccionAnticipoRep){
+    public function __construct(ClienteRepository $clienteRep,ReservaRepository $reservaRep,EstadoReservaRepository $estadoReservaRep,HabitacionRepository $habitacionRep,MotivoRepository $motivoRep,PaqueteRepository $paqueteRep,ServicioRepository $servicioRep,CanalReservaRepository $canalReservaRep,PaisRepository $paisRep,ClienteCiudadRepository $ciudadRep,TransaccionRepository $transaccionRep,TransaccionAnticipoRepository $transaccionAnticipoRep){
         $this->middleware('auth');
         $this->middleware('guest');
         $this->clienteRep=$clienteRep;
@@ -47,6 +49,7 @@ class ReservaController extends Controller
         $this->paqueteRep=$paqueteRep;
         $this->servicioRep=$servicioRep;
         $this->reservaRep=$reservaRep;
+        $this->canalReservaRep=$canalReservaRep;
         $this->paisRep=$paisRep;
         $this->ciudadRep=$ciudadRep;
         $this->transaccionRep=$transaccionRep;
@@ -85,8 +88,9 @@ class ReservaController extends Controller
         $motivos=$this->motivoRep->obtenerMotivos();
         $paquetes=$this->paqueteRep->obtenerPaquetes();
         $servicios=$this->servicioRep->obtenerServicios();
+        $canalReserva=$this->canalReservaRep->obtenerCanalReserva();
         $paises=$this->paisRep->obtenerPaises();
-        return response()->json(array ('clientes'=>$clientes,'estadoReservas'=>$estadoReservas,'habitaciones'=>$habitaciones,'motivos'=>$motivos,'paquetes'=>$paquetes,'servicios'=>$servicios,'paises'=>$paises));
+        return response()->json(array ('clientes'=>$clientes,'estadoReservas'=>$estadoReservas,'habitaciones'=>$habitaciones,'motivos'=>$motivos,'paquetes'=>$paquetes,'servicios'=>$servicios,'canal_reserva'=>$canalReserva,'paises'=>$paises));
     }
 
     public function store(Request $request){
@@ -110,13 +114,14 @@ class ReservaController extends Controller
         $motivos=$this->motivoRep->obtenerMotivos();
         $paquetes=$this->paqueteRep->obtenerPaquetes();
         $servicios=$this->servicioRep->obtenerServicios();
+        $canalReserva=$this->canalReservaRep->obtenerCanalReserva();
         $paises=$this->paisRep->obtenerPaises();
 
         $ciudades=null;
         if( $reserva!=null){
             $ciudades=$this->ciudadRep->obtenerCiudadesPorPaisId($reserva->procedencia_pais_id);
         }
-        return response()->json(array ('reserva'=>$reserva,'transaccion'=>$transaccion,'transaccion_pago'=>$transaccionPago,'ciudades'=>$ciudades,'clientes'=>$clientes,'estadoReservas'=>$estadoReservas,'habitaciones'=>$habitaciones,'motivos'=>$motivos,'paquetes'=>$paquetes,'servicios'=>$servicios,'paises'=>$paises));
+        return response()->json(array ('reserva'=>$reserva,'transaccion'=>$transaccion,'transaccion_pago'=>$transaccionPago,'ciudades'=>$ciudades,'clientes'=>$clientes,'estadoReservas'=>$estadoReservas,'habitaciones'=>$habitaciones,'motivos'=>$motivos,'paquetes'=>$paquetes,'servicios'=>$servicios,'canal_reserva'=>$canalReserva,'paises'=>$paises));
     }
 
     public function update(Request $request,$id){

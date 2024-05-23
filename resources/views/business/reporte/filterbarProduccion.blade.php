@@ -15,13 +15,25 @@
                 </div>
             </div>
 
-            <div class="col-lg-3 col-md-3 col-sm-3 col-12">
+            <div class="col-lg-2 col-md-2 col-sm-2 col-12">
                 <div class="form-group m-0">
                     <label for="producto_id" class="my-0"><strong>Producto:</strong></label>
                     <select id="producto_id" name="producto_id"  class="form-control selectpicker" data-live-search="true">
                         <option value="">--Todos--</option>
                         @foreach($productos as $listProducto)
                             <option value="{{$listProducto->id}}">{{$listProducto->producto}}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-2 col-sm-2 col-12">
+                <div class="form-group m-0">
+                    <label for="canal_reserva_id" class="my-0"><strong>Canal Reserva:</strong></label>
+                    <select id="canal_reserva_id" name="canal_reserva_id"  class="form-control selectpicker" data-live-search="true">
+                        <option value="">--Todos--</option>
+                        @foreach($canal_reserva as $listCanalReserva)
+                            <option value="{{$listCanalReserva->id}}">{{$listCanalReserva->nombre}}</option>
                         @endforeach
                     </select>
                 </div>

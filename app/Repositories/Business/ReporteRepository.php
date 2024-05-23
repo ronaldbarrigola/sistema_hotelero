@@ -239,21 +239,50 @@ class ReporteRepository{
         $fecha_ini=($fecha_ini!=null)?Carbon::createFromFormat('Y-m-d',$fecha_ini)->format('Ymd'):null;
         $fecha_fin=($fecha_fin!=null)?Carbon::createFromFormat('Y-m-d',$fecha_fin)->format('Ymd'):null;
 
-        $huespedes=DB::table('res_huesped as u')
-        ->join('cli_cliente as cli','cli.id','=','u.cliente_id')
-        ->join('bas_persona as p','p.id','=','cli.id')
-        ->leftjoin('cli_pais as cp','cp.id','=','cli.pais_id')
-        ->join('con_cliente_datofactura as df','df.cliente_id','=','p.id')
-        ->join('con_datofactura as f','f.id','=','df.datofactura_id')
-        ->select('p.doc_id','cp.descripcion as nacionalidad',DB::raw('CONCAT(IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")," ",IFNULL(p.nombre,"")) AS huesped'),DB::raw('DATE_FORMAT(u.fecha_ingreso,"%d/%m/%Y") as fecha_ingreso'),DB::raw('DATE_FORMAT(u.fecha_salida,"%d/%m/%Y") as fecha_salida'),DB::raw('"0" as nro_factura'),DB::raw('"0" as nro_autorizacion'),DB::raw('"" as observacion'),DB::raw('"" as justificacion'),'f.nit')
-        ->where('u.estado','=','1')
-        ->where('cli.estado','=','1')
-        ->where('p.estado','=','1')
-        ->where('df.estado','=','1')
-        ->where('f.estado','=','1')
-        ->where('u.estado_huesped_id','=',2)
-        ->whereRaw('DATE_FORMAT(u.fecha_ingreso,"%Y%m%d") BETWEEN ? AND ?', [$fecha_ini,$fecha_fin])
-        ->orderBy('u.id','desc')
+        // $huespedes=DB::table('res_huesped as u')
+        // ->join('cli_cliente as cli','cli.id','=','u.cliente_id')
+        // ->join('bas_persona as p','p.id','=','cli.id')
+        // ->leftjoin('cli_pais as cp','cp.id','=','cli.pais_id')
+        // ->join('con_cliente_datofactura as df','df.cliente_id','=','p.id')
+        // ->join('con_datofactura as f','f.id','=','df.datofactura_id')
+        // ->select('p.doc_id','cp.descripcion as nacionalidad',DB::raw('CONCAT(IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")," ",IFNULL(p.nombre,"")) AS huesped'),DB::raw('DATE_FORMAT(u.fecha_ingreso,"%d/%m/%Y") as fecha_ingreso'),DB::raw('DATE_FORMAT(u.fecha_salida,"%d/%m/%Y") as fecha_salida'),DB::raw('"0" as nro_factura'),DB::raw('"0" as nro_autorizacion'),DB::raw('"" as observacion'),DB::raw('"" as justificacion'),'f.nit')
+        // ->where('u.estado','=','1')
+        // ->where('cli.estado','=','1')
+        // ->where('p.estado','=','1')
+        // ->where('df.estado','=','1')
+        // ->where('f.estado','=','1')
+        // ->where('u.estado_huesped_id','=',2)
+        // ->whereRaw('DATE_FORMAT(u.fecha_ingreso,"%Y%m%d") BETWEEN ? AND ?', [$fecha_ini,$fecha_fin])
+        // ->orderBy('u.id','desc')
+        // ->distinct()
+        // ->get();
+
+        $huespedes = DB::table('res_huesped as u')
+        ->join('cli_cliente as cli', 'cli.id', '=', 'u.cliente_id')
+        ->join('bas_persona as p', 'p.id', '=', 'cli.id')
+        ->leftJoin('cli_pais as cp', 'cp.id', '=', 'cli.pais_id')
+        ->join('con_cliente_datofactura as df', 'df.cliente_id', '=', 'p.id')
+        ->join('con_datofactura as f', 'f.id', '=', 'df.datofactura_id')
+        ->select([
+            'p.doc_id',
+            'cp.descripcion as nacionalidad',
+            DB::raw('CONCAT(IFNULL(p.paterno, ""), " ", IFNULL(p.materno, ""), " ", IFNULL(p.nombre, "")) AS huesped'),
+            DB::raw('DATE_FORMAT(u.fecha_ingreso, "%d/%m/%Y") as fecha_ingreso'),
+            DB::raw('DATE_FORMAT(u.fecha_salida, "%d/%m/%Y") as fecha_salida'),
+            DB::raw('"0" as nro_factura'),
+            DB::raw('"0" as nro_autorizacion'),
+            DB::raw('"" as observacion'),
+            DB::raw('"" as justificacion'),
+            'f.nit'
+        ])
+        ->where('u.estado', '=', '1')
+        ->where('cli.estado', '=', '1')
+        ->where('p.estado', '=', '1')
+        ->where('df.estado', '=', '1')
+        ->where('f.estado', '=', '1')
+        ->where('u.estado_huesped_id', '=', 2)
+        ->whereBetween(DB::raw('DATE_FORMAT(u.fecha_ingreso, "%Y%m%d")'), [$fecha_ini, $fecha_fin])
+        ->orderBy('u.id', 'desc')
         ->distinct()
         ->get();
 
@@ -272,12 +301,13 @@ class ReporteRepository{
     //END:Reporte SIAT
 
     //BEGIN:Reporte Produccion
-    public function obtenerProduccion($habitacion_id,$producto_id,$fecha_ini,$fecha_fin){
+    public function obtenerProduccion($habitacion_id,$producto_id,$canal_reserva_id,$fecha_ini,$fecha_fin){
         $fecha_ini=($fecha_ini!=null)?Carbon::createFromFormat('Y-m-d',$fecha_ini)->format('Ymd'):null;
         $fecha_fin=($fecha_fin!=null)?Carbon::createFromFormat('Y-m-d',$fecha_fin)->format('Ymd'):null;
 
         $produccion=DB::table('res_reserva as r')
         ->leftjoin('gob_habitacion as h','h.id','=','r.habitacion_id')
+        ->leftjoin('res_canal_reserva as cr','cr.id','=','r.canal_reserva_id')
         ->join('con_transaccion as tr','tr.reserva_id','=','r.id')
         ->join('con_transaccion_pago as trp','trp.transaccion_id','=','tr.id')
         ->leftjoin('con_tipo_transaccion as tt','tt.id','=','trp.tipo_transaccion_id')
@@ -286,7 +316,7 @@ class ReporteRepository{
         ->leftjoin('bas_persona as p','p.id','=','cli.id')
         ->leftjoin('pro_hotel_producto as hp','hp.id','=','tr.hotel_producto_id')
         ->leftjoin('pro_producto as pd','pd.id','=','hp.producto_id')
-        ->select(DB::raw('DATE_FORMAT(trp.fecha,"%d/%m/%Y") as fecha'),'r.id as reserva_id','h.num_habitacion','pd.descripcion as producto',DB::raw('CONCAT(IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")," ",IFNULL(p.nombre,"")) AS cliente'),'tt.descripcion as tipo_transaccion','trp.monto')
+        ->select(DB::raw('DATE_FORMAT(trp.fecha,"%d/%m/%Y") as fecha'),'cr.nombre as canal_reserva','r.id as reserva_id','h.num_habitacion','pd.descripcion as producto',DB::raw('CONCAT(IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")," ",IFNULL(p.nombre,"")) AS cliente'),'tt.descripcion as tipo_transaccion','trp.monto')
         ->where('r.estado','=','1')
         ->where('tr.estado','=','1')
         ->where('trp.estado','=','1')
@@ -300,18 +330,21 @@ class ReporteRepository{
         if($producto_id!=null){
             $produccion->where('pd.id','=',$producto_id);
         }
+        if($canal_reserva_id!=null){
+            $produccion->where('cr.id','=',$canal_reserva_id);
+        }
 
         $produccion=$produccion->get();
         return $produccion;
     }
 
-    public function obtenerReporteProduccionDataTables($habitacion_id,$producto_id,$fecha_ini,$fecha_fin){
-        $produccion=$this->obtenerProduccion($habitacion_id,$producto_id,$fecha_ini,$fecha_fin);
+    public function obtenerReporteProduccionDataTables($habitacion_id,$producto_id,$canal_reserva_id,$fecha_ini,$fecha_fin){
+        $produccion=$this->obtenerProduccion($habitacion_id,$producto_id,$canal_reserva_id,$fecha_ini,$fecha_fin);
         return datatables()->of($produccion)->toJson();
     }
 
-    public function exportarReporteProduccion($formato,$habitacion_id,$producto_id,$fecha_ini,$fecha_fin){
-        $produccion=$this->obtenerProduccion($habitacion_id,$producto_id,$fecha_ini,$fecha_fin);
+    public function exportarReporteProduccion($formato,$habitacion_id,$producto_id,$canal_reserva_id,$fecha_ini,$fecha_fin){
+        $produccion=$this->obtenerProduccion($habitacion_id,$producto_id,$canal_reserva_id,$fecha_ini,$fecha_fin);
         if($formato=="excel"){
             $this->exportarProduccionExcel->exportar($produccion);
         } else {

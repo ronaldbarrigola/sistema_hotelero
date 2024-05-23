@@ -159,7 +159,7 @@
                             } else {
                                 nombre=v.paterno;
                             }
-                            title=`<span>Nro. Reserva : ${v.id}</span><br><span>Cliente : ${v.cliente}</span><br><span>Tipo Habitacion : ${v.tipo_habitacion}</span>`;
+                            title=`<span>Nro. Reserva : ${v.id}</span><br><span>Cliente : ${v.cliente}</span><br><span>Tipo Habitacion : ${v.tipo_habitacion}</span><br><span>Canal Reserva : ${v.canal_reserva}</span>`;
 
                             if(v.estado_reserva_id==0||v.estado_reserva_id==1){
                                 nombre =v.cantidad_huesped_checkin + ", " + nombre
@@ -204,7 +204,7 @@
                         }
 
 
-                        title=`<span>Nro. Reserva : ${v.id}</span><br><span>Cliente : ${v.cliente}</span><br><span>Tipo Habitacion : ${v.tipo_habitacion}</span>`;
+                        title=`<span>Nro. Reserva : ${v.id}</span><br><span>Cliente : ${v.cliente}</span><br><span>Tipo Habitacion : ${v.tipo_habitacion}</span><br><span>Canal Reserva : ${v.canal_reserva}</span>`;
 
                         if(v.estado_reserva_id==0||v.estado_reserva_id==1){
                             nombre=v.cantidad_huesped_checkin + ", " + nombre

@@ -9,6 +9,7 @@
                 <th>Num Hab.</th>
                 <th>Tipo Habitacion</th>
                 <th>Servicio</th>
+                <th>Canal Reserva</th>
                 <th>Fecha Ingreso</th>
                 <th>Fecha Salida</th>
                 <th>Pais Procedencia</th>
@@ -24,8 +25,8 @@
     </div>
 </div>
 @include('partials/confirmaeliminacion',['url_base_eliminar'=>'business/reserva'])
-@include('business/reserva/create_edit')
 @include('business/cliente/create_edit')
+@include('business/reserva/create_edit')
 
 @push('scripts')
     <script>
@@ -46,6 +47,7 @@
                             {data:'num_habitacion'},
                             {data:'tipo_habitacion'},
                             {data:'servicio'},
+                            {data:'canal_reserva'},
                             {data:'fecha_ini'},
                             {data:'fecha_fin'},
                             {data:'pais'},

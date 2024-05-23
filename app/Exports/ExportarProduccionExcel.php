@@ -20,7 +20,7 @@ class ExportarProduccionExcel
             $activeSheet->getParent()->getDefaultStyle()->getFont()->setName('Arial');
             $activeSheet->setCellValue('A1', 'REPORTE DE PRODUCCION');
             $activeSheet->getStyle("A1")->getFont()->setSize(16);
-            $activeSheet->mergeCells('A1:G1');
+            $activeSheet->mergeCells('A1:H1');
 
             //CONFIGURACION DE PAGINA PARA IMPRESION
             $activeSheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
@@ -41,8 +41,9 @@ class ExportarProduccionExcel
             $activeSheet->setCellValue('C'.self::FIL_INI, 'Num. Hab.');
             $activeSheet->setCellValue('D'.self::FIL_INI, 'Producto');
             $activeSheet->setCellValue('E'.self::FIL_INI, 'Cliente');
-            $activeSheet->setCellValue('F'.self::FIL_INI, 'Tipo Transaccion');
-            $activeSheet->setCellValue('G'.self::FIL_INI, 'Monto');
+            $activeSheet->setCellValue('F'.self::FIL_INI, 'Canal Reserva');
+            $activeSheet->setCellValue('G'.self::FIL_INI, 'Tipo Transaccion');
+            $activeSheet->setCellValue('H'.self::FIL_INI, 'Monto');
 
             //COLOR DE TITULO COLUMNAS
             $styleArray = array(
@@ -77,7 +78,7 @@ class ExportarProduccionExcel
                 )
             );
 
-            $activeSheet->getStyle("A".self::FIL_INI.":G".self::FIL_INI)->applyFromArray($styleArray);
+            $activeSheet->getStyle("A".self::FIL_INI.":H".self::FIL_INI)->applyFromArray($styleArray);
 
             // LLENANDO FILAS
             $i=self::FIL_INI;
@@ -88,13 +89,14 @@ class ExportarProduccionExcel
                 $activeSheet->setCellValue('C'.$i , $row->num_habitacion);
                 $activeSheet->setCellValue('D'.$i , $row->producto);
                 $activeSheet->setCellValue('E'.$i , $row->cliente);
-                $activeSheet->setCellValue('F'.$i , $row->tipo_transaccion);
-                $activeSheet->setCellValue('G'.$i , $row->monto);
+                $activeSheet->setCellValue('F'.$i , $row->canal_reserva);
+                $activeSheet->setCellValue('G'.$i , $row->tipo_transaccion);
+                $activeSheet->setCellValue('H'.$i , $row->monto);
 
-                $activeSheet->getStyle("A".$i.":G".$i)->applyFromArray($styleArray2); //Establecer bordes
+                $activeSheet->getStyle("A".$i.":H".$i)->applyFromArray($styleArray2); //Establecer bordes
             }
 
-            foreach (range('A','G') as $col) {
+            foreach (range('A','H') as $col) {
                 $activeSheet->getColumnDimension($col)->setAutoSize(true);
             }
 

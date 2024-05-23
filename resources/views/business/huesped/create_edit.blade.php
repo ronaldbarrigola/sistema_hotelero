@@ -42,10 +42,6 @@
   <script>
         $(document).ready(function() {
 
-           $(document).on("click", "#btnNuevoHuespedCliente", function(){ //El boton btnCreateCliente se encuentra en actionbar
-              createCliente();
-           });
-
         }); //Fin ready
 
         function submitFormHuesped(event) {

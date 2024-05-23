@@ -10,6 +10,7 @@ use App\Repositories\Business\EstadoReservaRepository;
 use App\Repositories\Business\EstadoHuespedRepository;
 use App\Repositories\Business\TipoHabitacionRepository;
 use App\Repositories\Business\ProductoRepository;
+use App\Repositories\Business\CanalReservaRepository;
 
 class ReporteController extends Controller
 {
@@ -20,8 +21,9 @@ class ReporteController extends Controller
     protected $estadoHuespedRep;
     protected $tipoHabitacionRep;
     protected $productoRep;
+    protected $canalReservaRep;
 
-    public function __construct(ReporteRepository $reporteRep,HabitacionRepository $habitacionRep,ClienteRepository $clienteRep,EstadoReservaRepository $estadoReservaRep,EstadoHuespedRepository $estadoHuespedRep,TipoHabitacionRepository $tipoHabitacionRep,ProductoRepository $productoRep){
+    public function __construct(ReporteRepository $reporteRep,HabitacionRepository $habitacionRep,ClienteRepository $clienteRep,EstadoReservaRepository $estadoReservaRep,EstadoHuespedRepository $estadoHuespedRep,TipoHabitacionRepository $tipoHabitacionRep,ProductoRepository $productoRep,CanalReservaRepository $canalReservaRep){
         $this->middleware('auth');
         $this->middleware('guest');
         $this->reporteRep=$reporteRep;
@@ -31,6 +33,7 @@ class ReporteController extends Controller
         $this->estadoHuespedRep=$estadoHuespedRep;
         $this->tipoHabitacionRep=$tipoHabitacionRep;
         $this->productoRep=$productoRep;
+        $this->canalReservaRep=$canalReservaRep;
     }
 
     public function obtenerReservas(Request $request){
@@ -117,13 +120,15 @@ class ReporteController extends Controller
         if($request->ajax()){
             $habitacion_id=$request->get("habitacion_id");
             $producto_id=$request->get("producto_id");
+            $canal_reserva_id=$request->get("canal_reserva_id");
             $fecha_ini=$request->get("fecha_ini");
             $fecha_fin=$request->get("fecha_fin");
-            return $this->reporteRep->obtenerReporteProduccionDataTables($habitacion_id,$producto_id,$fecha_ini,$fecha_fin);
+            return $this->reporteRep->obtenerReporteProduccionDataTables($habitacion_id,$producto_id,$canal_reserva_id,$fecha_ini,$fecha_fin);
         }else{
             $habitaciones=$this->habitacionRep->obtenerHabitaciones();
             $productos=$this->productoRep->obtenerProductos();
-            return view('business.reporte.produccion',['habitaciones'=>$habitaciones,'productos'=>$productos]);
+            $canalReserva=$this->canalReservaRep->obtenerCanalReserva();
+            return view('business.reporte.produccion',['habitaciones'=>$habitaciones,'productos'=>$productos,'canal_reserva'=>$canalReserva]);
         }
     }
 
@@ -131,10 +136,11 @@ class ReporteController extends Controller
     {
         $formato=$request->get("formato");
         $habitacion_id=$request->get("habitacion_id");
+        $canal_reserva_id=$request->get("canal_reserva_id");
         $producto_id=$request->get("producto_id");
         $fecha_ini=$request->get("fecha_ini");
         $fecha_fin=$request->get("fecha_fin");
-        $this->reporteRep->exportarReporteProduccion($formato,$habitacion_id,$producto_id,$fecha_ini,$fecha_fin);
+        $this->reporteRep->exportarReporteProduccion($formato,$habitacion_id,$producto_id,$canal_reserva_id,$fecha_ini,$fecha_fin);
     }
     //END: Reporte Produccion
 

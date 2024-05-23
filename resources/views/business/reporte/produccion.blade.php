@@ -17,13 +17,14 @@
                             <th>Habitacion</th>
                             <th>Producto</th>
                             <th>Cliente</th>
+                            <th>Canal Reserva</th>
                             <th>Tipo Transaccion</th>
                             <th>Ingreso</th>
                         </tr>
                     </thead>
                     <tfoot>
                         <tr>
-                            <th colspan="6">TOTALES</th>
+                            <th colspan="7">TOTALES</th>
                             <th></th>
                         </tr>
                     </tfoot>
@@ -44,6 +45,7 @@
                             {data:'num_habitacion'},
                             {data:'producto'},
                             {data:'cliente'},
+                            {data:'canal_reserva'},
                             {data:'tipo_transaccion'},
                             {data:'monto',className: "text-center"},
                         ];
@@ -59,6 +61,7 @@
                             "data" :function(d){
                                       d.habitacion_id=$("#habitacion_id").val();
                                       d.producto_id=$("#producto_id").val();
+                                      d.canal_reserva_id=$("#canal_reserva_id").val();
                                       d.fecha_ini=$("#fecha_ini").val();
                                       d.fecha_fin=$("#fecha_fin").val();
                                     },
@@ -69,7 +72,7 @@
                     var api = this.api(), data;
 
                     //BEGIN:Calcular total ingreso
-                    data = api.column( 6 ).data(); //Total paginas
+                    data = api.column( 7 ).data(); //Total paginas
                     var totalIngreso = data.length ?
                         data.reduce( function (a, b) {
                                 return parseFloat(a) + parseFloat(b);
@@ -78,7 +81,7 @@
 
                     // Update footer
 
-                    $( api.column( 6 ).footer() ).html(
+                    $( api.column( 7 ).footer() ).html(
                         '<span style="color:#00008B">'+ totalIngreso.toFixed(2) +'</span>'
                     );
                 },

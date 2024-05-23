@@ -58,6 +58,7 @@ class ExportarProduccionPdf
                     <th><strong>Num. Hab.</strong></th>
                     <th><strong>Producto</strong></th>
                     <th><strong>Cliente</strong></th>
+                    <th><strong>Canal Reserva</strong></th>
                     <th><strong>Tipo Transaccion</strong></th>
                     <th><strong>Ingreso</strong></th>
                 </tr></thead>';
@@ -72,6 +73,7 @@ class ExportarProduccionPdf
                 <td align="center">'.$row->num_habitacion.'</td>
                 <td align="left">'.$row->producto.'</td>
                 <td align="left">'.$row->cliente.'</td>
+                <td align="left">'.$row->canal_reserva.'</td>
                 <td align="left">'.$row->tipo_transaccion.'</td>
                 <td align="center">'.$row->monto.'</td>
              </tr>';
@@ -81,7 +83,7 @@ class ExportarProduccionPdf
 
        $footer= '<tfoot>
                 <tr>
-                    <td colspan="6" style="text-align:right;"><strong>TOTAL INGRESO</strong></td>
+                    <td colspan="7" style="text-align:right;"><strong>TOTAL INGRESO</strong></td>
                     <td>'.$total.'</td>
                 </tr>
                 </tfoot>';

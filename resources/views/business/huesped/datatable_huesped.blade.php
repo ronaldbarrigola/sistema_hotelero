@@ -20,7 +20,6 @@
 </div>
 
 @include('business/huesped/create_edit')
-{{-- @include('business/cliente/create_edit') --}}
 
 @push('scripts')
     <script>

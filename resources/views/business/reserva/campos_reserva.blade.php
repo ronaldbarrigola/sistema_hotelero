@@ -37,15 +37,6 @@
                     </div>
                 </div>
 
-                {{-- <div class="col-lg-6 col-md-6 col-sm-6 col-12">
-                    <div class="form-group">
-                        <label for="paquete_id" class="my-0" ><strong>Paquete:</strong></label>
-                        <select name="paquete_id" id="paquete_id"  class="form-control selectpicker border" data-live-search="true" >
-                             <!--Se carga los datos por ajax-->
-                        </select>
-                    </div>
-                </div> --}}
-
                 <div class="col-lg-6 col-md-6 col-sm-6 col-12">
                     <div class="form-group">
                         <label for="procedencia_pais_id" class="my-0" ><strong>Pais Procedencia:</strong></label>
@@ -60,6 +51,15 @@
                         <label for="procedencia_ciudad_id" class="my-0" ><strong>Ciudad Procedencia:</strong></label>
                         <select name="procedencia_ciudad_id" id="procedencia_ciudad_id" required class="form-control selectpicker border" data-live-search="true" >
                             <!--Se carga los datos por ajax-->
+                        </select>
+                    </div>
+                </div>
+
+                 <div class="col-lg-6 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label for="canal_reserva_id" class="my-0" ><strong>Canal Reserva:</strong></label>
+                        <select name="canal_reserva_id" id="canal_reserva_id" required class="form-control selectpicker border" data-live-search="true" >
+                             <!--Se carga los datos por ajax-->
                         </select>
                     </div>
                 </div>
