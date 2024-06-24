@@ -13,8 +13,10 @@
 
     {{-- BUSQUEDA --}}
     <div class="input-group mt-1">
-        <div class="input-group-prepend">
-            <div class="input-group-text">{{$titulo}}</div>
+        <div class="input-group-append">
+            <button type="button" class="btn btn-danger" id="btnDetalleCargo" onclick="detalleCargo()">
+                <i class="icon-Pdf"></i> Detalle Cargo
+            </button>
         </div>
         <input id="txtBuscarTransaccion" type="text" class="form-control" size="60" placeholder="Buscar"  >
         <div class="input-group-append">

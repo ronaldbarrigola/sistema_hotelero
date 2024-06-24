@@ -115,6 +115,8 @@
             @yield('content_index')
         </div>
 
+        @include('business/comprobante/detalle_cargo') <!--Declarar el comprobante detalle cargo como publico-->
+
     </div>
 
     <!-- Scripts -->

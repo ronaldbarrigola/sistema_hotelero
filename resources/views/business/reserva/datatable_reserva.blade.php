@@ -28,6 +28,7 @@
 @include('business/cliente/create_edit')
 @include('business/reserva/create_edit')
 
+
 @push('scripts')
     <script>
         var datatable_reserva="";
@@ -37,7 +38,7 @@
                             {data:'id',
                                 orderable:false,
                                 render: function(data){
-                                    return '<button id="'+data+'" class="btn btn-danger" onclick="comprobanteReserva(id);">Pdf</button>';
+                                    return '<button id="'+data+'" class="btn btn-danger" onclick="comprobanteDetalleCargo(id);">Pdf</button>';
                                 },
                                 className: "text-center"
                             },

@@ -162,4 +162,14 @@ class ReservaController extends Controller
         return response()->json(array('reserva'=>$reserva,'response'=>$response));
     }
 
+    public function generarComprobanteDetalleCargo(Request $request){
+        $id=$request["reserva_id"];
+        $response=true;
+        $reserva=$this->reservaRep->generarComprobanteDetalleCargo($id);
+        if (is_null($reserva) ){
+          $response=false;
+        }
+        return response()->json(array('reserva'=>$reserva,'response'=>$response));
+    }
+
 }

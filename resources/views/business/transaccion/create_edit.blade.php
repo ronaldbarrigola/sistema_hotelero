@@ -272,6 +272,26 @@
             }); //End Ajax
         }
 
+        function detalleCargo(){ //Para generar comprobante de detalle de cargos
+            var reserva_id = $('#foreign_reserva_id').val();
+            $.ajax({
+                    type: "GET",
+                    url: "{{route('detalle_cargo')}}",
+                    data:{reserva_id:reserva_id,'_token': '{{ csrf_token() }}'},
+                    dataType: 'json',
+                    beforeSend: function () {
+
+                    },
+                    success: function(result){
+                        var reserva_id=result.reserva.id;
+                        comprobanteDetalleCargo(reserva_id);//El partial esta declarado en layouts/plantilla.blade.php
+                    },//End success
+                    complete:function(result, textStatus ){
+
+                    }
+             }); //End Ajax
+        }
+
         function loadDataTransaccionAjax(result){
             $("#hotel_producto_id").find('option').remove();
             $("#hotel_producto_id").append('<option  value="">--Seleccione--</option>');

@@ -104,6 +104,7 @@ Route::get('/busines/ciudad/obtener_profesiones', [ProfesionController::class,'o
 Route::get('/busines/reserva/obtenerReservas', [ReservaController::class,'obtenerReservasTimeLines'])->name('obtenerReservasTimeLine');
 Route::get('/busines/reserva/obtenerReservaPorIdTimeLines', [ReservaController::class,'obtenerReservasPorIdTimeLines'])->name('obtenerReservaPorIdTimeLines');
 Route::get('/busines/reserva/validar_eliminacion', [ReservaController::class,'validarEliminacion'])->name('validar_eliminacion');
+Route::get('/busines/reserva/detalle_cargo', [ReservaController::class,'generarComprobanteDetalleCargo'])->name('detalle_cargo');
 Route::get('/business/ciudad/listaciudades', [ClienteCiudadController::class,'obtenerCiudadesPorPaisId'])->name('listaciudades');
 Route::get('/base/persona/buscarPersonaDocId', [PersonaController::class,'buscarPersonaClientePorDocId'])->name('buscarPersonaDocId');
 Route::get('/base/persona/obtenerpersonas', [PersonaController::class,'obtenerPersonas'])->name('obtenerpersonas');

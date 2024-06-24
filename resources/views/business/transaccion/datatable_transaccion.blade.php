@@ -64,6 +64,7 @@
 @include('business/transaccion/create_edit')
 @include('business/transaccion_pago/create_edit')
 @include('business/transaccion_anticipo/create_edit')
+
 @push('scripts')
     <script>
         var datatable_transaccion="";

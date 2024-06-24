@@ -40,7 +40,6 @@
     </div>
 </div> <!--End Modal-->
 
-@include('business/comprobante/reserva')
 
 @push('scripts')
   <script>
@@ -276,7 +275,7 @@
                     } catch(err){}
 
                     //View Comprobante de reserva
-                    comprobanteReserva(reserva_id);
+                    comprobanteDetalleCargo(reserva_id); //El partial esta declarado en layouts/plantilla.blade.php
                 },//End success
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
 

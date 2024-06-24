@@ -80,12 +80,14 @@
                     //BEGIN: Insertar elementos al menu contextual
                     var btnCargos="<div class='col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='slideTransaccion(id)' style='text-align:left'>Cargos</button></div>"; //slideReservaTransaccion(id) se encuentra en el modulo transaccion.crete_edit
                     var btnHuesped="<div class='m=0 col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='slideHuesped(this)' style='text-align:left'>Huesped</button></div>";
+                    var btnUpdate="<div class='m=0 col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='editReserva(id)' style='text-align:left'>Modificar</button></div>";
                     var btnCheckIn="<div class='m=0 col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='checkIn(this)' style='text-align:left'>Check In</button></div>";
                     var btnCheckOut="<div class='col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='checkOut(this)' style='text-align:left'>Check Out</button></div>";
                     var btnStandBy="<div class='col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='standBy(this)' style='text-align:left'>Stand By</button></div>";
 
                     $menu.append(btnCargos);
                     $menu.append(btnHuesped);
+                    $menu.append(btnUpdate);
                     $menu.append(btnCheckIn);
                     $menu.append(btnCheckOut);
                     $menu.append(btnStandBy);
@@ -230,9 +232,9 @@
             options = {
                  start: fechaActual,
                  end: fechaActual,
-                editable: true,
-                stack: true,
-                visibleFrameTemplate: function (item) {
+                 editable: true,
+                 stack: true,
+                 visibleFrameTemplate: function (item) {
                     if (item == null) return;//evitando error al crear rango(al presionar tecla crtl y arrastrar)
                     if (item.visibleFrameTemplate != '') {
                         return item.visibleFrameTemplate;// si ya tiene definido el visibleFrameTemplate lo muestra

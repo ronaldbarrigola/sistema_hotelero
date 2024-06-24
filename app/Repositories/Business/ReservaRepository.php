@@ -129,6 +129,7 @@ class ReservaRepository{
         return $reserva;
     }
 
+    //Cabecera del comprobante detalle cargo
     public function obtenerInformacionReservaPorId($reserva_id){
         $reserva= DB::table('res_reserva as r')
         ->join('res_servicio as s','s.id','=','r.servicio_id')
@@ -144,13 +145,37 @@ class ReservaRepository{
         return $reserva;
     }
 
-    public function obtenerInformacionTransaccionDetallePorId($transaccion_id){
-        $transaccion_detalle=DB::table('con_transaccion_detalle as td')
-        ->select('td.id',DB::raw('DATE_FORMAT(td.fecha,"%d/%m/%Y") as fecha'),DB::raw('DATE_FORMAT(td.fecha_ini,"%d/%m/%Y") as fecha_ini'),DB::raw('DATE_FORMAT(td.fecha_fin,"%d/%m/%Y") as fecha_fin'),'td.monto')
-        ->where('td.transaccion_id','=',$transaccion_id)
-        ->where('td.estado','=','1')
-        ->get();
-        return $transaccion_detalle;
+    //Detalle del comprobante detalle cargo
+    public function obtenerInformacionTransaccionPorReservaId($reserva_id){
+        $transaccion_cargo=DB::table('con_transaccion as tr')
+                            ->join('pro_hotel_producto as hp','hp.id','=','tr.hotel_producto_id')
+                            ->join('pro_producto as p','p.id','=','hp.producto_id')
+                            ->select('tr.id',DB::raw('DATE_FORMAT(tr.fecha,"%d/%m/%Y") as fecha'),'p.descripcion as producto','tr.cantidad','tr.precio_unidad','tr.descuento','tr.monto as cargo',DB::raw('(SELECT IFNULL(sum(trp.monto),0) FROM con_transaccion_pago trp WHERE trp.transaccion_id=tr.id AND tr.estado=1 AND trp.estado=1) as pago'),DB::raw("0 as saldo"))
+                            ->where('tr.reserva_id','=',$reserva_id)
+                            ->where('tr.estado','=','1')
+                            ->where('hp.estado','=','1')
+                            ->where('p.estado','=','1')
+                            ->get();
+
+         //Calcular saldo
+         if($transaccion_cargo!=null){
+            foreach($transaccion_cargo as $row){
+                $cargo=($row->cargo!=null)?$row->cargo:0;
+                $pago=($row->pago!=null)?$row->pago:0;
+                $row->saldo=round($cargo-$pago,2);
+            }
+        }
+
+        return $transaccion_cargo;
+    }
+
+    public function generarComprobanteDetalleCargo($reserva_id){
+        $reserva=$this->obtenerInformacionReservaPorId($reserva_id);
+        $detalle=$this->obtenerInformacionTransaccionPorReservaId($reserva_id);
+        if($reserva!=null&&$detalle!=null){
+            $this->comprobanteRep->comprobante_detalle_cargo($reserva,$detalle);
+        }
+        return $reserva;
     }
 
     public function obtenerReservaPorId($id){
@@ -252,15 +277,6 @@ class ReservaRepository{
        return $response;
     }
 
-    public function generarComprobante($reserva_id,$transaccion_id){
-        $informacionReserva=$this->obtenerInformacionReservaPorId($reserva_id);
-        $informacionDetalle=$this->obtenerInformacionTransaccionDetallePorId($transaccion_id);
-        if($informacionReserva!=null&&$informacionDetalle!=null){
-            $this->comprobanteRep->comprobante_reserva($informacionReserva,$informacionDetalle);
-        }
-    }
-
-
     public function insertarDesdeRequest(Request $request){
         $reserva=null;
         try{
@@ -294,7 +310,7 @@ class ReservaRepository{
             $request->request->add(['hotel_producto_id'=>$hotel_producto->id]);
             $request->request->add(['pago_cliente_id'=>$reserva->cliente_id]); //En caso de que exista anticipo
 
-            $transaccion=$this->transaccionRep->insertarDesdeReserva($request);
+            $this->transaccionRep->insertarDesdeReserva($request);
 
             $persona=$this->personaRep->obtenerPersonaPorId($reserva->cliente_id); //El id cliente es lo mismo que id persona
             if(!is_null($persona)){
@@ -304,7 +320,7 @@ class ReservaRepository{
                 }
             }
 
-            $this->generarComprobante($reserva->id,$transaccion->id);
+            $this->generarComprobanteDetalleCargo($reserva->id); //El partial esta declarado en layouts/plantilla.blade.php
 
             DB::commit();
         }catch(\Exception $e){
@@ -371,7 +387,7 @@ class ReservaRepository{
 
             }
 
-            $this->generarComprobante($reserva->id,$transaccion->id);
+            $this->generarComprobanteDetalleCargo($reserva->id);
 
             DB::commit();
         }catch(\Exception $e){

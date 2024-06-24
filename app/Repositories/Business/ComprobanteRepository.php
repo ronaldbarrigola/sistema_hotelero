@@ -18,7 +18,7 @@ class ComprobanteRepository{
     }
 
     //Generar comprobante PDF papel carta
-    public function comprobante_reserva($reserva,$detalle){
+    public function comprobante_detalle_cargo($reserva,$detalle){
 
         //https://tcpdf.org Manual tcpdf
 
@@ -104,69 +104,76 @@ class ComprobanteRepository{
         //Titulo del comprobante
         $pdf::ln(6);
         $pdf::SetFont('Helvetica','B',14);
-        $pdf::Cell(0,4,"DETALLE DE RESERVA",0,1,'C');
+        $pdf::Cell(0,4,"DETALLE DE CARGOS",0,1,'C');
 
         /// Apartir de aqui empezamos con la tabla de productos
         $pdf::ln(2);
-        $pdf::SetFont('Helvetica','',12);
+        $pdf::SetFont('Helvetica','',10);
         $tbody="";
         $total=0;
-        $cantidad_total=0;
-        $descuento=($reserva->descuento!=null)?$reserva->descuento:0;
-        $anticipo=($reserva->anticipo!=null)?$reserva->anticipo:0;
+        $descuento_total=0;
+        $cargo_total=0;
+        $pago_total=0;
+        $saldo_total=0;
         foreach($detalle as $row)
         {
             $tbody=$tbody.'<tr>
-                <td align="center">'.$row->fecha_ini.'</td>
-                <td align="center">'.$row->fecha_fin.'</td>
-                <td align="center">1</td>
-                <td align="center">'.number_format($row->monto,2,".",",").'</td>
+                <td align="left">'.$row->fecha.'</td>
+                <td align="left">'.$row->producto.'</td>
+                <td align="center">'.$row->cantidad.'</td>
+                <td align="right">'.$row->precio_unidad.'</td>
+                <td align="right">'.number_format($row->cantidad*$row->precio_unidad,2,".",",").'</td>
+                <td align="right">'.number_format($row->descuento,2,".",",").'</td>
+                <td align="right">'.number_format($row->cargo,2,".",",").'</td>
+                <td align="right">'.number_format($row->pago,2,".",",").'</td>
+                <td align="right">'.number_format($row->saldo,2,".",",").'</td>
             </tr>';
-            $total=$total+$row->monto;
-            $cantidad_total=$cantidad_total+1;
+            $total=$total + $row->cantidad*$row->precio_unidad;
+            $descuento_total=$descuento_total + $row->descuento;
+            $cargo_total=$cargo_total + $row->cargo;
+            $pago_total=$pago_total + $row->pago;
+            $saldo_total=$saldo_total + $row->saldo;
         }
 
-        $pago=$total-($descuento+$anticipo);
-
         $html= '<table border="1" cellspacing="0" style="text-align:center;">
-
                     <thead><tr bgcolor="#58D68D">
-                        <th><strong>Desde</strong></th>
-                        <th><strong>Hasta</strong></th>
-                        <th><strong>Cantidad</strong></th>
-                        <th><strong>Monto</strong></th>
+                        <th><strong>Fecha</strong></th>
+                        <th><strong>Detalle</strong></th>
+                        <th><strong>Cant</strong></th>
+                        <th><strong>P/U</strong></th>
+                        <th><strong>Total</strong></th>
+                        <th><strong>Dscto</strong></th>
+                        <th><strong>Cargo</strong></th>
+                        <th><strong>Pago</strong></th>
+                        <th><strong>Saldo</strong></th>
                     </tr></thead>
-
                 <tbody>'.$tbody.'</tbody>
                 <tfoot>
                    <tr>
-                      <th colspan="2">TOTAL</th>
-                      <th>'.$cantidad_total.'</th>
-                      <th>'.number_format($total,2,".",",").'</th>
+                      <th colspan="4">TOTAL</th>
+                      <th align="right">'.number_format($total,2,".",",").'</th>
+                      <th align="right">'.number_format($descuento_total,2,".",",").'</th>
+                      <th align="right">'.number_format($cargo_total,2,".",",").'</th>
+                      <th align="right">'.number_format($pago_total,2,".",",").'</th>
+                      <th align="right">'.number_format($saldo_total,2,".",",").'</th>
                    </tr>
                 </tfoot>
                 </table>';
+
         $pdf::writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
 
         $pdf::ln(5);
+        $pdf::SetFont('Helvetica','',12);
         $html_footer='<table border="0">
-            <tr>
-                <td colspan="3" style="text-align:right;">Descuento</td>
-                <td style="text-align:center;">'.number_format($reserva->descuento,2,".",",").'</td>
-            </tr>
-            <tr>
-                <td colspan="3" style="text-align:right;">Anticipo</td>
-                <td style="text-align:center;">'.number_format($reserva->anticipo,2,".",",").'</td>
-            </tr>
             <hr>
             <tr>
-                <td colspan="3" style="text-align:right;">TOTAL A PAGAR :'.$this->numerosEnLetras->convertir($pago,'Bolivianos',true).'</td>
-                <td style="text-align:center;">'.number_format($pago,2,".",",").'</td>
+                <td colspan="3" style="text-align:right;">TOTAL A PAGAR :'.$this->numerosEnLetras->convertir($saldo_total,'Bolivianos',true).'</td>
+                <td style="text-align:center;"><strong>'.number_format($saldo_total,2,".",",").'</strong></td>
             </tr>
         </table>';
         $pdf::writeHTMLCell(0, 0, '', '', $html_footer, 0, 1, 0, true, '', true);
 
-        $pdf::Output(public_path('pdf/comprobante/reserva/'.$reserva->id.'.pdf'), 'F');
+        $pdf::Output(public_path('pdf/comprobante/detalle_cargo/'.$reserva->id.'.pdf'), 'F');
     }
 
 }//fin clase
