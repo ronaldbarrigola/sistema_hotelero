@@ -25,6 +25,7 @@ use App\Http\Controllers\PaisController;
 use App\Http\Controllers\ClienteCiudadController;
 use App\Http\Controllers\ProfesionController;
 use App\Http\Controllers\ReporteController;
+use App\Http\Controllers\GrupoController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -141,5 +142,6 @@ Route::resource('business/huesped', HuespedController::class);
 Route::resource('business/pais', PaisController::class);
 Route::resource('business/ciudad', ClienteCiudadController::class);
 Route::resource('business/profesion', ProfesionController::class);
+Route::resource('business/grupo', GrupoController::class);
 
 

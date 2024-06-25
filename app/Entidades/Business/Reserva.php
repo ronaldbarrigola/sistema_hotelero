@@ -94,10 +94,17 @@ class Reserva extends Model
        return $this->hasMany(Transaccion::class,'reserva_id','id');
     }
 
-     //Relacion 1 a muchos
-     public function huespedes()
-     {
-        return $this->hasMany(Huesped::class,'reserva_id','id');
-     }
+    //Relacion 1 a muchos
+    public function huespedes()
+    {
+       return $this->hasMany(Huesped::class,'reserva_id','id');
+    }
+
+    //Relacion 1 a muchos (Inversa)
+    public function grupo()
+    {
+       return $this->belongsTo(Grupo::class,'reserva_id','id');
+    }
+
 
 }

@@ -37,6 +37,7 @@
         @include('business/reserva/create_edit')
         @include('business/cliente/create_edit')
         @include('business/profesion/create_edit')
+        @include('business/grupo/create_edit')
         @include('business/contextmenu/menu')
     @endsection
 @endsection
@@ -52,6 +53,7 @@
         //Variables Time Line
         var dataGroups=[];
         var dataItems=[];
+        var selectedItems=[]; //Usado para agrupar items seleccionados
         var groups="";
         var items ="";
         var options="";
@@ -72,6 +74,15 @@
             loadOptions();
             timeline = new vis.Timeline(container, items, groups, options);
 
+            //Para agrupar reservas seleccionados
+            timeline.on('select', function (properties) {
+                selectedItems = properties.items;
+                limpiarDatoGrupo();
+                selectedItems.forEach(function(reserva_id) {
+                    cargarFilaGrupo(reserva_id,"nuevo")
+                });
+            });
+
             timeline.on('contextmenu', function (props) {
                 props.event.preventDefault(); // Para evitar que se abra el menú del navegador
                 var $menu = $('.context-menu'); //.context-menu se ecuentra en el modulo contextmenu
@@ -84,6 +95,7 @@
                     var btnCheckIn="<div class='m=0 col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='checkIn(this)' style='text-align:left'>Check In</button></div>";
                     var btnCheckOut="<div class='col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='checkOut(this)' style='text-align:left'>Check Out</button></div>";
                     var btnStandBy="<div class='col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='standBy(this)' style='text-align:left'>Stand By</button></div>";
+                    var btnGroupSelectedItems="<div class='col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='groupSelectedItems(this)' style='text-align:left'>Agrupar</button></div>";
 
                     $menu.append(btnCargos);
                     $menu.append(btnHuesped);
@@ -91,6 +103,7 @@
                     $menu.append(btnCheckIn);
                     $menu.append(btnCheckOut);
                     $menu.append(btnStandBy);
+                    $menu.append(btnGroupSelectedItems);
 
                     //END: Insertar elementos al menu contextual se ecuentra en el modulo contextmenu
                 } else {
@@ -167,9 +180,9 @@
                                 nombre =v.cantidad_huesped_checkin + ", " + nombre
                                 var porcentaje=(v.porcentaje!=null)?v.porcentaje:0;
                                 var visibleFrameTemplate='<div class="progress-wrapper"><div class="progress" style="width:'+porcentaje+'%"></div><label class="progress-label">'+porcentaje+'%<label></div>';
-                                dataItems.push({id:v.id,content:nombre,title:title,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,editable:Boolean(v.editable),visibleFrameTemplate:visibleFrameTemplate})
+                                dataItems.push({id:v.id,content:nombre,title:title,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,style: "border: 4px solid " + v.color_borde ,editable:Boolean(v.editable),visibleFrameTemplate:visibleFrameTemplate})
                             } else {
-                                dataItems.push({id:v.id,content:nombre,title:title,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,editable:Boolean(v.editable)})
+                                dataItems.push({id:v.id,content:nombre,title:title,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,style: "border: 4px solid " + v.color_borde ,editable:Boolean(v.editable)})
                             }
 
                         });
@@ -212,9 +225,9 @@
                             nombre=v.cantidad_huesped_checkin + ", " + nombre
                             var porcentaje=(v.porcentaje!=null)?v.porcentaje:0;
                             var visibleFrameTemplate='<div class="progress-wrapper"><div class="progress" style="width:'+porcentaje+'%"></div><label class="progress-label">'+porcentaje+'%<label></div>';
-                            items.update({id:v.id,content:nombre,title:title,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,editable:Boolean(v.editable),visibleFrameTemplate:visibleFrameTemplate});
+                            items.update({id:v.id,content:nombre,title:title,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,style: "border: 4px solid " + v.color_borde,editable:Boolean(v.editable),visibleFrameTemplate:visibleFrameTemplate});
                         } else {
-                            items.update({id:v.id,content:nombre,title:title,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,editable:Boolean(v.editable)})
+                            items.update({id:v.id,content:nombre,title:title,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,style: "border: 4px solid " + v.color_borde,editable:Boolean(v.editable)})
                         }
                        //timeline.redraw();
                        //timeline.refresh();
@@ -230,6 +243,8 @@
         function loadOptions(){
             var fechaActual = new Date(); //Para que el timeline se ubique en la fecha actual
             options = {
+                 multiselect: true,
+                 selectable: true,
                  start: fechaActual,
                  end: fechaActual,
                  editable: true,
@@ -375,6 +390,14 @@
                     estadoReserva(reserva_id,estado_reserva_id);
                 }
             });
+        }
+
+        function groupSelectedItems($this){
+            if (selectedItems.length > 1) {
+                $("#modalViewGrupo").modal("show");
+            } else {
+                messageAlert("Debe seleccionar mas de dos Reservas para agrupar");
+            }
         }
 
         function checkOut($this){

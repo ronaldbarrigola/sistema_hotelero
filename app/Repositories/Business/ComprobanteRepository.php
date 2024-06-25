@@ -108,7 +108,7 @@ class ComprobanteRepository{
 
         /// Apartir de aqui empezamos con la tabla de productos
         $pdf::ln(2);
-        $pdf::SetFont('Helvetica','',10);
+        $pdf::SetFont('Helvetica','',9);
         $tbody="";
         $total=0;
         $descuento_total=0;
@@ -118,6 +118,7 @@ class ComprobanteRepository{
         foreach($detalle as $row)
         {
             $tbody=$tbody.'<tr>
+                <td align="center">'.$row->num_habitacion.'</td>
                 <td align="left">'.$row->fecha.'</td>
                 <td align="left">'.$row->producto.'</td>
                 <td align="center">'.$row->cantidad.'</td>
@@ -137,6 +138,7 @@ class ComprobanteRepository{
 
         $html= '<table border="1" cellspacing="0" style="text-align:center;">
                     <thead><tr bgcolor="#58D68D">
+                        <th><strong>Hab.</strong></th>
                         <th><strong>Fecha</strong></th>
                         <th><strong>Detalle</strong></th>
                         <th><strong>Cant</strong></th>
@@ -150,7 +152,7 @@ class ComprobanteRepository{
                 <tbody>'.$tbody.'</tbody>
                 <tfoot>
                    <tr>
-                      <th colspan="4">TOTAL</th>
+                      <th colspan="5">TOTAL</th>
                       <th align="right">'.number_format($total,2,".",",").'</th>
                       <th align="right">'.number_format($descuento_total,2,".",",").'</th>
                       <th align="right">'.number_format($cargo_total,2,".",",").'</th>
@@ -167,7 +169,7 @@ class ComprobanteRepository{
         $html_footer='<table border="0">
             <hr>
             <tr>
-                <td colspan="3" style="text-align:right;">TOTAL A PAGAR :'.$this->numerosEnLetras->convertir($saldo_total,'Bolivianos',true).'</td>
+                <td colspan="4" style="text-align:right;">TOTAL A PAGAR :'.$this->numerosEnLetras->convertir($saldo_total,'Bolivianos',true).'</td>
                 <td style="text-align:center;"><strong>'.number_format($saldo_total,2,".",",").'</strong></td>
             </tr>
         </table>';

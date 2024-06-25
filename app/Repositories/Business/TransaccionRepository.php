@@ -4,6 +4,7 @@ namespace App\Repositories\Business;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Entidades\Business\Transaccion;
+use App\Entidades\Business\Reserva;
 use App\Repositories\Business\CargoRepository;
 use App\Repositories\Business\TransaccionAnticipoRepository;
 use App\Repositories\Business\TransaccionDetalleRepository;
@@ -23,14 +24,27 @@ class TransaccionRepository{
     }
 
     public function obtenerTransacciones($reserva_id){
+
+        $grupo_id = -1;
+        $reserva = Reserva::find($reserva_id);
+        if (!is_null($reserva)) {
+            $grupo_id = !is_null($reserva->grupo_id) ? $reserva->grupo_id : -1;
+        }
+
         $transaccion=DB::table('con_cargo as c')
+        ->join('res_reserva as r','r.id','=','c.reserva_id')
+        ->leftjoin('gob_habitacion as hab','hab.id','=','r.habitacion_id')
         ->leftjoin('con_transaccion as tr','tr.cargo_id','=','c.id')
         ->leftjoin('pro_hotel_producto as h','h.id','=','tr.hotel_producto_id')
         ->leftjoin('pro_producto as p','p.id','=','h.producto_id')
-        ->select('c.id as cargo_id','tr.id',DB::raw('DATE_FORMAT(tr.fecha,"%d/%m/%Y") as fecha'),'p.descripcion as producto','tr.detalle','tr.cantidad','tr.precio_unidad',DB::raw('tr.cantidad*tr.precio_unidad as total'),DB::raw('(SELECT IFNULL(sum(tp.monto),0) FROM con_transaccion_pago tp WHERE tp.tipo_transaccion_id="A" AND tp.transaccion_id = tr.id AND tp.estado=1) as anticipo'),'tr.descuento_porcentaje','tr.descuento','tr.monto as cargo',DB::raw('(SELECT IFNULL(sum(tp.monto),0) FROM con_transaccion_pago tp WHERE tp.transaccion_id = tr.id AND tp.estado=1) as pago'))
+        ->select('c.id as cargo_id','tr.id','hab.num_habitacion',DB::raw('DATE_FORMAT(tr.fecha,"%d/%m/%Y") as fecha'),'p.descripcion as producto','tr.detalle','tr.cantidad','tr.precio_unidad',DB::raw('tr.cantidad*tr.precio_unidad as total'),DB::raw('(SELECT IFNULL(sum(tp.monto),0) FROM con_transaccion_pago tp WHERE tp.tipo_transaccion_id="A" AND tp.transaccion_id = tr.id AND tp.estado=1) as anticipo'),'tr.descuento_porcentaje','tr.descuento','tr.monto as cargo',DB::raw('(SELECT IFNULL(sum(tp.monto),0) FROM con_transaccion_pago tp WHERE tp.transaccion_id = tr.id AND tp.estado=1) as pago'))
         ->where('h.agencia_id','=',Auth::user()->agencia_id)
-        ->where('c.reserva_id','=',$reserva_id)
+        ->where(function ($query) use ($reserva_id, $grupo_id) {
+            $query->where('tr.reserva_id', '=', $reserva_id)
+                  ->orWhere('r.grupo_id', '=', $grupo_id);
+        })
         ->where('tr.estado','=','1')
+        ->where('r.estado','=','1')
         ->orderBy('tr.fecha','desc')
         ->orderBy('tr.id','desc')
         ->get();

@@ -5,7 +5,7 @@
             <thead>
                 <tr>
                     {{-- <th>Nro. Cargo</th> --}}
-                    <th>Transaccion</th>
+                    <th>Habitacion</th>
                     <th>Fecha</th>
                     <th>Producto</th>
                     <th>Detalle</th>
@@ -76,7 +76,7 @@
 
             // ══════════════════════ Cargando columnas para datatables  ══════════════════════
             var columnas=[
-                            {data:'id',className: "text-center"},
+                            {data:'num_habitacion',className: "text-center"},
                             {data:'fecha'},
                             {data:'producto'},
                             {data:'detalle'},

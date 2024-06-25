@@ -80,6 +80,7 @@ class ReporteRepository{
         if($fecha_fin!=-1){
             $fecha_fin=Carbon::createFromFormat('d/m/Y H:i:s',$fecha_fin.' 00:00:00')->format('Ymd');
         }
+
         $reservas=$this->obtenerReservas($habitacion_id,$tipo_habitacion_id,$cliente_id,$estado_reserva_id,$fecha_ini,$fecha_fin);
         return datatables()->of($reservas)->toJson();
     }
@@ -123,8 +124,8 @@ class ReporteRepository{
         $fecha_fin=($fecha_fin!=null)?Carbon::createFromFormat('Y-m-d',$fecha_fin)->format('Ymd'):null;
 
         $fecha_actual=Carbon::now('America/La_Paz')->format('Ymd');
-        $fechaActualDto = Carbon::parse($fecha_actual);
-        $fechaFinDto = Carbon::parse($fecha_fin);
+        $fechaActualDto=Carbon::parse($fecha_actual);
+        $fechaFinDto=Carbon::parse($fecha_fin);
 
         if ($fechaFinDto->greaterThan($fechaActualDto)) { //La fecha 2 es mayor que la fecha 1
             $fecha_fin=$fecha_actual;
@@ -148,6 +149,7 @@ class ReporteRepository{
         ->where('u.estado_huesped_id','=',2)
         ->whereRaw('DATE_FORMAT(u.fecha_salida,"%Y%m%d")>=?', [$fecha_fin])
         ->whereRaw('DATE_FORMAT(u.fecha_salida,"%Y%m%d") BETWEEN ? AND ?', [$fecha_ini,$fecha_fin]);
+
         if($habitacion_id!=null){
             $huespedes_salida->where('r.habitacion_id','=',$habitacion_id);
         }
