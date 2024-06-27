@@ -20,4 +20,14 @@ class GrupoController extends Controller
         return $this->grupoRep->insertarGrupoReserva($request);
     }
 
+    public function update(Request $request,$id){
+        $request->request->add(['id'=>$id]);
+        $habitacion=$this->grupoRep->modificarGrupoReserva($request);
+        return  $habitacion;
+    }
+
+    public function obtenerGruposPorReservaId(Request $request){
+        return $this->grupoRep->obtenerGruposPorReservaId($request);
+    }
+
 }

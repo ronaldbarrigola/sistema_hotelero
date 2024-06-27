@@ -8,6 +8,7 @@ use App\Entidades\Business\Reserva;
 use App\Repositories\Business\CargoRepository;
 use App\Repositories\Business\TransaccionAnticipoRepository;
 use App\Repositories\Business\TransaccionDetalleRepository;
+use App\Repositories\Business\GrupoRepository;
 use Carbon\Carbon;
 use DB;
 
@@ -16,20 +17,18 @@ class TransaccionRepository{
     protected $cargoRep;
     protected $transaccionAnticipoRep;
     protected $transaccionDetalleRep;
+    protected $grupoRep;
 
-    public function __construct(CargoRepository $cargoRep,TransaccionDetalleRepository $transaccionDetalleRep,TransaccionAnticipoRepository $transaccionAnticipoRep){
+    public function __construct(CargoRepository $cargoRep,TransaccionDetalleRepository $transaccionDetalleRep,TransaccionAnticipoRepository $transaccionAnticipoRep,GrupoRepository $grupoRep){
         $this->cargoRep=$cargoRep;
         $this->transaccionDetalleRep=$transaccionDetalleRep;
         $this->transaccionAnticipoRep=$transaccionAnticipoRep;
+        $this->grupoRep=$grupoRep;
     }
 
     public function obtenerTransacciones($reserva_id){
 
-        $grupo_id = -1;
-        $reserva = Reserva::find($reserva_id);
-        if (!is_null($reserva)) {
-            $grupo_id = !is_null($reserva->grupo_id) ? $reserva->grupo_id : -1;
-        }
+        $grupo_id=$this->grupoRep->obtenerGrupoIdPorReservaId($reserva_id);
 
         $transaccion=DB::table('con_cargo as c')
         ->join('res_reserva as r','r.id','=','c.reserva_id')

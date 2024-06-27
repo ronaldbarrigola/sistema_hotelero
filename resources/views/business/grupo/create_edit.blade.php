@@ -3,7 +3,7 @@
         <div class="modal-content">
 
             <div class="modal-header">
-                <h5 id="title_modal_view_grupo" class="modal-title">AGRUPAR</h5>
+                <h5 id="title_modal_view_grupo" class="modal-title">GRUPO</h5>
                 <button id='cerrarModal' type="button"  class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">X</span>
                 </button>
@@ -14,7 +14,7 @@
                 <form id="frmGrupo" enctype="multipart/form-data" onsubmit="return submitGrupo(event)">
                     @csrf
 
-                    <input type="hidden" name="edit" id="edit" value="">
+                    <input type="hidden" name="editGrupo" id="editGrupo" value="">
 
                     @include('business/grupo/campos_grupo')
                     @include('business/grupo/detalle_grupo')
@@ -58,6 +58,11 @@
             var formdata = new FormData($("#frmGrupo")[0]); //Serializa con imagenes multimedia
             url=URL_BASE + "/business/grupo";
 
+            if($("#editGrupo").val()=="modificar"){
+                url= url + "/" + $("#grupoId").val();
+                formdata.append('_method','patch');
+            }
+
             $.ajax({
                 type: "POST",
                 processData: false, //importante para enviar imagen
@@ -74,7 +79,6 @@
                     if(result.response){
                         limpiarDatoGrupo();
                         $.each(result.lista_reserva,function(i,reserva_id) {
-                            console.log(reserva_id);
                             updateItemForId(reserva_id);
                         });
                     } else {
@@ -83,9 +87,7 @@
 
                     $("#btnGuardarGrupo").removeAttr('disabled');
                     $("#btnGuardarGrupo").text("Guardar");
-
                     $("#modalViewGrupo").modal("hide");
-
                 },//End success
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
                 }, //END error

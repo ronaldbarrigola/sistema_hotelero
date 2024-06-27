@@ -111,6 +111,9 @@ Route::get('/base/persona/buscarPersonaDocId', [PersonaController::class,'buscar
 Route::get('/base/persona/obtenerpersonas', [PersonaController::class,'obtenerPersonas'])->name('obtenerpersonas');
 Route::get('/business/datofactura/nit', [DatoFacturaController::class,'obtenerDatoFacturaPorNit'])->name('dato_factura');
 
+//Grupos
+Route::get('/business/grupo/obtener_grupo_reserva', [GrupoController::class,'obtenerGruposPorReservaId'])->name('obtener_grupo_reserva');
+
 //Post
 Route::post('/business/hotel_producto/activatehotelproducto', [HotelProductoController::class,'activate'])->name('activatehotelproducto');
 Route::post('/business/reserva/estado', [ReservaController::class,'estadoReserva'])->name('estadoreserva');

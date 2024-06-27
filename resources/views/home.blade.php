@@ -19,7 +19,7 @@
             </div>
         @endif
 
-        <div class="carouselReserva carousel slide" data-ride="carousel" data-interval="false">
+        <div class="carouselReserva carousel slide" data-ride="carousel" data-interval="false" data-touch="false">
             <div class="carousel-inner">
                 <div class="carousel-item active" id="slide-1">
                     {{-- Contenedor principal timeline --}}
@@ -77,10 +77,6 @@
             //Para agrupar reservas seleccionados
             timeline.on('select', function (properties) {
                 selectedItems = properties.items;
-                limpiarDatoGrupo();
-                selectedItems.forEach(function(reserva_id) {
-                    cargarFilaGrupo(reserva_id,"nuevo")
-                });
             });
 
             timeline.on('contextmenu', function (props) {
@@ -95,7 +91,7 @@
                     var btnCheckIn="<div class='m=0 col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='checkIn(this)' style='text-align:left'>Check In</button></div>";
                     var btnCheckOut="<div class='col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='checkOut(this)' style='text-align:left'>Check Out</button></div>";
                     var btnStandBy="<div class='col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='standBy(this)' style='text-align:left'>Stand By</button></div>";
-                    var btnGroupSelectedItems="<div class='col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='groupSelectedItems(this)' style='text-align:left'>Agrupar</button></div>";
+                    var btnGroupSelectedItems="<div class='col-12'><button type='button' id='"+props.item+"' class='form-control btn btn-light' onclick='groupSelectedItems(id)' style='text-align:left'>Agrupar</button></div>";
 
                     $menu.append(btnCargos);
                     $menu.append(btnHuesped);
@@ -161,28 +157,29 @@
                     if(result.response){
                         $.each(result.reservas,function(i, v) {
                             let tipoGrafico='range';
-                            // if(v.servicio_id==2) //DAY USE
-                            // {
-                            //     tipoGrafico='point';
-                            // }
 
                             var nombre="";
                             var title="";
                             var tipo_habitacion="";
+
+
+                            var nombre_grupo=(v.nombre_grupo!=""&&v.nombre_grupo!=null)?`<br><span>Grupo : ${v.nombre_grupo}</span>`:"";
+
                             if(v.tipo_persona_id=="J"){ //J:Persona Juridica N:Persona Natural
                                 nombre=v.nombre;
                             } else {
                                 nombre=v.paterno;
                             }
-                            title=`<span>Nro. Reserva : ${v.id}</span><br><span>Cliente : ${v.cliente}</span><br><span>Tipo Habitacion : ${v.tipo_habitacion}</span><br><span>Canal Reserva : ${v.canal_reserva}</span>`;
+
+                            title=`<span>Nro. Reserva : ${v.id}</span><br><span>Cliente : ${v.cliente}</span><br><span>Tipo Habitacion : ${v.tipo_habitacion}</span><br><span>Canal Reserva : ${v.canal_reserva}</span>${nombre_grupo}`;
 
                             if(v.estado_reserva_id==0||v.estado_reserva_id==1){
                                 nombre =v.cantidad_huesped_checkin + ", " + nombre
                                 var porcentaje=(v.porcentaje!=null)?v.porcentaje:0;
                                 var visibleFrameTemplate='<div class="progress-wrapper"><div class="progress" style="width:'+porcentaje+'%"></div><label class="progress-label">'+porcentaje+'%<label></div>';
-                                dataItems.push({id:v.id,content:nombre,title:title,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,style: "border: 4px solid " + v.color_borde ,editable:Boolean(v.editable),visibleFrameTemplate:visibleFrameTemplate})
+                                dataItems.push({id:v.id,content:nombre,title:title,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,style: "border: 5px solid " + v.color_borde ,editable:Boolean(v.editable),visibleFrameTemplate:visibleFrameTemplate})
                             } else {
-                                dataItems.push({id:v.id,content:nombre,title:title,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,style: "border: 4px solid " + v.color_borde ,editable:Boolean(v.editable)})
+                                dataItems.push({id:v.id,content:nombre,title:title,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,style: "border: 5px solid " + v.color_borde ,editable:Boolean(v.editable)})
                             }
 
                         });
@@ -218,16 +215,16 @@
                             nombre=v.paterno;
                         }
 
-
-                        title=`<span>Nro. Reserva : ${v.id}</span><br><span>Cliente : ${v.cliente}</span><br><span>Tipo Habitacion : ${v.tipo_habitacion}</span><br><span>Canal Reserva : ${v.canal_reserva}</span>`;
+                        var nombre_grupo=(v.nombre_grupo!=""&&v.nombre_grupo!=null)?`<br><span>Grupo : ${v.nombre_grupo}</span>`:"";
+                        title=`<span>Nro. Reserva : ${v.id}</span><br><span>Cliente : ${v.cliente}</span><br><span>Tipo Habitacion : ${v.tipo_habitacion}</span><br><span>Canal Reserva : ${v.canal_reserva}</span>${nombre_grupo}`;
 
                         if(v.estado_reserva_id==0||v.estado_reserva_id==1){
                             nombre=v.cantidad_huesped_checkin + ", " + nombre
                             var porcentaje=(v.porcentaje!=null)?v.porcentaje:0;
                             var visibleFrameTemplate='<div class="progress-wrapper"><div class="progress" style="width:'+porcentaje+'%"></div><label class="progress-label">'+porcentaje+'%<label></div>';
-                            items.update({id:v.id,content:nombre,title:title,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,style: "border: 4px solid " + v.color_borde,editable:Boolean(v.editable),visibleFrameTemplate:visibleFrameTemplate});
+                            items.update({id:v.id,content:nombre,title:title,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,style: "border: 5px solid " + v.color_borde,editable:Boolean(v.editable),visibleFrameTemplate:visibleFrameTemplate});
                         } else {
-                            items.update({id:v.id,content:nombre,title:title,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,style: "border: 4px solid " + v.color_borde,editable:Boolean(v.editable)})
+                            items.update({id:v.id,content:nombre,title:title,start:v.fecha_ini,end:v.fecha_fin,group:v.habitacion_id,className:v.color,style: "border: 5px solid " + v.color_borde,editable:Boolean(v.editable)})
                         }
                        //timeline.redraw();
                        //timeline.refresh();
@@ -392,11 +389,39 @@
             });
         }
 
-        function groupSelectedItems($this){
-            if (selectedItems.length > 1) {
+        function groupSelectedItems($id){
+            if (selectedItems.length > 0) {
+                limpiarDatoGrupo();
+                $.ajax({
+                    async: false, //Evitar la ejecucion  Asincrona
+                    type: "GET",
+                    url: "{{route('obtener_grupo_reserva')}}",
+                    data:{reserva_id:$id,selected_items:selectedItems,'_token':'{{ csrf_token() }}'},
+                    dataType: 'json',
+                    success: function(result){
+                        var items=result.reservas;
+                        var grupo=result.grupo;
+                        if(result.accion=="modificar"){
+                            $("#grupoId").val(grupo.id);
+                            $("#editGrupo").val("modificar");
+                            $("#title_modal_view_grupo").text("MODIFICAR GRUPO");
+                            $("#nombre_grupo").val(grupo.nombre);
+                            $("#color_grupo").val(grupo.color);
+                        } else {
+                            $("#title_modal_view_grupo").text("NUEVO GRUPO");
+                        }
+
+                        if (items && items.length > 0) {
+                            items.forEach(function(v) {
+                                cargarFilaGrupo(v.reserva_id,v.num_habitacion,v.estado)
+                            });
+                        }
+                    }
+                }); //End Ajax
+
                 $("#modalViewGrupo").modal("show");
             } else {
-                messageAlert("Debe seleccionar mas de dos Reservas para agrupar");
+                messageAlert("Debe seleccionar uno o mas reservas para agrupar");
             }
         }
 

@@ -10,6 +10,7 @@ use App\Repositories\Business\TransaccionRepository;
 use App\Repositories\Business\HotelProductoRepository;
 use App\Repositories\Business\HuespedRepository;
 use App\Repositories\Business\ComprobanteRepository;
+use App\Repositories\Business\GrupoRepository;
 use Carbon\Carbon;
 use DB;
 
@@ -20,14 +21,16 @@ class ReservaRepository{
     protected $huespedRep;
     protected $personaRep;
     protected $comprobanteRep;
+    protected $grupoRep;
 
     //===constructor=============================================================================================
-    public function __construct(TransaccionRepository $transaccionRep,HotelProductoRepository $hotelProductoRep,PersonaRepository $personaRep,HuespedRepository $huespedRep,ComprobanteRepository $comprobanteRep){
+    public function __construct(TransaccionRepository $transaccionRep,HotelProductoRepository $hotelProductoRep,PersonaRepository $personaRep,HuespedRepository $huespedRep,ComprobanteRepository $comprobanteRep,GrupoRepository $grupoRep){
         $this->transaccionRep=$transaccionRep;
         $this->hotelProductoRep=$hotelProductoRep;
         $this->huespedRep=$huespedRep;
         $this->personaRep=$personaRep;
         $this->comprobanteRep=$comprobanteRep;
+        $this->grupoRep=$grupoRep;
     }
 
     public function obtenerReservas(){
@@ -82,7 +85,7 @@ class ReservaRepository{
         ->leftjoin('res_canal_reserva as cr','cr.id','=','r.canal_reserva_id')
         ->leftjoin('res_grupo as g','g.id','=','r.grupo_id')
         ->join('res_estado_reserva as er','er.id','=','r.estado_reserva_id')
-        ->select('r.id','r.estado_reserva_id',DB::raw('DATE_FORMAT(r.fecha,"%d/%m/%Y") as fecha'),'cr.nombre as canal_reserva','p.tipo_persona_id','g.nombre as nombre_grupo','g.color as color_borde',DB::raw('IFNULL(p.nombre,"") as nombre'),DB::raw('IFNULL(p.paterno,"") as paterno'),DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) AS cliente'),DB::raw('(SELECT IFNULL(count(*),0) FROM res_huesped i inner join cli_cliente cli on i.cliente_id=cli.id  WHERE i.estado_huesped_id=1 AND i.reserva_id=r.id AND i.estado=1 AND cli.estado=1) as cantidad_huesped_checkin'),'r.habitacion_id','h.num_habitacion','t.descripcion as tipo_habitacion',DB::raw('DATE_FORMAT(r.fecha_ini,"%Y-%m-%d %H:%i:%s") as fecha_ini'),DB::raw('DATE_FORMAT(r.fecha_fin,"%Y-%m-%d %H:%i:%s") as fecha_fin'),'er.descripcion as estado_reserva','er.color','er.editable','r.servicio_id',DB::raw('(SELECT IFNULL(sum(tr.monto),0) FROM con_transaccion tr WHERE tr.reserva_id = r.id AND tr.estado=1) as cargo'),DB::raw('(SELECT IFNULL(sum(trp.monto),0) FROM con_transaccion_pago as trp INNER JOIN con_transaccion as tr ON trp.transaccion_id=tr.id WHERE tr.reserva_id = r.id AND tr.estado=1 AND trp.estado=1) as pago'))
+        ->select('r.id','r.estado_reserva_id',DB::raw('DATE_FORMAT(r.fecha,"%d/%m/%Y") as fecha'),'cr.nombre as canal_reserva','p.tipo_persona_id',DB::raw('IFNULL(g.nombre,"") as nombre_grupo'),'g.color as color_borde',DB::raw('IFNULL(p.nombre,"") as nombre'),DB::raw('IFNULL(p.paterno,"") as paterno'),DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) AS cliente'),DB::raw('(SELECT IFNULL(count(*),0) FROM res_huesped i inner join cli_cliente cli on i.cliente_id=cli.id  WHERE i.estado_huesped_id=1 AND i.reserva_id=r.id AND i.estado=1 AND cli.estado=1) as cantidad_huesped_checkin'),'r.habitacion_id','h.num_habitacion','t.descripcion as tipo_habitacion',DB::raw('DATE_FORMAT(r.fecha_ini,"%Y-%m-%d %H:%i:%s") as fecha_ini'),DB::raw('DATE_FORMAT(r.fecha_fin,"%Y-%m-%d %H:%i:%s") as fecha_fin'),'er.descripcion as estado_reserva','er.color','er.editable','r.servicio_id',DB::raw('(SELECT IFNULL(sum(tr.monto),0) FROM con_transaccion tr WHERE tr.reserva_id = r.id AND tr.estado=1) as cargo'),DB::raw('(SELECT IFNULL(sum(trp.monto),0) FROM con_transaccion_pago as trp INNER JOIN con_transaccion as tr ON trp.transaccion_id=tr.id WHERE tr.reserva_id = r.id AND tr.estado=1 AND trp.estado=1) as pago'))
         ->whereDate('r.fecha_ini','>=',$fecha_filtro)
         ->where('r.estado','=','1')
         ->where('p.estado','=','1')
@@ -112,7 +115,7 @@ class ReservaRepository{
         ->leftjoin('res_canal_reserva as cr','cr.id','=','r.canal_reserva_id')
         ->leftjoin('res_grupo as g','g.id','=','r.grupo_id')
         ->join('res_estado_reserva as er','er.id','=','r.estado_reserva_id')
-        ->select('r.id','r.estado_reserva_id',DB::raw('DATE_FORMAT(r.fecha,"%d/%m/%Y") as fecha'),'cr.nombre as canal_reserva','p.tipo_persona_id','g.nombre as nombre_grupo','g.color as color_borde',DB::raw('IFNULL(p.nombre,"") as nombre'),DB::raw('IFNULL(p.paterno,"") as paterno'),DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) AS cliente'),DB::raw('(SELECT IFNULL(count(*),0) FROM res_huesped i inner join cli_cliente cli on i.cliente_id=cli.id  WHERE i.estado_huesped_id=1 AND i.reserva_id=r.id AND i.estado=1 AND cli.estado=1) as cantidad_huesped_checkin'),'r.habitacion_id','h.num_habitacion','t.descripcion as tipo_habitacion',DB::raw('DATE_FORMAT(r.fecha_ini,"%Y-%m-%d %H:%i:%s") as fecha_ini'),DB::raw('DATE_FORMAT(r.fecha_fin,"%Y-%m-%d %H:%i:%s") as fecha_fin'),'er.descripcion as estado_reserva','er.color','er.editable','r.servicio_id',DB::raw('(SELECT IFNULL(sum(tr.monto),0) FROM con_transaccion tr WHERE tr.reserva_id = r.id AND tr.estado=1) as cargo'),DB::raw('(SELECT IFNULL(sum(trp.monto),0) FROM con_transaccion_pago as trp INNER JOIN con_transaccion as tr ON trp.transaccion_id=tr.id WHERE tr.reserva_id = r.id AND tr.estado=1 AND trp.estado=1) as pago'))
+        ->select('r.id','r.estado_reserva_id',DB::raw('DATE_FORMAT(r.fecha,"%d/%m/%Y") as fecha'),'cr.nombre as canal_reserva','p.tipo_persona_id',DB::raw('IFNULL(g.nombre,"") as nombre_grupo'),'g.color as color_borde',DB::raw('IFNULL(p.nombre,"") as nombre'),DB::raw('IFNULL(p.paterno,"") as paterno'),DB::raw('CONCAT(IFNULL(p.nombre,"")," ",IFNULL(p.paterno,"")," ",IFNULL(p.materno,"")) AS cliente'),DB::raw('(SELECT IFNULL(count(*),0) FROM res_huesped i inner join cli_cliente cli on i.cliente_id=cli.id  WHERE i.estado_huesped_id=1 AND i.reserva_id=r.id AND i.estado=1 AND cli.estado=1) as cantidad_huesped_checkin'),'r.habitacion_id','h.num_habitacion','t.descripcion as tipo_habitacion',DB::raw('DATE_FORMAT(r.fecha_ini,"%Y-%m-%d %H:%i:%s") as fecha_ini'),DB::raw('DATE_FORMAT(r.fecha_fin,"%Y-%m-%d %H:%i:%s") as fecha_fin'),'er.descripcion as estado_reserva','er.color','er.editable','r.servicio_id',DB::raw('(SELECT IFNULL(sum(tr.monto),0) FROM con_transaccion tr WHERE tr.reserva_id = r.id AND tr.estado=1) as cargo'),DB::raw('(SELECT IFNULL(sum(trp.monto),0) FROM con_transaccion_pago as trp INNER JOIN con_transaccion as tr ON trp.transaccion_id=tr.id WHERE tr.reserva_id = r.id AND tr.estado=1 AND trp.estado=1) as pago'))
         ->where('r.id','=',$reserva_id)
         ->where('r.estado','=','1')
         ->where('p.estado','=','1')
@@ -150,11 +153,7 @@ class ReservaRepository{
     //Detalle del comprobante detalle cargo
     public function obtenerInformacionTransaccionPorReservaId($reserva_id){
 
-        $grupo_id = -1;
-        $reserva = Reserva::find($reserva_id);
-        if (!is_null($reserva)) {
-            $grupo_id = !is_null($reserva->grupo_id) ? $reserva->grupo_id : -1;
-        }
+        $grupo_id=$this->grupoRep->obtenerGrupoIdPorReservaId($reserva_id);
 
         $transaccion_cargo=DB::table('con_transaccion as tr')
                             ->join('res_reserva as r','r.id','=','tr.reserva_id')
