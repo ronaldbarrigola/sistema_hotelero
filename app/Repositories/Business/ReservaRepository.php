@@ -252,7 +252,7 @@ class ReservaRepository{
                     }
                     break;
                 case 3: //CHECK OUT
-                    if($reserva->estado_reserva_id==1){ //Verifica si el estado esta en Check In
+                    if($reserva->estado_reserva_id==1||$reserva->estado_reserva_id==2){ //Verifica si el estado esta en Check In
                         $saldo=$this->transaccionRep->saldo($id);
                         if($saldo>0){
                             $message="No puede ejecutar la accion Check Out, porque tiene saldo pendiente de pago";
